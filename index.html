@@ -758,8 +758,11 @@
     font-size:13px;font-weight:600;font-family:'Inter',sans-serif;
   }
   .trade-partner-btn:hover{background:rgba(255,255,255,.14);}
-  .tp-tok{width:24px;height:24px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
-    font-size:13px;border:2px solid var(--ink);}
+  .tp-tok{width:30px;height:30px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+    font-size:15px;border:2px solid var(--ink);}
+  .tp-info{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:0;}
+  .tp-name{font-weight:700;font-size:13px;}
+  .tp-meta{font-size:10.5px;color:rgba(242,244,234,.6);font-weight:600;}
 
   .trade-columns{display:flex;flex-wrap:wrap;gap:10px;width:100%;max-width:380px;justify-content:center;}
   .trade-col{flex:1 1 150px;min-width:130px;background:rgba(255,255,255,.05);border-radius:10px;padding:8px 10px;}
@@ -773,12 +776,29 @@
   .trade-row.selected{background:rgba(241,196,15,.18);border-color:rgba(241,196,15,.5);color:#fff;}
   .trade-swatch{width:9px;height:9px;border-radius:2px;flex:none;}
   .tr-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .tr-price{flex:none;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(242,244,234,.55);}
+  .trade-row.selected .tr-price{color:var(--gold);}
   .trade-empty{font-size:10.5px;color:rgba(242,244,234,.5);padding:4px 0;}
   .trade-money{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--gold);font-weight:700;}
+  .tm-label{flex:none;}
   .trade-money input{
     width:100%;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);border-radius:6px;
-    color:#fff;font-family:'JetBrains Mono',monospace;font-size:12px;padding:4px 6px;
+    color:#fff;font-family:'JetBrains Mono',monospace;font-size:12px;padding:4px 6px;text-align:center;
   }
+  .tm-step{
+    flex:none;width:22px;height:22px;border-radius:6px;border:none;background:rgba(255,255,255,.14);
+    color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;
+  }
+  .tm-step:hover{background:var(--pitch);}
+  .trade-summary{
+    display:flex;align-items:center;gap:8px;width:100%;max-width:380px;margin-top:2px;
+    background:rgba(241,196,15,.08);border:1px solid rgba(241,196,15,.25);border-radius:10px;padding:8px 12px;
+  }
+  .trade-summary-side{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+  .trade-summary-side:last-child{text-align:right;}
+  .trade-summary-label{font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:rgba(242,244,234,.55);font-weight:700;}
+  .trade-summary-value{font-size:11.5px;color:#fff;font-weight:600;line-height:1.35;}
+  .trade-summary-arrow{flex:none;font-size:16px;color:var(--gold);}
   .trade-error{
     width:100%;max-width:380px;background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.5);
     color:#ffd6d2;font-size:11.5px;border-radius:8px;padding:6px 10px;margin-top:8px;text-align:center;
@@ -814,17 +834,35 @@
     flex:none;width:100%;max-width:720px;margin:0 auto;
     background:linear-gradient(160deg,#173a22,#0c1f13);
     border:1px solid rgba(255,255,255,.09);
-    border-radius:14px;padding:10px 18px 12px;
+    border-radius:14px;
     box-shadow:0 10px 24px rgba(0,0,0,.35);
+    overflow:hidden;
   }
-  .highlights-title{
-    font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
-    color:var(--gold);text-align:center;margin-bottom:6px;font-weight:700;
+  .highlights-toggle{
+    display:flex;align-items:center;gap:8px;width:100%;
+    background:none;border:none;color:inherit;font-family:inherit;
+    padding:9px 14px;text-align:left;
   }
+  .highlights-title-text{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--gold);font-weight:700;flex:none;
+  }
+  .highlights-latest{
+    flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    font-size:12px;color:rgba(242,244,234,.85);font-weight:600;
+  }
+  .highlights-chevron{
+    flex:none;color:rgba(242,244,234,.5);font-size:11px;
+    transition:transform .2s ease;
+  }
+  .highlights-panel.expanded .highlights-chevron{transform:rotate(180deg);}
+  .highlights-panel.expanded .highlights-latest{opacity:0;}
   #log{
-    width:100%;max-height:120px;overflow-y:auto;
+    width:100%;max-height:0;overflow-y:auto;
     font-size:13px;color:rgba(242,244,234,.72);line-height:1.6;text-align:center;
+    padding:0 18px;transition:max-height .25s ease, padding .25s ease;
   }
+  .highlights-panel.expanded #log{max-height:150px;padding:0 18px 12px;}
   #log div{opacity:.85;padding:2px 0;}
   #log div:last-child{color:#fff;font-weight:600;opacity:1;}
 
@@ -838,21 +876,26 @@
 
   @media (max-width:980px){
     #game{height:100vh;height:100dvh;}
-    .layout{flex-direction:column;align-items:center;padding:8px;gap:8px;overflow-y:auto;}
-    #sidebar{width:100%;max-width:600px;flex-direction:row;flex-wrap:wrap;overflow-y:visible;max-height:none;flex:none;gap:5px;}
-    .player-card{flex:1 1 120px;padding:5px 8px;border-radius:10px;}
+    .layout{flex-direction:column;align-items:stretch;padding:6px;gap:6px;overflow-y:auto;}
+    #sidebar{
+      width:100%;flex-direction:row;flex-wrap:wrap;overflow-y:visible;max-height:none;flex:none;gap:5px;
+    }
+    .player-card{
+      flex:1 1 auto;min-width:0;padding:5px 8px;border-radius:10px;
+      display:flex;align-items:center;gap:6px;
+    }
     .player-card.active{transform:none;}
-    .pc-top{gap:5px;margin-bottom:0;}
-    .pc-tok{width:18px;height:18px;font-size:9.5px;border-width:1.2px;border-radius:6px;}
-    .pc-name{font-size:10.5px;}
-    .you-tag{font-size:8px;}
-    .pc-money{font-size:11.5px;}
+    .pc-top{gap:5px;margin-bottom:0;flex:1;min-width:0;}
+    .pc-tok{width:20px;height:20px;font-size:10px;border-width:1.2px;border-radius:6px;flex:none;}
+    .pc-name{font-size:11px;}
+    .you-tag{display:none;}
+    .pc-money{font-size:12px;flex:none;}
     .pc-props{display:none;}
-    .pc-status{font-size:8px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .pc-status{display:none;}
+    .main-area{flex:1;width:100%;min-height:0;gap:6px;}
     #boardWrap{flex:1;width:100%;min-height:0;}
-    .main-area{flex:1;width:100%;min-height:0;gap:8px;}
-    .highlights-panel{padding:8px 14px 10px;}
-    #log{max-height:70px;font-size:11.5px;}
+    .highlights-toggle{padding:7px 12px;}
+    .highlights-title-text{display:none;}
   }
   @media (max-width:600px){
     .topbar{padding:8px 10px;gap:6px;}
@@ -1042,8 +1085,12 @@
       <div id="boardWrap">
         <div id="board"></div>
       </div>
-      <div class="highlights-panel">
-        <div class="highlights-title">⚡ Moments forts</div>
+      <div class="highlights-panel" id="highlightsPanel">
+        <button class="highlights-toggle" id="highlightsToggle" type="button">
+          <span class="highlights-title-text">⚡ Moments forts</span>
+          <span class="highlights-latest" id="highlightsLatest"></span>
+          <span class="highlights-chevron">▾</span>
+        </button>
         <div id="log"></div>
       </div>
     </div>
@@ -1570,6 +1617,7 @@
     state.doublesStreak = 0;
     state.status = 'playing';
     state.turnStartedAt = null;
+    timerPauseStart = null;
 
     document.getElementById('localSetup').style.display = 'none';
     document.getElementById('game').style.display = 'flex';
@@ -1628,6 +1676,7 @@
     state.buildOpen = false;
     state.pendingBuy = null;
     state.turnStartedAt = null;
+    timerPauseStart = null;
     const codeEl = document.getElementById('topbarCode');
     if(codeEl) codeEl.style.display = '';
     document.getElementById('game').style.display = 'none';
@@ -1848,8 +1897,9 @@
   /* ---------------- TRADES BETWEEN PLAYERS ---------------- */
   function openTrade(){
     state.trade = { partnerId:null, give:new Set(), receive:new Set(), moneyGive:0, moneyReceive:0, error:'' };
+    pauseTimer();
   }
-  function closeTrade(){ state.trade = null; }
+  function closeTrade(){ state.trade = null; resumeTimer(); }
   function pickTradePartner(partnerId){
     if(!state.trade) return;
     state.trade.partnerId = partnerId;
@@ -1895,6 +1945,7 @@
     pushLog(describeTradeResult(cp, partner, giveArr, receiveArr, t.moneyGive, t.moneyReceive, '🤝', 'concluent un échange'));
 
     state.trade = null;
+    resumeTimer();
     renderAll();
     pushState();
   }
@@ -1919,6 +1970,7 @@
     };
     pushLog(`🤝 ${cp.name} propose un échange à ${partner.name}.`);
     state.trade = null;
+    resumeTimer();
     renderAll();
     pushState();
   }
@@ -2132,12 +2184,23 @@
 
   // The event log now lives in its own panel below the board, independent of
   // whatever's happening in the center console — so it never gets shoved
-  // around or hidden by build/trade panels anymore.
+  // around or hidden by build/trade panels anymore. Collapsed by default
+  // (just the latest line, in the toggle bar itself) to save space on
+  // phones; tapping it reveals the full scrollable history.
   function renderHighlights(){
     const logEl = document.getElementById('log');
+    const latestEl = document.getElementById('highlightsLatest');
+    if(latestEl) latestEl.textContent = state.log.length ? state.log[state.log.length - 1] : '';
     if(!logEl) return;
     logEl.innerHTML = state.log.slice(-10).map(m => `<div>${m}</div>`).join('');
     logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  const highlightsToggleBtn = document.getElementById('highlightsToggle');
+  if(highlightsToggleBtn){
+    highlightsToggleBtn.addEventListener('click', () => {
+      document.getElementById('highlightsPanel').classList.toggle('expanded');
+    });
   }
 
   let lastMoneyById = {};
@@ -2344,7 +2407,7 @@
         pushState();
       }));
       const closeBtn = document.getElementById('buildCloseBtn');
-      if(closeBtn) closeBtn.addEventListener('click', () => { state.buildOpen = false; renderConsole(); });
+      if(closeBtn) closeBtn.addEventListener('click', () => { state.buildOpen = false; resumeTimer(); renderConsole(); });
       return;
     }
 
@@ -2366,6 +2429,15 @@
       const mr = document.getElementById('tradeMoneyReceive');
       if(mg) mg.addEventListener('input', () => { state.trade.moneyGive = Math.max(0, parseInt(mg.value, 10) || 0); state.trade.error=''; });
       if(mr) mr.addEventListener('input', () => { state.trade.moneyReceive = Math.max(0, parseInt(mr.value, 10) || 0); state.trade.error=''; });
+      zone.querySelectorAll('.tm-step').forEach(btn => btn.addEventListener('click', () => {
+        const targetId = btn.dataset.target;
+        const delta = parseInt(btn.dataset.delta, 10);
+        const current = targetId === 'tradeMoneyGive' ? state.trade.moneyGive : state.trade.moneyReceive;
+        const next = Math.max(0, current + delta);
+        if(targetId === 'tradeMoneyGive') state.trade.moneyGive = next; else state.trade.moneyReceive = next;
+        state.trade.error = '';
+        renderConsole();
+      }));
       const confirmBtn = document.getElementById('tradeConfirmBtn');
       if(confirmBtn) confirmBtn.addEventListener('click', () => {
         if(state.mode === 'online') proposeTrade(); else executeTrade();
@@ -2423,7 +2495,7 @@
       const buildBtn = document.createElement('button');
       buildBtn.className = 'action-btn btn-build';
       buildBtn.textContent = '🏗️ Construire';
-      buildBtn.addEventListener('click', () => { state.buildOpen = true; renderConsole(); });
+      buildBtn.addEventListener('click', () => { state.buildOpen = true; pauseTimer(); renderConsole(); });
       zone.appendChild(buildBtn);
     }
 
@@ -2483,7 +2555,11 @@
         <div class="trade-partners">`;
       others.forEach(p => {
         html += `<button class="trade-partner-btn" data-pid="${p.id}">
-          <span class="tp-tok" style="background:${p.color}">${p.token}</span>${p.name}
+          <span class="tp-tok" style="background:${p.color}">${p.token}</span>
+          <span class="tp-info">
+            <span class="tp-name">${p.name}</span>
+            <span class="tp-meta">${p.properties.length} club${p.properties.length > 1 ? 's' : ''} · ${fmt(p.money)}</span>
+          </span>
         </button>`;
       });
       html += `</div>`;
@@ -2498,6 +2574,7 @@
       return `<div class="trade-row ${selected ? 'selected' : ''}" data-idx="${idx}" data-side="${side}">
         <span class="trade-swatch" style="background:var(${G[sp.group]})"></span>
         <span class="tr-name">${sp.name}</span>
+        <span class="tr-price">€${sp.price}</span>
       </div>`;
     }
 
@@ -2510,20 +2587,48 @@
       ? receiveProps.map(idx => propRow(idx, t.receive.has(idx), 'receive')).join('')
       : '<div class="trade-empty">Aucun club libre chez lui/elle</div>';
 
+    const giveNames = Array.from(t.give).map(idx => BOARD[idx].name);
+    const receiveNames = Array.from(t.receive).map(idx => BOARD[idx].name);
+    const hasOffer = giveNames.length || t.moneyGive || receiveNames.length || t.moneyReceive;
+    const summaryHtml = hasOffer ? `
+      <div class="trade-summary">
+        <div class="trade-summary-side">
+          <span class="trade-summary-label">Vous donnez</span>
+          <span class="trade-summary-value">${giveNames.length ? giveNames.join(', ') : '—'}${t.moneyGive ? `${giveNames.length ? ' + ' : ''}${fmt(t.moneyGive)}` : ''}</span>
+        </div>
+        <div class="trade-summary-arrow">⇄</div>
+        <div class="trade-summary-side">
+          <span class="trade-summary-label">Vous recevez</span>
+          <span class="trade-summary-value">${receiveNames.length ? receiveNames.join(', ') : '—'}${t.moneyReceive ? `${receiveNames.length ? ' + ' : ''}${fmt(t.moneyReceive)}` : ''}</span>
+        </div>
+      </div>
+    ` : '';
+
     return `
       <div class="trade-header">🤝 Échange avec ${partner.name} <button class="build-close" id="tradeCloseBtn">Fermer ✕</button></div>
       <div class="trade-columns">
         <div class="trade-col">
           <div class="trade-col-title">Vous donnez</div>
           <div class="trade-list">${giveHtml}</div>
-          <label class="trade-money">€ <input type="number" min="0" id="tradeMoneyGive" value="${t.moneyGive}"></label>
+          <div class="trade-money">
+            <span class="tm-label">€</span>
+            <button type="button" class="tm-step" data-target="tradeMoneyGive" data-delta="-50">−</button>
+            <input type="number" min="0" id="tradeMoneyGive" value="${t.moneyGive}">
+            <button type="button" class="tm-step" data-target="tradeMoneyGive" data-delta="50">+</button>
+          </div>
         </div>
         <div class="trade-col">
           <div class="trade-col-title">Vous recevez</div>
           <div class="trade-list">${receiveHtml}</div>
-          <label class="trade-money">€ <input type="number" min="0" id="tradeMoneyReceive" value="${t.moneyReceive}"></label>
+          <div class="trade-money">
+            <span class="tm-label">€</span>
+            <button type="button" class="tm-step" data-target="tradeMoneyReceive" data-delta="-50">−</button>
+            <input type="number" min="0" id="tradeMoneyReceive" value="${t.moneyReceive}">
+            <button type="button" class="tm-step" data-target="tradeMoneyReceive" data-delta="50">+</button>
+          </div>
         </div>
       </div>
+      ${summaryHtml}
       ${errorHtml}
       <div class="trade-actions">
         <button class="action-btn btn-buy" id="tradeConfirmBtn">${state.mode === 'online' ? "Proposer l'échange" : "Valider l'échange"}</button>
@@ -2542,6 +2647,7 @@
     state.buildOpen = false;
     state.trade = null;
     state.turnStartedAt = Date.now();
+    timerPauseStart = null;
     if(cp.skipTurn){
       cp.skipTurn = false;
       pushLog(`🪑 ${cp.name} est suspendu et passe son tour.`);
@@ -2821,8 +2927,21 @@
      Every phone shows the same countdown (derived from the shared
      turnStartedAt timestamp), but only the active player's own phone is the
      one that actually enforces the skip — avoids every phone racing to
-     advance the turn at once. */
+     advance the turn at once. Opening the build or trade panel genuinely
+     pauses it: turnStartedAt gets shifted forward by however long was spent
+     browsing, once you leave, so no time is silently lost. */
   const TURN_TIME_LIMIT_MS = 60000;
+  let timerPauseStart = null;
+
+  function pauseTimer(){
+    if(timerPauseStart === null) timerPauseStart = Date.now();
+  }
+  function resumeTimer(){
+    if(timerPauseStart !== null && state.turnStartedAt){
+      state.turnStartedAt += (Date.now() - timerPauseStart);
+    }
+    timerPauseStart = null;
+  }
 
   function forceSkipTurn(){
     const cp = currentPlayer();
@@ -2832,6 +2951,7 @@
     state.pendingTrade = null;
     state.buildOpen = false;
     state.trade = null;
+    timerPauseStart = null;
     advanceToNextPlayer();
   }
 
@@ -2842,6 +2962,12 @@
     const relevantPhase = state.phase === 'ready' || state.phase === 'must-end' || state.phase === 'awaiting-buy';
     if(state.mode !== 'online' || !gameVisible || !state.turnStartedAt || !relevantPhase || state.pendingTrade){
       el.style.display = 'none';
+      return;
+    }
+    if(timerPauseStart !== null){
+      el.style.display = 'inline-flex';
+      el.textContent = '⏸️ Pause';
+      el.classList.remove('timer-warning');
       return;
     }
     const elapsed = Math.floor((Date.now() - state.turnStartedAt) / 1000);
@@ -2857,6 +2983,7 @@
     turnTimerLoopId = setInterval(() => {
       updateTurnTimerDisplay();
       if(state.mode === 'online' && isMyTurn() && state.turnStartedAt && !state.pendingTrade &&
+         timerPauseStart === null &&
          (state.phase === 'ready' || state.phase === 'must-end' || state.phase === 'awaiting-buy') &&
          Date.now() - state.turnStartedAt >= TURN_TIME_LIMIT_MS){
         forceSkipTurn();
