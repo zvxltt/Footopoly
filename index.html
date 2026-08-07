@@ -1,0 +1,2318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Footopoly en ligne — Édition Champions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/mqtt@5/dist/mqtt.min.js"></script>
+<style>
+  :root{
+    --bg-deep:#0e1a12;
+    --bg-deep-2:#16261b;
+    --parchment:#f2f4ea;
+    --parchment-dark:#dfe4d2;
+    --ink:#20281f;
+    --ink-soft:#5b6355;
+    --red:#c0392b;
+    --gold:#f1c40f;
+    --pitch:#2f9e44;
+    --line:rgba(32,40,31,0.16);
+    --shadow:0 10px 30px rgba(8,16,10,0.35);
+    --promus:#9c8465; --eredivisie:#e8842e; --portugal:#2f9e44; --seriea:#2f8fd1;
+    --bundesliga:#c0392b; --laliga:#f1c40f; --premier:#6c5ce7; --elite:#1f2a52;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(1200px 700px at 15% -10%, #1c3a24 0%, transparent 60%),
+      radial-gradient(1000px 600px at 110% 10%, #123322 0%, transparent 55%),
+      var(--bg-deep);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.display{font-family:'Baloo 2',sans-serif;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  button{font-family:inherit;cursor:pointer;}
+  ::selection{background:var(--gold);color:var(--ink);}
+
+  /* ---------- Original football icon (drawn in CSS, not a club/league logo) ---------- */
+  .footballicon{
+    width:20px;height:20px;border-radius:50%;flex:none;
+    background:#fff;border:2px solid var(--ink);position:relative;
+  }
+  .footballicon::before{
+    content:'';position:absolute;top:50%;left:50%;width:8px;height:8px;background:var(--ink);
+    clip-path:polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%);transform:translate(-50%,-50%);
+  }
+
+  /* Slot for your own sourced logo images (see LOGO_MAP in the script) */
+  .cell-logo{width:60%;height:60%;object-fit:contain;flex:none;}
+
+  /* ---------- Original shield / card badges (no copied club or league artwork) ---------- */
+  .medal{
+    width:18px;height:18px;flex:none;position:relative;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+    filter:drop-shadow(0 2px 2px rgba(0,0,0,.25));
+  }
+  .medal .glyph{
+    width:100%;height:100%;
+    clip-path:polygon(50% 0%,100% 0%,100% 55%,50% 100%,0% 55%,0% 0%);
+    border:1.4px solid var(--ink);
+  }
+  .medal.medal-lg{width:32px;height:32px;}
+  .medal.medal-lg .glyph{border-width:2px;}
+  .glyph-promus{background:linear-gradient(160deg,#c9b494,var(--promus) 78%);}
+  .glyph-eredivisie{background:linear-gradient(160deg,#ffbf78,var(--eredivisie) 78%);}
+  .glyph-portugal{background:linear-gradient(160deg,#8fd6a0,var(--portugal) 78%);}
+  .glyph-seriea{background:linear-gradient(160deg,#a9d3f5,var(--seriea) 78%);}
+  .glyph-bundesliga{background:linear-gradient(160deg,#ef8f84,var(--bundesliga) 78%);}
+  .glyph-laliga{background:linear-gradient(160deg,#fbe57e,var(--laliga) 78%);}
+  .glyph-premier{background:linear-gradient(160deg,#b6a9f5,var(--premier) 78%);}
+  .glyph-elite{background:linear-gradient(160deg,#4a5a8f,var(--elite) 78%);}
+  .glyph-elite::after{content:'★';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    color:var(--gold);font-size:9px;top:2px;}
+  .glyph-stadium{background:linear-gradient(160deg,#e3e3e3,#8f8f8f 80%);position:relative;}
+  .glyph-stadium::after{content:'';position:absolute;left:22%;right:22%;top:38%;height:34%;border:1.4px solid #fff;border-radius:50%;}
+  .glyph-sponsor{background:linear-gradient(160deg,#fff0b0,#c9a63c 80%);display:flex;align-items:center;justify-content:center;
+    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:10px;color:#5a4a12;}
+  .glyph-tax{background:linear-gradient(160deg,#e6e6e6,#a3a3a3 80%);display:flex;align-items:center;justify-content:center;
+    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:10px;color:#4a4a4a;}
+  .medal-corner{width:26px;height:26px;}
+  .medal-corner .glyph{border-width:2px;}
+  .glyph-kickoff{background:linear-gradient(160deg,#8fd6a0,var(--pitch) 80%);position:relative;}
+  .glyph-kickoff::after{content:'';position:absolute;top:50%;left:50%;width:32%;height:32%;background:#fff;
+    border:1.4px solid var(--ink);border-radius:50%;transform:translate(-50%,-50%);}
+  .glyph-bench{background:repeating-linear-gradient(90deg,#4a4a4a 0 3px,#c9c9c9 3px 7px);}
+  .glyph-halftime{background:linear-gradient(160deg,#a9dcf5,var(--seriea) 80%);display:flex;align-items:center;justify-content:center;
+    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:11px;color:#fff;}
+
+  /* Yellow / red card icons for the event-draw spaces */
+  .card-icon{width:13px;height:18px;border-radius:2px;background:var(--gold);border:1.4px solid var(--ink);flex:none;}
+  .card-icon.red{background:var(--red);}
+  .transfer-icon{
+    width:18px;height:18px;border-radius:50%;flex:none;
+    background:linear-gradient(160deg,#8fb3ef,#3d6fc9);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;
+    border:1.4px solid var(--ink);
+  }
+
+  /* ================= LANDING & LOBBY SCREENS ================= */
+  #landing, #lobby, #localSetup{
+    min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:32px 16px;
+  }
+  .setup-card{
+    width:100%;max-width:640px;
+    background:var(--parchment);
+    border-radius:22px;
+    box-shadow:var(--shadow);
+    border:1px solid var(--parchment-dark);
+    overflow:hidden;
+  }
+  .setup-banner{
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.06) 0 12px, transparent 12px 24px),
+      linear-gradient(120deg, var(--pitch), #227a35 55%, #1c6b2d);
+    padding:30px 28px 26px;
+    color:#fff;
+    position:relative;
+    text-align:center;
+  }
+  .setup-banner .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    letter-spacing:.18em;
+    font-size:11px;
+    text-transform:uppercase;
+    opacity:.85;
+    margin-bottom:6px;
+  }
+  .setup-banner h1{
+    margin:0;font-size:clamp(28px,6vw,40px);font-weight:800;
+    text-shadow:0 3px 0 rgba(0,0,0,0.18);letter-spacing:.01em;
+  }
+  .setup-banner p{margin:8px 0 0;font-size:14px;opacity:.92;}
+  .code-label{
+    margin:0;font-size:11px;text-transform:uppercase;letter-spacing:.14em;
+    opacity:.8;font-weight:700;
+  }
+  .code-display{
+    font-family:'JetBrains Mono',monospace;font-weight:700;
+    font-size:clamp(34px,9vw,52px);letter-spacing:.14em;
+    color:#fff;margin:6px 0 2px;text-shadow:0 3px 0 rgba(0,0,0,.2);
+    word-break:break-all;
+  }
+  .setup-body{padding:26px 28px 30px;}
+  .field-label{
+    font-size:12px;text-transform:uppercase;letter-spacing:.09em;
+    color:var(--ink-soft);font-weight:700;margin-bottom:8px;display:block;
+  }
+  .stepper{
+    display:flex;align-items:center;gap:14px;margin-bottom:22px;
+  }
+  .stepper button{
+    width:38px;height:38px;border-radius:10px;border:none;
+    background:var(--ink);color:var(--parchment);font-size:18px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .12s ease, background .12s ease;
+  }
+  .stepper button:hover{background:var(--red);}
+  .stepper button:active{transform:scale(.92);}
+  .stepper .count{
+    font-family:'Baloo 2',sans-serif;font-size:26px;font-weight:700;
+    min-width:34px;text-align:center;
+  }
+  .player-row{
+    display:flex;align-items:center;gap:10px;
+    background:#fff;border:1px solid var(--parchment-dark);
+    border-radius:12px;padding:8px 10px;
+  }
+  .token-pick{
+    width:38px;height:38px;border-radius:10px;flex:none;
+    display:flex;align-items:center;justify-content:center;font-size:19px;
+    border:2px solid var(--ink);
+  }
+  .player-row input[type=text]{
+    flex:1;border:none;outline:none;font-size:15px;font-weight:600;
+    color:var(--ink);background:transparent;min-width:0;
+  }
+  .row-money{margin-bottom:22px;}
+  .money-input-wrap{
+    display:flex;align-items:center;gap:8px;background:#fff;
+    border:1px solid var(--parchment-dark);border-radius:12px;padding:10px 14px;
+  }
+  .money-input-wrap span{font-weight:700;color:var(--gold);font-size:18px;}
+  .money-input-wrap input{
+    border:none;outline:none;font-size:16px;font-weight:700;width:100%;
+    font-family:'JetBrains Mono',monospace;color:var(--ink);background:transparent;
+  }
+  .start-btn{
+    width:100%;padding:15px;border:none;border-radius:14px;
+    background:linear-gradient(135deg,var(--pitch),#1c6b2d);
+    color:#fff;font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:700;
+    letter-spacing:.02em;box-shadow:0 8px 18px rgba(35,110,45,.35);
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .start-btn:hover{transform:translateY(-2px);box-shadow:0 12px 22px rgba(35,110,45,.42);}
+  .start-btn:active{transform:translateY(0);}
+  .start-btn-alt{
+    background:linear-gradient(135deg,#3d6fc9,#274a8a);
+    box-shadow:0 8px 18px rgba(39,74,138,.35);margin-top:10px;
+  }
+  .start-btn-local{
+    background:linear-gradient(135deg,#caa23a,#8a6a1c);
+    box-shadow:0 8px 18px rgba(138,106,28,.35);margin-top:10px;
+  }
+  .config-warning{
+    background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.35);color:#8f2a20;
+    font-size:12px;line-height:1.5;border-radius:10px;padding:10px 12px;margin-bottom:16px;
+    text-align:center;font-weight:600;
+  }
+  .config-warning code{background:rgba(0,0,0,.08);padding:1px 5px;border-radius:4px;}
+  .conn-connecting{background:rgba(241,196,15,.12);border-color:rgba(241,196,15,.4);color:#8a6a0d;}
+  .conn-ok{background:rgba(47,158,68,.12);border-color:rgba(47,158,68,.4);color:#1c6b2d;}
+  .conn-error{background:rgba(192,57,43,.1);border-color:rgba(192,57,43,.35);color:#8f2a20;}
+  .landing-form{margin-top:18px;padding-top:18px;border-top:1px solid var(--parchment-dark);}
+  .text-input{
+    width:100%;border:1px solid var(--parchment-dark);border-radius:12px;padding:12px 14px;
+    font-size:15px;font-weight:600;color:var(--ink);background:#fff;margin-bottom:16px;
+    font-family:'Inter',sans-serif;
+  }
+  .text-input:focus{outline:2px solid var(--pitch);}
+  .code-input{
+    font-family:'JetBrains Mono',monospace;letter-spacing:.2em;text-transform:uppercase;
+    text-align:center;font-size:20px;
+  }
+  .token-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+  .token-row .token-pick{cursor:pointer;opacity:.45;transition:all .15s ease;}
+  .token-row .token-pick.picked{opacity:1;transform:scale(1.1);box-shadow:0 0 0 3px var(--gold);}
+  .form-error{color:var(--red);font-size:12.5px;font-weight:600;text-align:center;margin-top:10px;min-height:16px;}
+  .copy-btn{margin-top:0;}
+  .lobby-players{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;min-height:40px;}
+  .lobby-player-row{
+    display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--parchment-dark);
+    border-radius:12px;padding:9px 12px;font-size:14px;font-weight:600;color:var(--ink);
+  }
+  .lobby-player-row .host-tag{
+    margin-left:auto;font-size:10px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--gold);font-weight:800;
+  }
+  .setup-hint{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:12px;}
+  .rules-link{
+    display:block;margin:14px auto 0;background:none;border:none;color:var(--ink-soft);
+    font-size:12.5px;font-weight:700;text-decoration:underline;text-underline-offset:2px;
+  }
+  .rules-link:hover{color:var(--pitch);}
+
+  /* ================= GAME SCREEN ================= */
+  #game{display:none;flex-direction:column;height:100vh;width:100vw;overflow:hidden;}
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 20px;background:var(--bg-deep-2);
+    border-bottom:1px solid rgba(255,255,255,0.06);
+    flex:none;
+  }
+  .topbar-title{
+    display:flex;align-items:center;gap:10px;color:var(--parchment);
+    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:16px;letter-spacing:.02em;
+  }
+  .topbar-code{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+    color:var(--gold);padding:3px 9px;border-radius:999px;font-weight:700;
+    display:inline-block;
+  }
+  .turn-pill{
+    display:flex;align-items:center;gap:8px;
+    background:rgba(255,255,255,0.08);border-radius:999px;padding:6px 14px 6px 6px;
+    color:#fff;font-weight:600;font-size:13px;
+  }
+  .turn-pill .tok{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;}
+  .topbar-right{display:flex;align-items:center;gap:8px;}
+  .reset-btn{
+    background:transparent;border:1px solid rgba(255,255,255,0.25);
+    color:rgba(255,255,255,0.75);padding:7px 14px;border-radius:999px;font-size:12px;font-weight:600;
+    transition:all .15s ease;
+  }
+  .reset-btn:hover{border-color:var(--red);color:#fff;background:rgba(192,57,43,.25);}
+
+  /* ---------------- RULES OVERLAY ---------------- */
+  .rules-overlay{
+    position:fixed;inset:0;z-index:100;background:rgba(6,12,8,.72);
+    display:flex;align-items:center;justify-content:center;padding:24px;
+  }
+  .rules-card{
+    position:relative;width:100%;max-width:620px;max-height:86vh;overflow-y:auto;
+    background:var(--parchment);border-radius:20px;box-shadow:var(--shadow);
+    padding:30px 30px 24px;
+  }
+  .rules-close{
+    position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;
+    border:none;background:rgba(32,40,31,0.1);color:var(--ink);font-size:15px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .rules-close:hover{background:var(--red);color:#fff;}
+  .rules-card h2{margin:0 0 18px;font-size:clamp(20px,3.4vw,26px);color:var(--pitch);}
+  .rules-section{margin-bottom:16px;}
+  .rules-section h3{margin:0 0 4px;font-size:14.5px;color:var(--ink);}
+  .rules-section p{margin:0;font-size:13.5px;line-height:1.55;color:var(--ink-soft);}
+  .rules-section b{color:var(--ink);}
+
+  .layout{
+    flex:1;min-height:0;display:flex;gap:16px;padding:14px;align-items:stretch;
+    max-width:1600px;margin:0 auto;width:100%;overflow:hidden;
+  }
+  /* ---- Sidebar ---- */
+  #sidebar{
+    width:250px;flex:none;display:flex;flex-direction:column;gap:9px;
+    overflow-y:auto;padding-right:4px;
+  }
+  .player-card{
+    background:var(--parchment);border-radius:14px;padding:12px 14px;
+    border:2px solid transparent;box-shadow:0 4px 10px rgba(0,0,0,.18);
+    transition:border-color .2s ease, transform .2s ease;
+  }
+  .player-card.active{border-color:var(--gold);transform:translateY(-2px) scale(1.015);}
+  .player-card.bankrupt{opacity:.45;}
+  .pc-top{display:flex;align-items:center;gap:9px;margin-bottom:6px;}
+  .pc-tok{
+    width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+    font-size:16px;flex:none;border:2px solid var(--ink);
+  }
+  .pc-name{font-weight:700;font-size:14.5px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .you-tag{font-weight:700;font-size:10.5px;color:var(--pitch);text-transform:uppercase;letter-spacing:.04em;}
+  .pc-money{
+    font-family:'JetBrains Mono',monospace;font-weight:700;font-size:17px;color:#1e7a2f;
+  }
+  .pc-props{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;min-height:10px;}
+  .pc-props span{width:10px;height:10px;border-radius:3px;display:block;}
+  .pc-status{font-size:11px;color:var(--ink-soft);margin-top:4px;font-weight:600;}
+
+  /* ---- Board ---- */
+  #boardWrap{flex:1;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  #board{
+    display:grid;
+    grid-template-columns:repeat(11,minmax(0,1fr));
+    grid-template-rows:repeat(11,minmax(0,1fr));
+    width:min(92vw,780px);height:min(92vw,780px);
+    flex:none;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,.35), transparent 55%),
+      var(--parchment);
+    border-radius:16px;border:5px solid #4a5c3a;
+    box-shadow:var(--shadow);
+    padding:6px;gap:3px;
+    position:relative;
+  }
+  .cell{
+    background:#fffdf6;border-radius:6px;position:relative;
+    display:flex;flex-direction:column;overflow:hidden;
+    border:1px solid var(--line);
+    font-size:9px;
+  }
+  .cell .bar{height:9px;flex:none;}
+  .cell.edge-left .bar,.cell.edge-right .bar{height:auto;width:9px;position:absolute;top:0;bottom:0;}
+  .cell.edge-left .bar{right:0;}
+  .cell.edge-right .bar{left:0;}
+  .cell.edge-top .bar{order:2;align-self:flex-end;width:100%;}
+  .cell-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 3px;text-align:center;gap:2px;}
+  .cell-name{font-weight:700;font-size:8.2px;line-height:1.08;color:var(--ink);}
+  .cell-price{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--ink-soft);font-weight:700;}
+  .cell.corner{border-radius:9px;background:#f2f6ea;}
+  .cell.corner .cell-name{font-size:9.5px;}
+  .cell-owner-dot{position:absolute;bottom:2px;right:2px;width:7px;height:7px;border-radius:50%;border:1px solid var(--ink);}
+  .cell-houses{display:flex;gap:1.5px;justify-content:center;}
+  .cell-houses:not(:empty){margin-top:1px;}
+  .house-dot{width:5px;height:5px;border-radius:1px;background:var(--pitch);border:0.5px solid var(--ink);}
+  .hotel-dot{width:11px;height:6px;border-radius:1.5px;background:var(--gold);border:0.5px solid var(--ink);}
+  .cell-tokens{position:absolute;top:2px;left:2px;display:flex;gap:1px;flex-wrap:wrap;max-width:80%;}
+  .cell-tokens .mini-tok{
+    width:12px;height:12px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:8px;border:1px solid var(--ink);background:#fff;
+  }
+
+  /* ---- Center console ---- */
+  #console{
+    grid-row:2 / 11;grid-column:2 / 11;
+    background:
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0 40px, transparent 40px 80px),
+      linear-gradient(160deg,#173a22,#0c1f13);
+    border-radius:16px;
+    display:flex;align-items:center;justify-content:center;
+    padding:clamp(16px,3vw,30px);color:var(--parchment);
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,0.05), inset 0 0 50px rgba(0,0,0,.5);
+    position:relative;overflow:hidden;
+  }
+  /* decorative pitch markings, purely original, sits behind the UI */
+  .pitch-lines{position:absolute;inset:0;z-index:0;pointer-events:none;}
+  .pitch-lines .circle{
+    position:absolute;width:52%;aspect-ratio:1;border:2px solid rgba(255,255,255,.06);
+    border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);
+  }
+  .pitch-lines .spot{
+    position:absolute;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.09);
+    top:50%;left:50%;transform:translate(-50%,-50%);
+  }
+  .pitch-lines .halfway{position:absolute;left:4%;right:4%;top:50%;height:2px;background:rgba(255,255,255,.05);}
+
+  .console-inner{
+    position:relative;z-index:1;width:100%;height:100%;max-width:440px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:clamp(12px,2.2vw,20px);
+  }
+  .console-divider{width:64%;height:1px;background:rgba(255,255,255,.09);flex:none;}
+  #console .logo{
+    display:flex;align-items:center;gap:10px;font-family:'Baloo 2',sans-serif;
+    font-weight:800;font-size:clamp(20px,3.4vw,32px);color:var(--gold);letter-spacing:.02em;
+    text-shadow:0 2px 0 rgba(0,0,0,.4);
+  }
+  #console .logo .footballicon{width:clamp(22px,3.2vw,30px);height:clamp(22px,3.2vw,30px);}
+  .turn-banner{
+    display:flex;align-items:center;gap:8px;
+    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
+    border-radius:999px;padding:7px 18px 7px 7px;
+    font-size:clamp(13px,1.9vw,16px);color:#fff;font-weight:600;text-align:center;
+  }
+  .turn-banner .tb-tok{
+    width:clamp(24px,3.4vw,30px);height:clamp(24px,3.4vw,30px);border-radius:50%;flex:none;
+    display:flex;align-items:center;justify-content:center;font-size:clamp(13px,1.8vw,16px);
+    border:2px solid var(--ink);
+  }
+  .turn-banner b{color:var(--gold);}
+  #diceArea{display:flex;gap:clamp(12px,2.2vw,20px);align-items:center;}
+  .die{
+    width:clamp(56px,9.5vw,88px);height:clamp(56px,9.5vw,88px);border-radius:13px;
+    background:#fdf9ee;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);
+    padding:9px;box-shadow:0 8px 18px rgba(0,0,0,.4), inset 0 0 0 2px #d8cca4;
+    transition:transform .1s ease;
+  }
+  .die.rolling{animation:diceShake .09s linear infinite;}
+  @keyframes diceShake{
+    0%{transform:rotate(0deg);} 25%{transform:rotate(-8deg);} 50%{transform:rotate(6deg);} 75%{transform:rotate(-4deg);} 100%{transform:rotate(0deg);}
+  }
+  .dot{width:100%;height:100%;border-radius:50%;background:var(--ink);opacity:0;margin:auto;transform:scale(.55);}
+  .die.face-1 .dot:nth-child(5){opacity:1;}
+  .die.face-2 .dot:nth-child(1),.die.face-2 .dot:nth-child(9){opacity:1;}
+  .die.face-3 .dot:nth-child(1),.die.face-3 .dot:nth-child(5),.die.face-3 .dot:nth-child(9){opacity:1;}
+  .die.face-4 .dot:nth-child(1),.die.face-4 .dot:nth-child(3),.die.face-4 .dot:nth-child(7),.die.face-4 .dot:nth-child(9){opacity:1;}
+  .die.face-5 .dot:nth-child(1),.die.face-5 .dot:nth-child(3),.die.face-5 .dot:nth-child(5),.die.face-5 .dot:nth-child(7),.die.face-5 .dot:nth-child(9){opacity:1;}
+  .die.face-6 .dot:nth-child(1),.die.face-6 .dot:nth-child(3),.die.face-6 .dot:nth-child(4),.die.face-6 .dot:nth-child(6),.die.face-6 .dot:nth-child(7),.die.face-6 .dot:nth-child(9){opacity:1;}
+
+  .dice-sum{
+    font-family:'JetBrains Mono',monospace;font-weight:700;font-size:clamp(13px,1.9vw,16px);color:var(--gold);
+    min-height:20px;background:rgba(255,255,255,.06);border:1px solid rgba(241,196,15,.35);
+    border-radius:999px;padding:4px 16px;
+  }
+  #actionZone{width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;}
+
+  .action-btn{
+    border:none;border-radius:999px;font-family:'Baloo 2',sans-serif;
+    padding:clamp(11px,1.8vw,15px) clamp(26px,4.4vw,36px);
+    font-weight:700;font-size:clamp(14px,2vw,17px);letter-spacing:.02em;color:#fff;
+    box-shadow:0 8px 18px rgba(0,0,0,.35);transition:transform .12s ease, filter .12s ease;
+  }
+  .action-btn:hover{filter:brightness(1.08);transform:translateY(-1px);}
+  .action-btn:active{transform:translateY(0);}
+  .action-btn:disabled{opacity:.4;cursor:not-allowed;filter:none;transform:none;}
+  .btn-roll{background:linear-gradient(135deg,var(--red),#8f2a20);}
+  .btn-end{background:linear-gradient(135deg,#3d5c34,#294024);}
+  .btn-buy{background:linear-gradient(135deg,var(--pitch),#1c6b2d);}
+  .btn-pass{background:linear-gradient(135deg,#7a7a7a,#565656);}
+
+  .btn-build{background:linear-gradient(135deg,#caa23a,#8a6a1c);}
+  .btn-trade{background:linear-gradient(135deg,#3d6fc9,#274a8a);}
+  .btn-build,.btn-trade{padding:8px 22px;font-size:13px;}
+
+  .build-header{
+    display:flex;align-items:center;justify-content:space-between;width:100%;max-width:380px;
+    font-weight:700;font-size:13px;color:#fff;margin-bottom:8px;
+  }
+  .build-close{
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;
+    border-radius:999px;padding:3px 10px;font-size:11px;font-weight:600;
+  }
+  .build-empty{color:rgba(242,244,234,.75);font-size:12.5px;text-align:center;padding:14px;max-width:320px;}
+  .waiting-note{
+    color:rgba(242,244,234,.8);font-size:13px;text-align:center;padding:10px 16px;
+    background:rgba(255,255,255,.05);border-radius:999px;max-width:320px;
+  }
+  .waiting-note b{color:#fff;}
+  .build-panel{
+    width:100%;max-width:380px;max-height:clamp(120px,22vw,220px);overflow-y:auto;
+    display:flex;flex-direction:column;gap:8px;padding-right:2px;
+  }
+  .build-group{background:rgba(255,255,255,.05);border-radius:10px;padding:8px 10px;}
+  .build-group-title{
+    font-size:11px;font-weight:700;color:var(--gold);margin-bottom:6px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .build-swatch{
+    display:inline-block;width:13px;height:13px;flex:none;
+    clip-path:polygon(50% 0%,100% 0%,100% 55%,50% 100%,0% 55%,0% 0%);
+    border:1px solid var(--ink);
+  }
+  .build-row{display:flex;align-items:center;gap:6px;font-size:11.5px;color:rgba(242,244,234,.9);padding:3px 0;}
+  .br-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .br-level{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--gold);flex:none;min-width:56px;text-align:right;}
+  .br-btn{
+    width:22px;height:22px;border-radius:6px;border:none;background:rgba(255,255,255,.14);
+    color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;flex:none;
+  }
+  .br-btn:disabled{opacity:.3;}
+  .br-btn:not(:disabled):hover{background:var(--pitch);}
+
+  .trade-header{
+    display:flex;align-items:center;justify-content:space-between;width:100%;max-width:380px;
+    font-weight:700;font-size:13px;color:#fff;margin-bottom:8px;
+  }
+  .trade-pick-title{font-size:12px;color:rgba(242,244,234,.75);margin-bottom:8px;}
+  .trade-partners{display:flex;flex-direction:column;gap:6px;width:100%;max-width:300px;max-height:clamp(120px,20vw,200px);overflow-y:auto;}
+  .trade-partner-btn{
+    display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.14);color:#fff;border-radius:10px;padding:8px 12px;
+    font-size:13px;font-weight:600;font-family:'Inter',sans-serif;
+  }
+  .trade-partner-btn:hover{background:rgba(255,255,255,.14);}
+  .tp-tok{width:24px;height:24px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+    font-size:13px;border:2px solid var(--ink);}
+
+  .trade-columns{display:flex;flex-wrap:wrap;gap:10px;width:100%;max-width:380px;justify-content:center;}
+  .trade-col{flex:1 1 150px;min-width:130px;background:rgba(255,255,255,.05);border-radius:10px;padding:8px 10px;}
+  .trade-col-title{font-size:10.5px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+  .trade-list{max-height:clamp(80px,14vw,130px);overflow-y:auto;display:flex;flex-direction:column;gap:3px;margin-bottom:8px;}
+  .trade-row{
+    display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(242,244,234,.85);
+    padding:4px 6px;border-radius:6px;background:rgba(255,255,255,.03);border:1px solid transparent;
+  }
+  .trade-row:hover{background:rgba(255,255,255,.09);}
+  .trade-row.selected{background:rgba(241,196,15,.18);border-color:rgba(241,196,15,.5);color:#fff;}
+  .trade-swatch{width:9px;height:9px;border-radius:2px;flex:none;}
+  .tr-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .trade-empty{font-size:10.5px;color:rgba(242,244,234,.5);padding:4px 0;}
+  .trade-money{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--gold);font-weight:700;}
+  .trade-money input{
+    width:100%;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);border-radius:6px;
+    color:#fff;font-family:'JetBrains Mono',monospace;font-size:12px;padding:4px 6px;
+  }
+  .trade-error{
+    width:100%;max-width:380px;background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.5);
+    color:#ffd6d2;font-size:11.5px;border-radius:8px;padding:6px 10px;margin-top:8px;text-align:center;
+  }
+  .trade-actions{display:flex;gap:10px;justify-content:center;margin-top:10px;}
+  .trade-actions .action-btn{padding:9px 20px;font-size:13px;}
+
+  .trade-offer{
+    display:flex;align-items:center;gap:10px;width:100%;max-width:380px;justify-content:center;
+  }
+  .trade-offer-side{
+    flex:1 1 140px;min-width:120px;background:rgba(255,255,255,.06);border-radius:10px;padding:10px 12px;
+  }
+  .trade-offer-label{
+    font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--gold);margin-bottom:6px;
+  }
+  .trade-offer-item{font-size:12.5px;color:#fff;font-weight:600;padding:2px 0;}
+  .trade-offer-item.money{color:var(--gold);font-family:'JetBrains Mono',monospace;}
+  .trade-offer-item.empty{color:rgba(242,244,234,.5);font-weight:400;font-style:italic;}
+  .trade-offer-arrow{font-size:18px;color:rgba(242,244,234,.6);flex:none;}
+
+  .buy-panel{
+    background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12);
+    border-radius:14px;padding:14px 18px;text-align:center;max-width:300px;
+  }
+  .buy-panel .bp-name{font-weight:700;color:#fff;font-size:clamp(14px,2vw,17px);margin-bottom:2px;}
+  .buy-panel .bp-price{font-family:'JetBrains Mono',monospace;color:var(--gold);font-size:clamp(12px,1.7vw,14px);margin-bottom:12px;}
+  .buy-panel .bp-btns{display:flex;gap:10px;justify-content:center;}
+  .buy-panel .bp-btns .action-btn{padding:9px 20px;font-size:13px;}
+
+  .log-panel{
+    width:100%;max-width:380px;
+    background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.08);
+    border-radius:12px;padding:10px 14px 12px;
+  }
+  .log-title{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:rgba(241,196,15,.75);text-align:center;margin-bottom:6px;font-weight:700;
+  }
+  #log{
+    width:100%;max-height:clamp(64px,11vw,110px);overflow-y:auto;
+    font-size:clamp(11px,1.5vw,12.5px);color:rgba(242,244,234,.7);line-height:1.55;text-align:center;
+  }
+  #log div{opacity:.85;padding:1px 0;}
+  #log div:last-child{color:#fff;font-weight:600;opacity:1;}
+
+  .gameover-panel{
+    position:absolute;inset:0;background:rgba(8,14,9,.92);border-radius:14px;z-index:2;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px;
+  }
+  .gameover-panel h2{color:var(--gold);font-size:clamp(20px,4vw,30px);margin:0;}
+  .gameover-panel p{color:#fff;margin:0;font-size:14px;}
+
+  @media (max-width:980px){
+    #game{height:100vh;}
+    .layout{flex-direction:column;align-items:center;padding:10px;overflow-y:auto;}
+    #sidebar{width:100%;max-width:600px;flex-direction:row;flex-wrap:wrap;overflow-y:visible;max-height:none;flex:none;}
+    .player-card{flex:1 1 150px;}
+    #boardWrap{flex:none;width:100%;min-height:min(92vw,560px);}
+  }
+  @media (max-width:520px){
+    .cell-name{font-size:7.2px;}
+    .cell-price{font-size:6.6px;}
+    .medal{width:14px;height:14px;}
+    .medal-corner{width:22px;height:22px;}
+    .topbar{padding:8px 10px;gap:6px;}
+    .topbar-word{display:none;}
+    .turn-pill{font-size:11px;padding:5px 10px 5px 5px;}
+    .reset-btn{padding:6px 10px;font-size:11px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ LANDING SCREEN ============ -->
+<div id="landing">
+  <div class="setup-card">
+    <div class="setup-banner">
+      <div class="eyebrow">Édition Champions</div>
+      <h1>FOOTOPOLY</h1>
+      <p>En ligne entre plusieurs téléphones, ou en local sur un seul.</p>
+    </div>
+    <div class="setup-body">
+      <div id="connStatus" class="config-warning conn-connecting">
+        🔌 Connexion au serveur multijoueur…
+      </div>
+
+      <button class="start-btn" id="showCreateBtn" type="button">🎮 Créer une partie en ligne</button>
+      <button class="start-btn start-btn-alt" id="showJoinBtn" type="button">🔑 Rejoindre avec un code</button>
+      <button class="start-btn start-btn-local" id="showLocalBtn" type="button">🏠 Jouer en local (un seul appareil)</button>
+
+      <div id="createForm" class="landing-form" style="display:none">
+        <span class="field-label">Votre nom</span>
+        <input type="text" id="createName" maxlength="16" placeholder="Président 1" class="text-input">
+        <span class="field-label">Votre emblème</span>
+        <div class="token-row" id="createTokenRow"></div>
+        <span class="field-label">Budget de départ</span>
+        <div class="money-input-wrap">
+          <span>€</span>
+          <input type="number" id="createStartMoney" value="1500" min="200" step="50">
+        </div>
+        <button class="start-btn" id="createConfirmBtn" type="button">Créer la partie ▶</button>
+        <div id="createError" class="form-error"></div>
+      </div>
+
+      <div id="joinForm" class="landing-form" style="display:none">
+        <span class="field-label">Code de la partie</span>
+        <input type="text" id="joinCode" maxlength="6" placeholder="EX: PL4Y2" class="text-input code-input">
+        <span class="field-label">Votre nom</span>
+        <input type="text" id="joinName" maxlength="16" placeholder="Président 2" class="text-input">
+        <span class="field-label">Votre emblème</span>
+        <div class="token-row" id="joinTokenRow"></div>
+        <button class="start-btn" id="joinConfirmBtn" type="button">Rejoindre ▶</button>
+        <div id="joinError" class="form-error"></div>
+      </div>
+
+      <div class="setup-hint">2 à 6 Présidents · en ligne chacun joue depuis son téléphone, en local vous passez l'appareil</div>
+      <button class="rules-link" id="rulesLinkSetup" type="button">📖 Comment jouer ?</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LOCAL SETUP SCREEN ============ -->
+<div id="localSetup" style="display:none">
+  <div class="setup-card">
+    <div class="setup-banner">
+      <div class="eyebrow">Partie locale</div>
+      <h1>FOOTOPOLY</h1>
+      <p>Un seul appareil, à faire tourner entre vous.</p>
+    </div>
+    <div class="setup-body">
+      <span class="field-label">Nombre de Présidents</span>
+      <div class="stepper">
+        <button id="localDecBtn" type="button" aria-label="Moins de joueurs">−</button>
+        <div class="count" id="localCountLabel">4</div>
+        <button id="localIncBtn" type="button" aria-label="Plus de joueurs">+</button>
+      </div>
+
+      <span class="field-label">Présidents de club</span>
+      <div id="localPlayerRows"></div>
+
+      <div class="row-money">
+        <span class="field-label">Budget de départ</span>
+        <div class="money-input-wrap">
+          <span>€</span>
+          <input type="number" id="localStartMoney" value="1500" min="200" step="50">
+        </div>
+      </div>
+
+      <button class="start-btn" id="localStartBtn" type="button">Lancer la partie ▶</button>
+      <button class="rules-link" id="localBackBtn" type="button">← Retour</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LOBBY SCREEN ============ -->
+<div id="lobby" style="display:none">
+  <div class="setup-card">
+    <div class="setup-banner">
+      <div class="eyebrow">Salon d'attente</div>
+      <p class="code-label">Code de la partie</p>
+      <div class="code-display" id="lobbyCode">— — — — —</div>
+      <p>Partage ce code avec les autres Présidents</p>
+    </div>
+    <div class="setup-body">
+      <button class="start-btn start-btn-alt copy-btn" id="copyCodeBtn" type="button">📋 Copier le code</button>
+      <span class="field-label" style="margin-top:18px;">Présidents dans le salon</span>
+      <div id="lobbyPlayers" class="lobby-players"></div>
+
+      <div id="lobbyHostControls" style="display:none">
+        <span class="field-label">Budget de départ</span>
+        <div class="money-input-wrap">
+          <span>€</span>
+          <input type="number" id="lobbyStartMoney" value="1500" min="200" step="50">
+        </div>
+        <button class="start-btn" id="lobbyStartBtn" type="button">🎮 Lancer la partie</button>
+        <div id="lobbyHostHint" class="setup-hint">Il faut au moins 2 Présidents pour commencer</div>
+      </div>
+      <div id="lobbyGuestHint" class="setup-hint" style="display:none">En attente que l'hôte lance la partie…</div>
+
+      <button class="rules-link" id="lobbyLeaveBtn" type="button">← Quitter le salon</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ GAME SCREEN ============ -->
+<div id="game">
+  <div class="topbar">
+    <div class="topbar-title"><div class="footballicon"></div> <span class="topbar-word">FOOTOPOLY</span> <span class="topbar-code" id="topbarCode"></span></div>
+    <div class="turn-pill" id="turnPill"></div>
+    <div class="topbar-right">
+      <button class="reset-btn" id="rulesBtn" type="button">📖 Règles</button>
+      <button class="reset-btn" id="resetBtn" type="button">Quitter</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div id="sidebar"></div>
+    <div id="boardWrap">
+      <div id="board"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ RULES OVERLAY ============ -->
+<div id="rulesOverlay" class="rules-overlay" style="display:none">
+  <div class="rules-card">
+    <button class="rules-close" id="rulesCloseBtn" type="button">✕</button>
+    <h2>📖 Comment jouer à Footopoly</h2>
+
+    <div class="rules-section">
+      <h3>🎯 Objectif</h3>
+      <p>Devenez le dernier Président de club encore solvable. Achetez des clubs, développez-les avec des maisons et un hôtel, et ruinez vos adversaires grâce aux loyers.</p>
+    </div>
+
+    <div class="rules-section">
+      <h3>🎲 Déroulement d'un tour</h3>
+      <p>1. Lancez les dés pour avancer votre jeton.<br>
+      2. Résolvez la case où vous arrivez (acheter, payer un loyer, tirer une carte...).<br>
+      3. Terminez votre tour — sauf si vous avez fait un double : vous rejouez ! (Trois doubles d'affilée vous envoient direct aux vestiaires.)</p>
+    </div>
+
+    <div class="rules-section">
+      <h3>💶 Acheter un club</h3>
+      <p>Si la case est libre, vous pouvez l'acheter au prix affiché. Si vous refusez, elle reste disponible pour le prochain joueur qui s'y arrête.</p>
+    </div>
+
+    <div class="rules-section">
+      <h3>🏟️ Payer un loyer</h3>
+      <p>Si un adversaire possède la case, vous lui payez automatiquement un loyer. Il double si l'adversaire possède tout le championnat (le groupe de couleur), et grimpe encore plus s'il y a des maisons ou un hôtel construits.</p>
+    </div>
+
+    <div class="rules-section">
+      <h3>🏗️ Monopole &amp; construction</h3>
+      <p>Dès que vous possédez tout un groupe de clubs, un bouton <b>Construire</b> apparaît pendant votre tour : ajoutez des maisons (jusqu'à 4) puis un hôtel pour multiplier vos loyers. Vous pouvez aussi revendre une construction à moitié prix si vous manquez de liquidités.</p>
+    </div>
+
+    <div class="rules-section">
+      <h3>🤝 Échanger entre joueurs</h3>
+      <p>Le bouton <b>Échanger</b> vous permet de proposer un club (ou de l'argent) contre un club d'un adversaire — utile pour compléter un championnat. Un club avec des maisons ne peut pas être échangé : revendez d'abord ses constructions.</p>
+    </div>
+
+    <div class="rules-section">
+      <h3>🃏 Cartes événements</h3>
+      <p><b>🟨 Carton Jaune</b> : petit imprévu, gain ou perte modérée.<br>
+      <b>🔄 Transfert</b> : événement plus important, parfois un aller direct aux vestiaires.</p>
+    </div>
+
+    <div class="rules-section">
+      <h3>📍 Cases spéciales</h3>
+      <p><b>COUP D'ENVOI</b> : passez ici pour toucher €200.<br>
+      <b>VESTIAIRES</b> : simple visite, sauf si vous y êtes envoyé — vous passez alors un tour.<br>
+      <b>MI-TEMPS</b> : pause, rien ne se passe.<br>
+      <b>CARTON ROUGE</b> : direction les vestiaires, vous manquez votre prochain tour.</p>
+    </div>
+
+    <div class="rules-section">
+      <h3>💀 Faillite &amp; victoire</h3>
+      <p>Si vous ne pouvez plus payer une dette, votre club fait faillite : vos biens repartent à la banque et vous quittez la partie. Le dernier Président encore debout remporte la partie !</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------------------------------------------------------------
+     ONLINE SYNC — uses a public MQTT broker (HiveMQ's free community
+     broker) over WebSocket. No account, no signup, no config needed:
+     the first person to open this page and click "Créer une partie"
+     effectively creates a little mailbox named after the room code, and
+     everyone who joins with that code just listens to the same mailbox.
+     Trade-off for the zero-setup simplicity: it's a shared public server
+     with no guarantee of uptime and no real privacy beyond the room code
+     being hard to guess — fine for a casual game with friends, not for
+     anything sensitive.
+  --------------------------------------------------------------------- */
+  const MQTT_BROKER_URL = 'wss://broker.hivemq.com:8884/mqtt';
+  const TOPIC_PREFIX = 'footopoly-app-v1/rooms/';
+  let mqttClient = null;
+  let MQTT_READY = false;
+  let currentTopic = null;
+  let latestKnownRoom = null;
+
+  function setConnStatus(kind, text){
+    const el = document.getElementById('connStatus');
+    if(!el) return;
+    el.className = 'config-warning conn-' + kind;
+    el.textContent = text;
+    el.style.display = kind === 'ok' ? 'none' : 'block';
+  }
+
+  function connectMQTT(){
+    if(typeof mqtt === 'undefined'){
+      MQTT_READY = false;
+      setConnStatus('error', "⚠️ Le mode en ligne n'a pas pu se charger (bibliothèque indisponible). Le mode local fonctionne normalement — réessaie plus tard pour le mode en ligne.");
+      return;
+    }
+    setConnStatus('connecting', '🔌 Connexion au serveur multijoueur…');
+    try {
+      mqttClient = mqtt.connect(MQTT_BROKER_URL, {
+        clientId: 'footopoly-' + Math.random().toString(16).slice(2),
+        clean: true,
+        reconnectPeriod: 2000,
+        connectTimeout: 8000,
+      });
+    } catch(e){
+      MQTT_READY = false;
+      setConnStatus('error', '⚠️ Connexion au serveur multijoueur impossible. Le mode local fonctionne normalement.');
+      return;
+    }
+    mqttClient.on('connect', () => {
+      MQTT_READY = true;
+      setConnStatus('ok', '');
+    });
+    mqttClient.on('reconnect', () => {
+      MQTT_READY = false;
+      setConnStatus('connecting', '🔌 Reconnexion au serveur…');
+    });
+    mqttClient.on('offline', () => {
+      MQTT_READY = false;
+      setConnStatus('error', '⚠️ Connexion perdue — vérifie ta connexion internet.');
+    });
+    mqttClient.on('error', () => {
+      MQTT_READY = false;
+      setConnStatus('error', '⚠️ Impossible de joindre le serveur multijoueur pour le moment.');
+    });
+    mqttClient.on('message', (topic, payload) => {
+      if(topic !== currentTopic) return;
+      let room;
+      try { room = JSON.parse(payload.toString()); } catch(e){ return; }
+      latestKnownRoom = room;
+      if(suppressIncoming) return;
+      applyRoomSnapshot(room);
+    });
+  }
+  try { connectMQTT(); } catch(e){ MQTT_READY = false; setConnStatus('error', "⚠️ Le mode en ligne n'a pas pu démarrer. Le mode local fonctionne normalement."); }
+
+  function publishRoom(code, room, cb){
+    if(!mqttClient) return;
+    latestKnownRoom = room;
+    mqttClient.publish(TOPIC_PREFIX + code, JSON.stringify(room), { retain: true, qos: 1 }, cb || function(){});
+  }
+
+  /* ---------------- TOKENS ---------------- */
+  const TOKENS = [
+    {e:'⚽', c:'#2f8fd1', name:'Ballon'},
+    {e:'🧤', c:'#c0392b', name:'Gant'},
+    {e:'👟', c:'#9c8465', name:'Crampon'},
+    {e:'🏆', c:'#f1c40f', name:'Trophée'},
+    {e:'🎽', c:'#6c5ce7', name:'Maillot'},
+    {e:'🥅', c:'#2f9e44', name:'Cage'},
+  ];
+
+  /* ---------------- BOARD DATA ---------------- */
+  const G = {promus:'--promus', eredivisie:'--eredivisie', portugal:'--portugal', seriea:'--seriea',
+             bundesliga:'--bundesliga', laliga:'--laliga', premier:'--premier', elite:'--elite'};
+
+  const GROUP_LABEL = {
+    promus:'Clubs Promus', eredivisie:'Eredivisie', portugal:'Liga Portugal', seriea:'Serie A',
+    bundesliga:'Bundesliga', laliga:'La Liga', premier:'Premier League', elite:'Élite Mondiale',
+  };
+  // Cost of one construction step (house 1→4, then hotel), scaled by group tier — same spirit as classic Monopoly.
+  const BUILD_COST = {
+    promus:50, eredivisie:50, portugal:100, seriea:100,
+    bundesliga:150, laliga:150, premier:200, elite:200,
+  };
+  // Rent multiplier applied to the base rent once a property has N houses (5 = hotel).
+  const HOUSE_RENT_MULT = {1:5, 2:15, 3:30, 4:40, 5:55};
+
+  function prop(name, group, price){ return {name, type:'property', group, price, rent:Math.round(price/5)}; }
+  function stadium(name){ return {name, type:'station', price:200}; }
+  function sponsor(name){ return {name, type:'utility', price:150}; }
+
+  const BOARD = [
+    {name:'COUP D\u2019ENVOI', type:'go'},
+    prop('Le Havre AC','promus',60),
+    {name:'Carton Jaune', type:'pokeball'},
+    prop('Clermont Foot','promus',60),
+    {name:'Taxe de Transfert', type:'tax', amount:200},
+    stadium('Stade de France'),
+    prop('Ajax Amsterdam','eredivisie',100),
+    {name:'Carton Jaune', type:'pokeball'},
+    prop('PSV Eindhoven','eredivisie',100),
+    prop('Feyenoord Rotterdam','eredivisie',120),
+    {name:'VESTIAIRES / VISITE', type:'jail'},
+    prop('Sporting CP','portugal',140),
+    sponsor('Diffuseur TV'),
+    prop('FC Porto','portugal',140),
+    prop('Benfica Lisbonne','portugal',160),
+    stadium('Wembley Stadium'),
+    prop('AC Milan','seriea',180),
+    {name:'Transfert', type:'chest'},
+    prop('Inter Milan','seriea',180),
+    prop('Juventus Turin','seriea',200),
+    {name:'MI-TEMPS', type:'freeparking'},
+    prop('Borussia Dortmund','bundesliga',220),
+    {name:'Carton Jaune', type:'pokeball'},
+    prop('RB Leipzig','bundesliga',220),
+    prop('Bayern Munich','bundesliga',240),
+    stadium('Camp Nou'),
+    prop('Atlético Madrid','laliga',260),
+    prop('FC Barcelone','laliga',260),
+    sponsor('Sponsor Officiel'),
+    prop('Real Madrid','laliga',280),
+    {name:'CARTON ROUGE', type:'gotojail'},
+    prop('Chelsea FC','premier',300),
+    prop('Arsenal FC','premier',300),
+    {name:'Transfert', type:'chest'},
+    prop('Liverpool FC','premier',320),
+    stadium('San Siro'),
+    {name:'Carton Jaune', type:'pokeball'},
+    {name:'Amende UEFA', type:'tax', amount:100},
+    prop('Paris Saint-Germain','elite',350),
+    prop('Manchester City','elite',400),
+  ];
+
+  const POKEBALL_CARDS = [
+    {text:"Vous recevez une prime de performance.", money:50},
+    {text:"Un sponsor vous félicite pour la victoire.", money:75},
+    {text:"Billetterie exceptionnelle ce week-end.", money:60},
+    {text:"Frais de déplacement pour un match à l'extérieur.", money:-40},
+    {text:"Amende pour retard à l'entraînement.", money:-30},
+    {text:"Vente de maillots dédicacés.", money:45},
+    {text:"Avancez jusqu'à COUP D'ENVOI et récupérez 200.", money:0, moveTo:0},
+    {text:"Frais de kinésithérapie pour un joueur blessé.", money:-50},
+  ];
+  const SUPERBALL_CARDS = [
+    {text:"Un agent véreux détourne des fonds du club !", money:-75},
+    {text:"Vous vendez un jeune talent de la réserve.", money:40},
+    {text:"Bourse de la Fédération pour la formation.", money:100},
+    {text:"Réparation de la pelouse après les intempéries.", money:-25},
+    {text:"Vous remportez la Coupe locale !", money:90},
+    {text:"Amende de l'UEFA pour fair-play financier.", money:-60},
+    {text:"Un mécène investit dans le club.", money:45},
+    {text:"Carton rouge direct : direction les vestiaires.", money:0, goToJail:true},
+  ];
+
+  /* ---------------------------------------------------------------------
+     OPTIONAL: your own logo images.
+     I can't ship real club/league crests (they're trademarked), but if you
+     source your own image files (e.g. from each club's official press/media
+     page, respecting their usage terms for your school project), drop them
+     next to this HTML file in a folder named "assets", then list them here.
+     The exact key must match the space's name in BOARD above.
+     Example:
+       'Real Madrid': 'assets/real-madrid.png',
+       'FC Barcelone': 'assets/fc-barcelone.png',
+     Anything left out just keeps the original drawn shield badge.
+  --------------------------------------------------------------------- */
+  const LOGO_MAP = {
+    // 'Real Madrid': 'assets/real-madrid.png',
+  };
+
+  /* ---------------- STATE ---------------- */
+  const state = {
+    mode: null,      // 'online' | 'local'
+    code: null,
+    myId: null,      // my index within players[] for this room (online mode only)
+    isHost: false,
+    status: 'lobby', // lobby | playing
+    startMoney: 1500,
+    players: [],
+    current: 0,
+    ownership: {},   // idx -> playerId
+    houses: {},      // idx -> 0-4 houses, 5 = hotel
+    buildOpen: false, // local-only UI toggle, not synced
+    trade: null,      // local-only UI toggle (building an offer), not synced
+    pendingTrade: null, // { proposerId, partnerId, give:[idx], receive:[idx], moneyGive, moneyReceive } — synced, awaiting the partner's answer (online mode)
+    log: [],
+    phase: 'ready',  // ready | rolling | moving | awaiting-buy | must-end | gameover
+    pendingBuy: null,
+    doublesStreak: 0,
+    dice: [1,1],
+  };
+  // In local (pass-and-play) mode everyone shares one device, so every
+  // action is always "your turn" — only online mode gates by player identity.
+  function isMyTurn(){
+    if(state.mode === 'local') return true;
+    return state.myId !== null && state.myId === state.current;
+  }
+  function myPlayer(){ return state.myId !== null ? state.players[state.myId] : null; }
+
+  /* ---------------- ONLINE ROOM SYSTEM ---------------- */
+  const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no O/0, I/1 to avoid mix-ups
+  function generateCode(){
+    let c = '';
+    for(let i=0;i<5;i++) c += CODE_CHARS[Math.floor(Math.random()*CODE_CHARS.length)];
+    return c;
+  }
+
+  let myTokenChoice = 0;
+  let suppressIncoming = false;
+
+  function renderTokenRow(containerId){
+    const row = document.getElementById(containerId);
+    row.innerHTML = '';
+    TOKENS.forEach((tok, i) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'token-pick' + (i===myTokenChoice ? ' picked' : '');
+      btn.style.background = tok.c;
+      btn.textContent = tok.e;
+      btn.addEventListener('click', () => {
+        myTokenChoice = i;
+        row.querySelectorAll('.token-pick').forEach((el, j) => el.classList.toggle('picked', j===i));
+      });
+      row.appendChild(btn);
+    });
+  }
+  renderTokenRow('createTokenRow');
+  renderTokenRow('joinTokenRow');
+
+  document.getElementById('showCreateBtn').addEventListener('click', () => {
+    document.getElementById('createForm').style.display = 'block';
+    document.getElementById('joinForm').style.display = 'none';
+  });
+  document.getElementById('showJoinBtn').addEventListener('click', () => {
+    document.getElementById('joinForm').style.display = 'block';
+    document.getElementById('createForm').style.display = 'none';
+  });
+  document.getElementById('joinCode').addEventListener('input', (e) => {
+    e.target.value = e.target.value.toUpperCase();
+  });
+
+  document.getElementById('createConfirmBtn').addEventListener('click', () => {
+    const errorEl = document.getElementById('createError');
+    errorEl.textContent = '';
+    if(!MQTT_READY){ errorEl.textContent = 'Connexion au serveur en cours, réessaie dans un instant.'; return; }
+    const name = (document.getElementById('createName').value.trim() || 'Président 1').slice(0,16);
+    const startMoney = Math.max(200, parseInt(document.getElementById('createStartMoney').value, 10) || 1500);
+    const tok = TOKENS[myTokenChoice];
+    const code = generateCode();
+    const initialRoom = {
+      status: 'lobby',
+      startMoney: startMoney,
+      players: [{ name, token: tok.e, color: tok.c, money: 0, pos: 0, properties: [], bankrupt: false, skipTurn: false }],
+      current: 0,
+      ownership: {},
+      houses: {},
+      phase: 'ready',
+      pendingBuy: null,
+      doublesStreak: 0,
+      dice: [1, 1],
+      log: [],
+    };
+    currentTopic = TOPIC_PREFIX + code;
+    mqttClient.subscribe(currentTopic, { qos: 1 }, (err) => {
+      if(err){ errorEl.textContent = 'Impossible de créer la partie : ' + err.message; currentTopic = null; return; }
+      publishRoom(code, initialRoom);
+      state.mode = 'online';
+      state.code = code;
+      state.myId = 0;
+      state.isHost = true;
+      enterLobby(code);
+    });
+  });
+
+  document.getElementById('joinConfirmBtn').addEventListener('click', () => {
+    const errorEl = document.getElementById('joinError');
+    errorEl.textContent = '';
+    if(!MQTT_READY){ errorEl.textContent = 'Connexion au serveur en cours, réessaie dans un instant.'; return; }
+    const code = document.getElementById('joinCode').value.trim().toUpperCase();
+    const name = (document.getElementById('joinName').value.trim() || 'Président').slice(0,16);
+    if(!code){ errorEl.textContent = 'Entrez un code de partie.'; return; }
+    const tok = TOKENS[myTokenChoice];
+    latestKnownRoom = null;
+    currentTopic = TOPIC_PREFIX + code;
+    errorEl.textContent = 'Connexion au salon…';
+    mqttClient.subscribe(currentTopic, { qos: 1 }, (err) => {
+      if(err){ errorEl.textContent = 'Erreur de connexion : ' + err.message; currentTopic = null; return; }
+      // Give the broker a beat to deliver the retained snapshot for this room.
+      setTimeout(() => {
+        const room = latestKnownRoom;
+        if(!room){
+          errorEl.textContent = 'Aucune partie trouvée avec ce code.';
+          mqttClient.unsubscribe(currentTopic);
+          currentTopic = null;
+          return;
+        }
+        if(room.status !== 'lobby'){ errorEl.textContent = 'Cette partie a déjà commencé.'; return; }
+        if((room.players || []).length >= 6){ errorEl.textContent = 'Le salon est complet (6 max).'; return; }
+        const players = (room.players || []).slice();
+        players.push({ name, token: tok.e, color: tok.c, money: 0, pos: 0, properties: [], bankrupt: false, skipTurn: false });
+        const newRoom = Object.assign({}, room, { players });
+        errorEl.textContent = '';
+        state.mode = 'online';
+        state.code = code;
+        state.myId = players.length - 1;
+        state.isHost = false;
+        publishRoom(code, newRoom);
+        enterLobby(code);
+      }, 900);
+    });
+  });
+
+  function enterLobby(code){
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('lobby').style.display = 'flex';
+    document.getElementById('lobbyCode').textContent = code;
+    applyRoomSnapshot(latestKnownRoom);
+  }
+
+  /* ---------------- LOCAL (PASS-AND-PLAY) MODE ---------------- */
+  let localPlayerCount = 4;
+  const localPlayerRows = document.getElementById('localPlayerRows');
+
+  function renderLocalPlayerRows(){
+    const existing = Array.from(localPlayerRows.querySelectorAll('.player-row')).map(row => ({
+      name: row.querySelector('input').value,
+    }));
+    localPlayerRows.innerHTML = '';
+    for(let i=0;i<localPlayerCount;i++){
+      const tok = TOKENS[i % TOKENS.length];
+      const row = document.createElement('div');
+      row.className = 'player-row';
+      row.innerHTML = `
+        <div class="token-pick" style="background:${tok.c}">${tok.e}</div>
+        <input type="text" maxlength="16" placeholder="Président ${i+1}" value="${existing[i] ? existing[i].name.replace(/"/g,'&quot;') : ''}">
+      `;
+      localPlayerRows.appendChild(row);
+    }
+  }
+  renderLocalPlayerRows();
+
+  document.getElementById('showLocalBtn').addEventListener('click', () => {
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('localSetup').style.display = 'flex';
+  });
+  document.getElementById('localBackBtn').addEventListener('click', () => {
+    document.getElementById('localSetup').style.display = 'none';
+    document.getElementById('landing').style.display = 'flex';
+  });
+  document.getElementById('localDecBtn').addEventListener('click', () => {
+    if(localPlayerCount > 2){ localPlayerCount--; document.getElementById('localCountLabel').textContent = localPlayerCount; renderLocalPlayerRows(); }
+  });
+  document.getElementById('localIncBtn').addEventListener('click', () => {
+    if(localPlayerCount < 6){ localPlayerCount++; document.getElementById('localCountLabel').textContent = localPlayerCount; renderLocalPlayerRows(); }
+  });
+
+  document.getElementById('localStartBtn').addEventListener('click', () => {
+    const rows = Array.from(localPlayerRows.querySelectorAll('.player-row'));
+    const startMoney = Math.max(200, parseInt(document.getElementById('localStartMoney').value, 10) || 1500);
+
+    state.mode = 'local';
+    state.code = null;
+    state.myId = null;
+    state.isHost = false;
+    state.players = rows.map((row, i) => {
+      const input = row.querySelector('input');
+      const tok = TOKENS[i % TOKENS.length];
+      return {
+        id: i,
+        name: (input.value.trim() || `Président ${i+1}`).slice(0,16),
+        token: tok.e,
+        color: tok.c,
+        money: startMoney,
+        pos: 0,
+        properties: [],
+        bankrupt: false,
+        skipTurn: false,
+      };
+    });
+    state.current = 0;
+    state.ownership = {};
+    state.houses = {};
+    state.buildOpen = false;
+    state.trade = null;
+    state.log = [];
+    state.phase = 'ready';
+    state.pendingBuy = null;
+    state.doublesStreak = 0;
+    state.status = 'playing';
+
+    document.getElementById('localSetup').style.display = 'none';
+    document.getElementById('game').style.display = 'flex';
+    const codeEl = document.getElementById('topbarCode');
+    if(codeEl) codeEl.style.display = 'none';
+    buildBoardCells();
+    beginTurn(true);
+    requestAnimationFrame(() => requestAnimationFrame(sizeBoard));
+  });
+
+  document.getElementById('copyCodeBtn').addEventListener('click', () => {
+    if(navigator.clipboard && state.code) navigator.clipboard.writeText(state.code).catch(() => {});
+  });
+
+  document.getElementById('lobbyStartBtn').addEventListener('click', () => {
+    if(!state.isHost || state.players.length < 2) return;
+    const startMoney = Math.max(200, parseInt(document.getElementById('lobbyStartMoney').value, 10) || 1500);
+    const players = state.players.map(p => ({
+      name: p.name, token: p.token, color: p.color,
+      money: startMoney, pos: 0, properties: [], bankrupt: false, skipTurn: false,
+    }));
+    publishRoom(state.code, {
+      status: 'playing',
+      startMoney: startMoney,
+      players,
+      current: 0,
+      ownership: {},
+      houses: {},
+      phase: 'ready',
+      pendingBuy: null,
+      doublesStreak: 0,
+      dice: [1, 1],
+      log: [`🏟️ La partie commence avec ${players.length} Présidents !`],
+    });
+  });
+
+  document.getElementById('lobbyLeaveBtn').addEventListener('click', leaveRoom);
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    if(confirm('Quitter cette partie ?')) leaveRoom();
+  });
+
+  function leaveRoom(){
+    if(currentTopic && mqttClient) mqttClient.unsubscribe(currentTopic);
+    currentTopic = null;
+    latestKnownRoom = null;
+    state.mode = null;
+    state.code = null;
+    state.myId = null;
+    state.isHost = false;
+    const codeEl = document.getElementById('topbarCode');
+    if(codeEl) codeEl.style.display = '';
+    document.getElementById('game').style.display = 'none';
+    document.getElementById('lobby').style.display = 'none';
+    document.getElementById('localSetup').style.display = 'none';
+    document.getElementById('landing').style.display = 'flex';
+    document.getElementById('joinCode').value = '';
+    document.getElementById('createError').textContent = '';
+    document.getElementById('joinError').textContent = '';
+  }
+
+  function applyRoomSnapshot(room){
+    if(!room) return;
+    state.players = room.players || [];
+    state.players.forEach((p, i) => { p.id = i; }); // stable local id = array index
+    state.current = room.current || 0;
+    state.ownership = room.ownership || {};
+    state.houses = room.houses || {};
+    state.phase = room.phase || 'ready';
+    state.pendingBuy = (room.pendingBuy === undefined || room.pendingBuy === null) ? null : room.pendingBuy;
+    state.pendingTrade = (room.pendingTrade === undefined || room.pendingTrade === null) ? null : room.pendingTrade;
+    state.doublesStreak = room.doublesStreak || 0;
+    state.dice = room.dice || [1, 1];
+    state.log = room.log || [];
+    state.status = room.status || 'lobby';
+    state.startMoney = room.startMoney || 1500;
+
+    if(state.status === 'lobby'){
+      renderLobby();
+    } else {
+      if(document.getElementById('game').style.display !== 'flex'){
+        document.getElementById('lobby').style.display = 'none';
+        document.getElementById('game').style.display = 'flex';
+        const codeEl = document.getElementById('topbarCode');
+        if(codeEl){ codeEl.style.display = 'inline-block'; codeEl.textContent = state.code || ''; }
+        buildBoardCells();
+        requestAnimationFrame(() => requestAnimationFrame(sizeBoard));
+      }
+      renderAll();
+    }
+  }
+
+  function renderLobby(){
+    const list = document.getElementById('lobbyPlayers');
+    list.innerHTML = '';
+    state.players.forEach((p, i) => {
+      const row = document.createElement('div');
+      row.className = 'lobby-player-row';
+      row.innerHTML = `
+        <div class="pc-tok" style="background:${p.color}">${p.token}</div>
+        <span>${p.name}${i===state.myId ? ' (vous)' : ''}</span>
+        ${i===0 ? '<span class="host-tag">HÔTE</span>' : ''}
+      `;
+      list.appendChild(row);
+    });
+    document.getElementById('lobbyHostControls').style.display = state.isHost ? 'block' : 'none';
+    document.getElementById('lobbyGuestHint').style.display = state.isHost ? 'none' : 'block';
+    const startBtn = document.getElementById('lobbyStartBtn');
+    if(startBtn) startBtn.disabled = state.players.length < 2;
+    const hint = document.getElementById('lobbyHostHint');
+    if(hint) hint.style.display = state.players.length < 2 ? 'block' : 'none';
+  }
+
+  /* ---- push local state changes to every connected phone, at "settle
+     points" only (never mid-animation) so everyone converges on the same
+     state. MQTT publish always replaces the whole retained message, so we
+     resend every field each time rather than a partial update. ---- */
+  function pushState(){
+    if(!state.code || !mqttClient || !MQTT_READY) return;
+    suppressIncoming = true;
+    publishRoom(state.code, {
+      status: state.status,
+      startMoney: state.startMoney,
+      players: state.players,
+      current: state.current,
+      ownership: state.ownership,
+      houses: state.houses,
+      phase: state.phase,
+      pendingBuy: state.pendingBuy,
+      pendingTrade: state.pendingTrade,
+      doublesStreak: state.doublesStreak,
+      dice: state.dice,
+      log: state.log,
+    }, () => { suppressIncoming = false; });
+  }
+
+  /* ---------------- RULES OVERLAY ---------------- */
+  function openRules(){ document.getElementById('rulesOverlay').style.display = 'flex'; }
+  function closeRules(){ document.getElementById('rulesOverlay').style.display = 'none'; }
+  document.getElementById('rulesLinkSetup').addEventListener('click', openRules);
+  document.getElementById('rulesBtn').addEventListener('click', openRules);
+  document.getElementById('rulesCloseBtn').addEventListener('click', closeRules);
+  document.getElementById('rulesOverlay').addEventListener('click', (e) => {
+    if(e.target.id === 'rulesOverlay') closeRules();
+  });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape') closeRules();
+  });
+
+  /* ---------------- HELPERS ---------------- */
+  function cellPos(i){
+    if(i <= 10) return {row:11, col:11-i};
+    if(i <= 20) return {row:11-(i-10), col:1};
+    if(i <= 30) return {row:1, col:1+(i-20)};
+    return {row:1+(i-30), col:11};
+  }
+  function edgeClass(i){
+    if(i===0||i===10||i===20||i===30) return 'corner';
+    if(i>=1&&i<=9) return 'edge-bottom';
+    if(i>=11&&i<=19) return 'edge-left';
+    if(i>=21&&i<=29) return 'edge-top';
+    return 'edge-right';
+  }
+  function activePlayers(){ return state.players.filter(p => !p.bankrupt); }
+  function currentPlayer(){ return state.players[state.current]; }
+  function pushLog(msg){
+    state.log.push(msg);
+    if(state.log.length > 40) state.log.shift();
+  }
+  function fmt(n){ return (n<0?'−':'') + '€' + Math.abs(n); }
+
+  function ownersOfGroup(group, excludeIdx){
+    return BOARD.reduce((acc, sp, idx) => {
+      if(sp.type==='property' && sp.group===group && idx!==excludeIdx && state.ownership[idx]!==undefined) acc.push(state.ownership[idx]);
+      return acc;
+    }, []);
+  }
+  function groupSize(group){ return BOARD.filter(s => s.type==='property' && s.group===group).length; }
+  function ownerCountOfType(playerId, type){
+    return Object.keys(state.ownership).filter(idx => state.ownership[idx]===playerId && BOARD[idx].type===type).length;
+  }
+
+  /* ---------------- HOUSES / HOTEL ---------------- */
+  function ownsFullGroup(playerId, group){
+    const size = groupSize(group);
+    if(size === 0) return false;
+    return ownersOfGroup(group, -1).filter(id => id===playerId).length === size;
+  }
+  function playerMonopolyGroups(playerId){
+    return Object.keys(G).filter(g => ownsFullGroup(playerId, g));
+  }
+  function rentForProperty(sp, idx, ownerId){
+    const houses = state.houses[idx] || 0;
+    if(houses > 0) return sp.rent * (HOUSE_RENT_MULT[houses] || 1);
+    return ownsFullGroup(ownerId, sp.group) ? sp.rent * 2 : sp.rent;
+  }
+  function buildHouse(idx){
+    if(!isMyTurn()) return;
+    const sp = BOARD[idx];
+    const player = currentPlayer();
+    if(!sp || sp.type!=='property') return;
+    if(state.ownership[idx] !== player.id) return;
+    if(!ownsFullGroup(player.id, sp.group)) return;
+    const houses = state.houses[idx] || 0;
+    const cost = BUILD_COST[sp.group];
+    if(houses >= 5 || player.money < cost) return;
+    player.money -= cost;
+    state.houses[idx] = houses + 1;
+    const label = state.houses[idx]===5 ? 'un hôtel' : `${state.houses[idx]} maison${state.houses[idx]>1?'s':''}`;
+    pushLog(`🏗️ ${player.name} construit ${label} sur ${sp.name} (${fmt(-cost)}).`);
+  }
+  function sellHouse(idx){
+    if(!isMyTurn()) return;
+    const sp = BOARD[idx];
+    const player = currentPlayer();
+    if(!sp || sp.type!=='property') return;
+    if(state.ownership[idx] !== player.id) return;
+    const houses = state.houses[idx] || 0;
+    if(houses <= 0) return;
+    const refund = Math.round(BUILD_COST[sp.group] / 2);
+    player.money += refund;
+    state.houses[idx] = houses - 1;
+    pushLog(`🧾 ${player.name} revend une construction sur ${sp.name} (+€${refund}).`);
+  }
+
+  /* ---------------- TRADES BETWEEN PLAYERS ---------------- */
+  function openTrade(){
+    state.trade = { partnerId:null, give:new Set(), receive:new Set(), moneyGive:0, moneyReceive:0, error:'' };
+  }
+  function closeTrade(){ state.trade = null; }
+  function pickTradePartner(partnerId){
+    if(!state.trade) return;
+    state.trade.partnerId = partnerId;
+    state.trade.give = new Set();
+    state.trade.receive = new Set();
+    state.trade.error = '';
+  }
+  function toggleTradeProperty(idx, side){
+    if(!state.trade) return;
+    const set = side === 'give' ? state.trade.give : state.trade.receive;
+    if(set.has(idx)) set.delete(idx); else set.add(idx);
+    state.trade.error = '';
+  }
+
+  // Shared validation for a give/receive+money offer between a proposer and a partner.
+  // Returns an error string, or '' if the offer is currently valid.
+  function validateTradeOffer(proposer, partner, give, receive, moneyGive, moneyReceive){
+    if(!partner || partner.bankrupt) return "Ce Président n'est plus dans la partie.";
+    if(moneyGive > proposer.money) return 'Le budget proposé dépasse ce que vous avez.';
+    if(moneyReceive > partner.money) return `${partner.name} n'a pas assez de budget pour cette offre.`;
+    for(const idx of give){
+      if(!proposer.properties.includes(idx)) return 'Un des clubs proposés ne vous appartient plus.';
+      if((state.houses[idx]||0) > 0) return 'Revendez les constructions avant d\u2019échanger ce club.';
+    }
+    for(const idx of receive){
+      if(!partner.properties.includes(idx)) return `${partner.name} ne possède plus un des clubs demandés.`;
+      if((state.houses[idx]||0) > 0) return 'Ce club a des constructions : impossible de l\u2019échanger.';
+    }
+    return '';
+  }
+
+  // Local (pass-and-play) mode: everyone's at the table, so a trade executes immediately.
+  function executeTrade(){
+    const t = state.trade;
+    if(!t || t.partnerId === null || !isMyTurn()) return;
+    const cp = currentPlayer();
+    const partner = state.players[t.partnerId];
+    const giveArr = Array.from(t.give), receiveArr = Array.from(t.receive);
+    const err = validateTradeOffer(cp, partner, giveArr, receiveArr, t.moneyGive, t.moneyReceive);
+    if(err){ t.error = err; renderConsole(); return; }
+
+    applyTradeTransfer(cp, partner, giveArr, receiveArr, t.moneyGive, t.moneyReceive);
+    pushLog(describeTradeResult(cp, partner, giveArr, receiveArr, t.moneyGive, t.moneyReceive, '🤝', 'concluent un échange'));
+
+    state.trade = null;
+    renderAll();
+    pushState();
+  }
+
+  // Online mode: sends a proposal to the partner's phone instead of executing right away.
+  function proposeTrade(){
+    const t = state.trade;
+    if(!t || t.partnerId === null || !isMyTurn()) return;
+    const cp = currentPlayer();
+    const partner = state.players[t.partnerId];
+    const giveArr = Array.from(t.give), receiveArr = Array.from(t.receive);
+    const err = validateTradeOffer(cp, partner, giveArr, receiveArr, t.moneyGive, t.moneyReceive);
+    if(err){ t.error = err; renderConsole(); return; }
+
+    state.pendingTrade = {
+      proposerId: cp.id,
+      partnerId: partner.id,
+      give: giveArr,
+      receive: receiveArr,
+      moneyGive: t.moneyGive,
+      moneyReceive: t.moneyReceive,
+    };
+    pushLog(`🤝 ${cp.name} propose un échange à ${partner.name}.`);
+    state.trade = null;
+    renderAll();
+    pushState();
+  }
+
+  function acceptTrade(){
+    const t = state.pendingTrade;
+    if(!t || state.myId !== t.partnerId) return;
+    const proposer = state.players[t.proposerId];
+    const partner = state.players[t.partnerId];
+    const err = proposer ? validateTradeOffer(proposer, partner, t.give, t.receive, t.moneyGive, t.moneyReceive) : 'Ce Président n\u2019est plus dans la partie.';
+    if(err){
+      pushLog(`⚠️ Échange annulé : ${err}`);
+      state.pendingTrade = null;
+      renderAll();
+      pushState();
+      return;
+    }
+    applyTradeTransfer(proposer, partner, t.give, t.receive, t.moneyGive, t.moneyReceive);
+    pushLog(describeTradeResult(proposer, partner, t.give, t.receive, t.moneyGive, t.moneyReceive, '✅', 'concluent un échange'));
+    state.pendingTrade = null;
+    renderAll();
+    pushState();
+  }
+
+  function declineTrade(){
+    const t = state.pendingTrade;
+    if(!t || state.myId !== t.partnerId) return;
+    const proposer = state.players[t.proposerId];
+    const partner = state.players[t.partnerId];
+    pushLog(`❌ ${partner.name} refuse l'échange proposé par ${proposer ? proposer.name : '...'}.`);
+    state.pendingTrade = null;
+    renderAll();
+    pushState();
+  }
+
+  function cancelTrade(){
+    const t = state.pendingTrade;
+    if(!t || state.myId !== t.proposerId) return;
+    const proposer = state.players[t.proposerId];
+    pushLog(`🚫 ${proposer.name} annule sa proposition d'échange.`);
+    state.pendingTrade = null;
+    renderAll();
+    pushState();
+  }
+
+  // Moves properties/money between two players. Assumes the offer already passed validateTradeOffer.
+  function applyTradeTransfer(giver, receiver, give, receive, moneyGive, moneyReceive){
+    give.forEach(idx => {
+      giver.properties = giver.properties.filter(i => i!==idx);
+      receiver.properties.push(idx);
+      state.ownership[idx] = receiver.id;
+    });
+    receive.forEach(idx => {
+      receiver.properties = receiver.properties.filter(i => i!==idx);
+      giver.properties.push(idx);
+      state.ownership[idx] = giver.id;
+    });
+    giver.money = giver.money - moneyGive + moneyReceive;
+    receiver.money = receiver.money + moneyGive - moneyReceive;
+  }
+
+  function describeTradeResult(giver, receiver, give, receive, moneyGive, moneyReceive, icon, verb){
+    const giveNames = give.map(idx => BOARD[idx].name);
+    const receiveNames = receive.map(idx => BOARD[idx].name);
+    let summary = `${icon} ${giver.name} et ${receiver.name} ${verb}`;
+    if(giveNames.length || moneyGive) summary += ` — ${giver.name} donne ${giveNames.join(', ')}${giveNames.length && moneyGive ? ' + ' : ''}${moneyGive ? fmt(moneyGive) : ''}`;
+    if(receiveNames.length || moneyReceive) summary += ` contre ${receiveNames.join(', ')}${receiveNames.length && moneyReceive ? ' + ' : ''}${moneyReceive ? fmt(moneyReceive) : ''}`;
+    return summary + '.';
+  }
+
+  function tradeOfferSummaryHTML(t){
+    const giveNames = t.give.map(idx => BOARD[idx].name);
+    const receiveNames = t.receive.map(idx => BOARD[idx].name);
+    const side = (names, money) => {
+      let html = '';
+      names.forEach(n => { html += `<div class="trade-offer-item">${n}</div>`; });
+      if(money) html += `<div class="trade-offer-item money">${fmt(money)}</div>`;
+      if(!names.length && !money) html += `<div class="trade-offer-item empty">Rien</div>`;
+      return html;
+    };
+    return `
+      <div class="trade-offer">
+        <div class="trade-offer-side">
+          <div class="trade-offer-label">Vous recevriez</div>
+          ${side(giveNames, t.moneyGive)}
+        </div>
+        <div class="trade-offer-arrow">⇄</div>
+        <div class="trade-offer-side">
+          <div class="trade-offer-label">Vous donneriez</div>
+          ${side(receiveNames, t.moneyReceive)}
+        </div>
+      </div>
+    `;
+  }
+
+  /* ---------------- BUILD BOARD DOM ---------------- */
+  let cellEls = [];
+  function buildBoardCells(){
+    const board = document.getElementById('board');
+    board.innerHTML = '';
+    cellEls = [];
+
+    for(let i=0;i<BOARD.length;i++){
+      const sp = BOARD[i];
+      const pos = cellPos(i);
+      const ec = edgeClass(i);
+      const cell = document.createElement('div');
+      cell.className = 'cell ' + ec;
+      cell.style.gridRow = pos.row;
+      cell.style.gridColumn = pos.col;
+
+      let barColor = 'transparent';
+      if(sp.type==='property') barColor = `var(${G[sp.group]})`;
+      else if(sp.type==='station') barColor = '#7a7a7a';
+      else if(sp.type==='utility') barColor = '#c9a63c';
+
+      // Original hand-drawn shield / card badges (no copied club or league artwork),
+      // unless the user has supplied their own sourced logo via LOGO_MAP.
+      const userLogo = LOGO_MAP[sp.name];
+      let medalHtml = '';
+      if(userLogo){
+        medalHtml = `<img class="cell-logo" src="${userLogo}" alt="${sp.name}" onerror="this.style.display='none'">`;
+      } else if(sp.type==='property') medalHtml = `<div class="medal"><div class="glyph glyph-${sp.group}"></div></div>`;
+      else if(sp.type==='station') medalHtml = `<div class="medal"><div class="glyph glyph-stadium"></div></div>`;
+      else if(sp.type==='utility') medalHtml = `<div class="medal"><div class="glyph glyph-sponsor">€</div></div>`;
+      else if(sp.type==='tax') medalHtml = `<div class="medal"><div class="glyph glyph-tax">€</div></div>`;
+      else if(sp.type==='go') medalHtml = `<div class="medal medal-corner"><div class="glyph glyph-kickoff"></div></div>`;
+      else if(sp.type==='jail') medalHtml = `<div class="medal medal-corner"><div class="glyph glyph-bench"></div></div>`;
+      else if(sp.type==='freeparking') medalHtml = `<div class="medal medal-corner"><div class="glyph glyph-halftime">½</div></div>`;
+      else if(sp.type==='gotojail') medalHtml = `<div class="card-icon red" style="width:22px;height:30px;"></div>`;
+      else if(sp.type==='pokeball') medalHtml = `<div class="card-icon"></div>`;
+      else if(sp.type==='chest') medalHtml = `<div class="transfer-icon">⇄</div>`;
+
+      const priceHtml = sp.price ? `<div class="cell-price">€${sp.price}</div>` : '';
+      const housesHtml = sp.type==='property' ? `<div class="cell-houses" data-houses="${i}"></div>` : '';
+
+      cell.innerHTML = `
+        <div class="bar" style="background:${barColor}"></div>
+        <div class="cell-tokens" data-tokens="${i}"></div>
+        <div class="cell-body">
+          ${medalHtml}
+          <div class="cell-name">${sp.name}</div>
+          ${priceHtml}
+          ${housesHtml}
+        </div>
+        <div class="cell-owner-dot" data-owner="${i}" style="display:none"></div>
+      `;
+      board.appendChild(cell);
+      cellEls[i] = cell;
+    }
+
+    // center console
+    const consoleEl = document.createElement('div');
+    consoleEl.id = 'console';
+    consoleEl.innerHTML = `
+      <div class="pitch-lines">
+        <div class="circle"></div>
+        <div class="spot"></div>
+        <div class="halfway"></div>
+      </div>
+      <div class="console-inner">
+        <div class="logo"><div class="footballicon"></div> FOOTOPOLY</div>
+        <div class="turn-banner" id="turnBanner"></div>
+        <div class="console-divider"></div>
+        <div id="diceArea">
+          <div class="die face-1" id="die1"></div>
+          <div class="die face-1" id="die2"></div>
+        </div>
+        <div class="dice-sum" id="diceSum"></div>
+        <div id="actionZone"></div>
+        <div class="log-panel">
+          <div class="log-title">Derniers événements</div>
+          <div id="log"></div>
+        </div>
+      </div>
+    `;
+    board.appendChild(consoleEl);
+
+    for(const id of ['die1','die2']){
+      const d = document.getElementById(id);
+      for(let k=0;k<9;k++){ const dot=document.createElement('div'); dot.className='dot'; d.appendChild(dot); }
+    }
+  }
+
+  /* ---------------- FULL-PAGE BOARD SIZING ---------------- */
+  function sizeBoard(){
+    const wrap = document.getElementById('boardWrap');
+    const board = document.getElementById('board');
+    if(!wrap || !board) return;
+    const rect = wrap.getBoundingClientRect();
+    const avail = Math.min(rect.width, rect.height);
+    if(avail <= 0) return;
+    const size = Math.max(300, Math.floor(avail) - 4);
+    board.style.width = size + 'px';
+    board.style.height = size + 'px';
+  }
+  window.addEventListener('resize', sizeBoard);
+
+  /* ---------------- RENDER ---------------- */
+  function renderAll(){
+    renderSidebar();
+    renderBoardDynamic();
+    renderConsole();
+  }
+
+  function renderSidebar(){
+    const sidebar = document.getElementById('sidebar');
+    sidebar.innerHTML = '';
+    state.players.forEach((p, idx) => {
+      const card = document.createElement('div');
+      card.className = 'player-card' + (idx===state.current && !p.bankrupt ? ' active' : '') + (p.bankrupt ? ' bankrupt' : '');
+      const chips = p.properties.map(pi => {
+        const sp = BOARD[pi];
+        const col = sp.type==='property' ? `var(${G[sp.group]})` : (sp.type==='station' ? '#7a7a7a' : '#c9a63c');
+        return `<span style="background:${col}"></span>`;
+      }).join('');
+      card.innerHTML = `
+        <div class="pc-top">
+          <div class="pc-tok" style="background:${p.color}">${p.token}</div>
+          <div class="pc-name">${p.name}${idx===state.myId ? ' <span class="you-tag">(vous)</span>' : ''}</div>
+        </div>
+        <div class="pc-money mono">${fmt(p.money)}</div>
+        <div class="pc-props">${chips}</div>
+        <div class="pc-status">${p.bankrupt ? 'Éliminé — club en faillite' : (p.skipTurn ? 'Suspendu, passe son tour' : (BOARD[p.pos].name))}</div>
+      `;
+      sidebar.appendChild(card);
+    });
+  }
+
+  function renderBoardDynamic(){
+    for(let i=0;i<BOARD.length;i++){
+      const tEl = cellEls[i].querySelector(`[data-tokens="${i}"]`);
+      tEl.innerHTML = '';
+      const oEl = cellEls[i].querySelector(`[data-owner="${i}"]`);
+      const ownerId = state.ownership[i];
+      if(ownerId !== undefined){
+        oEl.style.display = 'block';
+        oEl.style.background = state.players[ownerId].color;
+      } else {
+        oEl.style.display = 'none';
+      }
+      const hEl = cellEls[i].querySelector(`[data-houses="${i}"]`);
+      if(hEl){
+        const houses = state.houses[i] || 0;
+        if(houses === 5){
+          hEl.innerHTML = `<div class="hotel-dot"></div>`;
+        } else if(houses > 0){
+          hEl.innerHTML = '<div class="house-dot"></div>'.repeat(houses);
+        } else {
+          hEl.innerHTML = '';
+        }
+      }
+    }
+    state.players.forEach(p => {
+      if(p.bankrupt) return;
+      const tEl = cellEls[p.pos].querySelector(`[data-tokens="${p.pos}"]`);
+      const mt = document.createElement('div');
+      mt.className = 'mini-tok';
+      mt.style.background = p.color;
+      mt.textContent = p.token;
+      tEl.appendChild(mt);
+    });
+  }
+
+  function renderConsole(){
+    const cp = currentPlayer();
+    const myTurn = isMyTurn();
+    const showYou = myTurn && state.mode === 'online';
+    document.getElementById('turnPill').innerHTML = cp
+      ? `<div class="tok" style="background:${cp.color}">${cp.token}</div> ${showYou ? 'À vous de jouer !' : 'Au tour de ' + cp.name}`
+      : '';
+    const tb = document.getElementById('turnBanner');
+    if(tb) tb.innerHTML = cp
+      ? `<div class="tb-tok" style="background:${cp.color}">${cp.token}</div> ${showYou ? '<b>C\u2019est à vous !</b>' : 'Au tour de <b>' + cp.name + '</b>'}`
+      : '';
+
+    const die1 = document.getElementById('die1');
+    const die2 = document.getElementById('die2');
+    if(die1 && die2){
+      die1.className = 'die face-' + state.dice[0];
+      die2.className = 'die face-' + state.dice[1];
+    }
+    const sumEl = document.getElementById('diceSum');
+    if(sumEl) sumEl.textContent = (state.phase!=='ready' || state.dice[0]!==1 || state.dice[1]!==1) ? `Total : ${state.dice[0]+state.dice[1]}` : '';
+
+    const zone = document.getElementById('actionZone');
+    if(!zone) return;
+    zone.innerHTML = '';
+
+    if(state.phase === 'gameover'){
+      ensureGameOverPanel();
+      return;
+    }
+
+    if(state.pendingTrade){
+      const t = state.pendingTrade;
+      const proposer = state.players[t.proposerId];
+      const partner = state.players[t.partnerId];
+      if(state.myId === t.partnerId){
+        zone.innerHTML = `
+          <div class="build-header">🤝 Proposition de ${proposer ? proposer.name : '...'}</div>
+          ${tradeOfferSummaryHTML(t)}
+          <div class="trade-actions">
+            <button class="action-btn btn-buy" id="tradeAcceptBtn">✅ Accepter</button>
+            <button class="action-btn btn-pass" id="tradeDeclineBtn">❌ Refuser</button>
+          </div>
+        `;
+        document.getElementById('tradeAcceptBtn').addEventListener('click', acceptTrade);
+        document.getElementById('tradeDeclineBtn').addEventListener('click', declineTrade);
+      } else if(state.myId === t.proposerId){
+        zone.innerHTML = `
+          <div class="waiting-note">🕐 En attente de la réponse de <b>${partner ? partner.name : '...'}</b>…</div>
+        `;
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'action-btn btn-pass';
+        cancelBtn.style.marginTop = '8px';
+        cancelBtn.textContent = '🚫 Annuler la proposition';
+        cancelBtn.addEventListener('click', cancelTrade);
+        zone.appendChild(cancelBtn);
+      } else {
+        zone.innerHTML = `<div class="waiting-note">🤝 ${proposer ? proposer.name : '...'} propose un échange à <b>${partner ? partner.name : '...'}</b>…</div>`;
+      }
+      const logEl = document.getElementById('log');
+      if(logEl){
+        logEl.innerHTML = state.log.slice(-6).map(m => `<div>${m}</div>`).join('');
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+      return;
+    }
+
+    if(state.buildOpen && cp && myTurn){
+      zone.innerHTML = `
+        <div class="build-header">🏗️ Constructions <button class="build-close" id="buildCloseBtn">Fermer ✕</button></div>
+        ${renderBuildPanelHTML(cp)}
+      `;
+      zone.querySelectorAll('.br-plus').forEach(btn => btn.addEventListener('click', () => {
+        buildHouse(parseInt(btn.dataset.idx, 10));
+        renderAll();
+        pushState();
+      }));
+      zone.querySelectorAll('.br-minus').forEach(btn => btn.addEventListener('click', () => {
+        sellHouse(parseInt(btn.dataset.idx, 10));
+        renderAll();
+        pushState();
+      }));
+      const closeBtn = document.getElementById('buildCloseBtn');
+      if(closeBtn) closeBtn.addEventListener('click', () => { state.buildOpen = false; renderConsole(); });
+      return;
+    }
+
+    if(state.trade && cp && myTurn){
+      zone.innerHTML = renderTradePanelHTML(cp);
+      const tCloseBtn = document.getElementById('tradeCloseBtn');
+      if(tCloseBtn) tCloseBtn.addEventListener('click', () => { closeTrade(); renderConsole(); });
+      zone.querySelectorAll('.trade-partner-btn').forEach(btn => btn.addEventListener('click', () => {
+        pickTradePartner(parseInt(btn.dataset.pid, 10));
+        renderConsole();
+      }));
+      const backBtn = document.getElementById('tradeBackBtn');
+      if(backBtn) backBtn.addEventListener('click', () => { pickTradePartner(null); renderConsole(); });
+      zone.querySelectorAll('.trade-row').forEach(row => row.addEventListener('click', () => {
+        toggleTradeProperty(parseInt(row.dataset.idx, 10), row.dataset.side);
+        renderConsole();
+      }));
+      const mg = document.getElementById('tradeMoneyGive');
+      const mr = document.getElementById('tradeMoneyReceive');
+      if(mg) mg.addEventListener('input', () => { state.trade.moneyGive = Math.max(0, parseInt(mg.value, 10) || 0); state.trade.error=''; });
+      if(mr) mr.addEventListener('input', () => { state.trade.moneyReceive = Math.max(0, parseInt(mr.value, 10) || 0); state.trade.error=''; });
+      const confirmBtn = document.getElementById('tradeConfirmBtn');
+      if(confirmBtn) confirmBtn.addEventListener('click', () => {
+        if(state.mode === 'online') proposeTrade(); else executeTrade();
+      });
+      return;
+    }
+
+    if(state.phase === 'awaiting-buy' && state.pendingBuy !== null){
+      const sp = BOARD[state.pendingBuy];
+      if(myTurn){
+        const panel = document.createElement('div');
+        panel.className = 'buy-panel';
+        panel.innerHTML = `
+          <div class="bp-name">${sp.name}</div>
+          <div class="bp-price">Prix : €${sp.price}</div>
+          <div class="bp-btns">
+            <button class="action-btn btn-buy" id="buyBtn">Acheter</button>
+            <button class="action-btn btn-pass" id="passBtn">Passer</button>
+          </div>
+        `;
+        zone.appendChild(panel);
+        document.getElementById('buyBtn').addEventListener('click', buyProperty);
+        document.getElementById('passBtn').addEventListener('click', passBuy);
+      } else {
+        zone.innerHTML = `<div class="waiting-note">🕐 ${cp.name} décide d'acheter <b>${sp.name}</b>…</div>`;
+      }
+      return;
+    } else if(state.phase === 'must-end'){
+      if(myTurn){
+        const btn = document.createElement('button');
+        btn.className = 'action-btn btn-end';
+        btn.textContent = 'Terminer le tour →';
+        btn.addEventListener('click', endTurn);
+        zone.appendChild(btn);
+      } else {
+        zone.innerHTML = `<div class="waiting-note">🕐 En attente que ${cp.name} termine son tour…</div>`;
+      }
+    } else if(state.phase === 'ready') {
+      if(myTurn){
+        const btn = document.createElement('button');
+        btn.className = 'action-btn btn-roll';
+        btn.textContent = '🎲 Lancer les dés';
+        btn.addEventListener('click', rollDice);
+        zone.appendChild(btn);
+      } else {
+        zone.innerHTML = `<div class="waiting-note">🕐 En attente que ${cp ? cp.name : '...'} lance les dés…</div>`;
+      }
+    } else if(state.phase === 'rolling'){
+      if(!myTurn) zone.innerHTML = `<div class="waiting-note">🎲 ${cp ? cp.name : '...'} lance les dés…</div>`;
+    } else if(state.phase === 'moving'){
+      if(!myTurn) zone.innerHTML = `<div class="waiting-note">🚶 ${cp ? cp.name : '...'} se déplace…</div>`;
+    }
+
+    if(myTurn && (state.phase === 'ready' || state.phase === 'must-end') && cp && playerMonopolyGroups(cp.id).length > 0){
+      const buildBtn = document.createElement('button');
+      buildBtn.className = 'action-btn btn-build';
+      buildBtn.textContent = '🏗️ Construire';
+      buildBtn.addEventListener('click', () => { state.buildOpen = true; renderConsole(); });
+      zone.appendChild(buildBtn);
+    }
+
+    if(myTurn && (state.phase === 'ready' || state.phase === 'must-end') && cp && activePlayers().length > 1){
+      const tradeBtn = document.createElement('button');
+      tradeBtn.className = 'action-btn btn-trade';
+      tradeBtn.textContent = '🤝 Échanger';
+      tradeBtn.addEventListener('click', () => { openTrade(); renderConsole(); });
+      zone.appendChild(tradeBtn);
+    }
+
+    const logEl = document.getElementById('log');
+    if(logEl){
+      logEl.innerHTML = state.log.slice(-6).map(m => `<div>${m}</div>`).join('');
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+  }
+
+  function renderBuildPanelHTML(player){
+    const groups = playerMonopolyGroups(player.id);
+    if(groups.length === 0){
+      return `<div class="build-empty">Vous ne possédez encore aucun groupe complet de clubs.</div>`;
+    }
+    let html = '<div class="build-panel">';
+    groups.forEach(g => {
+      const cost = BUILD_COST[g];
+      html += `<div class="build-group">
+        <div class="build-group-title"><span class="build-swatch glyph-${g}"></span> ${GROUP_LABEL[g]} · €${cost} / niveau</div>`;
+      BOARD.forEach((sp, idx) => {
+        if(sp.type === 'property' && sp.group === g){
+          const houses = state.houses[idx] || 0;
+          const label = houses === 5 ? 'Hôtel' : houses > 0 ? `${houses} maison${houses > 1 ? 's' : ''}` : 'Aucune construction';
+          const canBuild = houses < 5 && player.money >= cost;
+          const canSell = houses > 0;
+          html += `<div class="build-row">
+            <div class="br-name">${sp.name}</div>
+            <div class="br-level">${label}</div>
+            <button class="br-btn br-minus" data-idx="${idx}" ${canSell ? '' : 'disabled'}>−</button>
+            <button class="br-btn br-plus" data-idx="${idx}" ${canBuild ? '' : 'disabled'}>+</button>
+          </div>`;
+        }
+      });
+      html += '</div>';
+    });
+    html += '</div>';
+    return html;
+  }
+
+  function renderTradePanelHTML(cp){
+    const t = state.trade;
+    const errorHtml = t.error ? `<div class="trade-error">${t.error}</div>` : '';
+
+    if(t.partnerId === null){
+      const others = activePlayers().filter(p => p.id !== cp.id);
+      let html = `
+        <div class="trade-header">🤝 Échanger <button class="build-close" id="tradeCloseBtn">Fermer ✕</button></div>
+        <div class="trade-pick-title">Choisissez un partenaire :</div>
+        <div class="trade-partners">`;
+      others.forEach(p => {
+        html += `<button class="trade-partner-btn" data-pid="${p.id}">
+          <span class="tp-tok" style="background:${p.color}">${p.token}</span>${p.name}
+        </button>`;
+      });
+      html += `</div>`;
+      return html;
+    }
+
+    const partner = state.players[t.partnerId];
+    const tradeableProps = (player) => player.properties.filter(idx => (state.houses[idx]||0) === 0);
+
+    function propRow(idx, selected, side){
+      const sp = BOARD[idx];
+      return `<div class="trade-row ${selected ? 'selected' : ''}" data-idx="${idx}" data-side="${side}">
+        <span class="trade-swatch" style="background:var(${G[sp.group]})"></span>
+        <span class="tr-name">${sp.name}</span>
+      </div>`;
+    }
+
+    const giveProps = tradeableProps(cp);
+    const receiveProps = tradeableProps(partner);
+    const giveHtml = giveProps.length
+      ? giveProps.map(idx => propRow(idx, t.give.has(idx), 'give')).join('')
+      : '<div class="trade-empty">Aucun club libre à offrir</div>';
+    const receiveHtml = receiveProps.length
+      ? receiveProps.map(idx => propRow(idx, t.receive.has(idx), 'receive')).join('')
+      : '<div class="trade-empty">Aucun club libre chez lui/elle</div>';
+
+    return `
+      <div class="trade-header">🤝 Échange avec ${partner.name} <button class="build-close" id="tradeCloseBtn">Fermer ✕</button></div>
+      <div class="trade-columns">
+        <div class="trade-col">
+          <div class="trade-col-title">Vous donnez</div>
+          <div class="trade-list">${giveHtml}</div>
+          <label class="trade-money">€ <input type="number" min="0" id="tradeMoneyGive" value="${t.moneyGive}"></label>
+        </div>
+        <div class="trade-col">
+          <div class="trade-col-title">Vous recevez</div>
+          <div class="trade-list">${receiveHtml}</div>
+          <label class="trade-money">€ <input type="number" min="0" id="tradeMoneyReceive" value="${t.moneyReceive}"></label>
+        </div>
+      </div>
+      ${errorHtml}
+      <div class="trade-actions">
+        <button class="action-btn btn-buy" id="tradeConfirmBtn">${state.mode === 'online' ? "Proposer l'échange" : "Valider l'échange"}</button>
+        <button class="action-btn btn-pass" id="tradeBackBtn">← Retour</button>
+      </div>
+    `;
+  }
+
+
+  /* ---------------- TURN FLOW ---------------- */
+  function beginTurn(first){
+    const cp = currentPlayer();
+    if(!cp){ return; }
+    if(cp.bankrupt){ advanceToNextPlayer(); return; }
+    state.doublesStreak = 0;
+    state.buildOpen = false;
+    state.trade = null;
+    if(cp.skipTurn){
+      cp.skipTurn = false;
+      pushLog(`🪑 ${cp.name} est suspendu et passe son tour.`);
+      state.phase = 'must-end';
+      renderAll();
+      pushState();
+      return;
+    }
+    state.phase = 'ready';
+    if(!first) pushLog(`— Au tour de ${cp.name} —`);
+    renderAll();
+    pushState();
+  }
+
+  function rollDice(){
+    if(state.phase !== 'ready' || !isMyTurn()) return;
+    state.phase = 'rolling';
+    pushState();
+    const die1 = document.getElementById('die1');
+    const die2 = document.getElementById('die2');
+    die1.classList.add('rolling');
+    die2.classList.add('rolling');
+    renderConsole();
+
+    let ticks = 0;
+    const spin = setInterval(() => {
+      state.dice = [1+Math.floor(Math.random()*6), 1+Math.floor(Math.random()*6)];
+      die1.className = 'die rolling face-' + state.dice[0];
+      die2.className = 'die rolling face-' + state.dice[1];
+      ticks++;
+      if(ticks > 8){
+        clearInterval(spin);
+        die1.classList.remove('rolling');
+        die2.classList.remove('rolling');
+        const d1 = 1+Math.floor(Math.random()*6);
+        const d2 = 1+Math.floor(Math.random()*6);
+        state.dice = [d1,d2];
+        handleRollResult(d1,d2);
+      }
+    }, 80);
+  }
+
+  function handleRollResult(d1,d2){
+    const cp = currentPlayer();
+    const sum = d1+d2;
+    const isDouble = d1===d2;
+    pushLog(`🎲 ${cp.name} lance les dés : ${d1} + ${d2} = ${sum}${isDouble ? ' (double !)' : ''}`);
+
+    if(isDouble){
+      state.doublesStreak++;
+      if(state.doublesStreak >= 3){
+        cp.pos = 10;
+        pushLog(`🟥 Trois doubles d'affilée ! ${cp.name} est envoyé aux vestiaires.`);
+        state.phase = 'must-end';
+        renderAll();
+        pushState();
+        return;
+      }
+    }
+    state.phase = 'moving';
+    renderAll();
+    pushState();
+    movePlayer(cp, sum, isDouble);
+  }
+
+  function movePlayer(player, steps, isDouble){
+    let remaining = steps;
+    const step = () => {
+      if(remaining <= 0){
+        resolveSpace(player, isDouble);
+        return;
+      }
+      player.pos = (player.pos + 1) % BOARD.length;
+      remaining--;
+      if(player.pos === 0){
+        player.money += 200;
+        pushLog(`💰 ${player.name} passe par COUP D'ENVOI et récupère €200.`);
+      }
+      renderAll();
+      setTimeout(step, 130);
+    };
+    step();
+  }
+
+  function resolveSpace(player, isDouble){
+    const sp = BOARD[player.pos];
+    switch(sp.type){
+      case 'go':
+        pushLog(`${player.name} arrive sur COUP D'ENVOI.`);
+        break;
+      case 'property': case 'station': case 'utility': {
+        const ownerId = state.ownership[player.pos];
+        if(ownerId === undefined){
+          if(player.money >= sp.price){
+            state.pendingBuy = player.pos;
+            state.phase = 'awaiting-buy';
+            renderAll();
+            pushState();
+            return;
+          } else {
+            pushLog(`${player.name} n'a pas le budget pour ${sp.name}.`);
+          }
+        } else if(ownerId === player.id){
+          pushLog(`${player.name} est chez soi (${sp.name}).`);
+        } else {
+          chargeRent(player, ownerId, sp);
+        }
+        break;
+      }
+      case 'tax':
+        applyMoney(player, -sp.amount, `💸 ${player.name} paie ${sp.name} : ${fmt(-sp.amount)}.`);
+        break;
+      case 'pokeball': drawCard(player, POKEBALL_CARDS, 'Carton Jaune'); return;
+      case 'chest': drawCard(player, SUPERBALL_CARDS, 'Transfert'); return;
+      case 'jail':
+        pushLog(`👀 ${player.name} passe simplement par les vestiaires.`);
+        break;
+      case 'freeparking':
+        pushLog(`⏸️ ${player.name} profite de la mi-temps. Rien ne se passe.`);
+        break;
+      case 'gotojail':
+        player.pos = 10;
+        player.skipTurn = true;
+        pushLog(`🟥 ${player.name} reçoit un carton rouge et file aux vestiaires !`);
+        break;
+    }
+    finishResolution(player, isDouble);
+  }
+
+  function finishResolution(player, isDouble){
+    if(player.bankrupt){ renderAll(); pushState(); return; }
+    if(state.phase === 'gameover'){ renderAll(); pushState(); return; }
+    if(isDouble){
+      pushLog(`↻ Double ! ${player.name} rejoue.`);
+      state.phase = 'ready';
+    } else {
+      state.phase = 'must-end';
+    }
+    renderAll();
+    pushState();
+  }
+
+  function chargeRent(payer, ownerId, sp){
+    const owner = state.players[ownerId];
+    let rent = 0;
+    if(sp.type === 'property'){
+      rent = rentForProperty(sp, payer.pos, ownerId);
+    } else if(sp.type === 'station'){
+      const count = ownerCountOfType(ownerId, 'station');
+      rent = [0,25,50,100,200][count] || 200;
+    } else if(sp.type === 'utility'){
+      const count = ownerCountOfType(ownerId, 'utility');
+      const sum = state.dice[0]+state.dice[1];
+      rent = count >= 2 ? sum*10 : sum*4;
+    }
+    applyMoney(payer, -rent, `🏟️ ${payer.name} paie une indemnité de ${fmt(-rent)} à ${owner.name} pour ${sp.name}.`);
+    if(!payer.bankrupt) owner.money += rent;
+  }
+
+  function drawCard(player, deck, label){
+    const card = deck[Math.floor(Math.random()*deck.length)];
+    pushLog(`${label === 'Carton Jaune' ? '🟨' : '🔄'} ${label} — ${card.text}`);
+    if(card.money){
+      applyMoney(player, card.money, null);
+    }
+    if(card.moveTo !== undefined){
+      player.pos = card.moveTo;
+    }
+    if(card.goToJail){
+      player.pos = 10;
+      player.skipTurn = true;
+    }
+    finishResolution(player, false);
+  }
+
+  function applyMoney(player, delta, logMsg){
+    if(logMsg) pushLog(logMsg);
+    player.money += delta;
+    if(player.money < 0){
+      bankruptPlayer(player);
+    }
+  }
+
+  function bankruptPlayer(player){
+    if(player.bankrupt) return;
+    player.bankrupt = true;
+    player.money = 0;
+    player.properties.forEach(idx => { delete state.ownership[idx]; delete state.houses[idx]; });
+    player.properties = [];
+    pushLog(`💀 ${player.name} fait faillite et quitte la partie !`);
+    const alive = activePlayers();
+    if(alive.length <= 1){
+      state.phase = 'gameover';
+      if(alive.length === 1){
+        pushLog(`🏆 ${alive[0].name} remporte la partie !`);
+      }
+    }
+  }
+
+  // Renders the game-over overlay from `state` alone, so every connected
+  // phone shows it the moment it syncs — not just whoever triggered it.
+  function ensureGameOverPanel(){
+    const consoleEl = document.getElementById('console');
+    if(!consoleEl || consoleEl.querySelector('.gameover-panel')) return;
+    const winner = activePlayers()[0];
+    const panel = document.createElement('div');
+    panel.className = 'gameover-panel';
+    panel.innerHTML = `
+      <div class="footballicon" style="width:44px;height:44px;"></div>
+      <h2>${winner ? winner.name + ' remporte la partie !' : 'Partie terminée'}</h2>
+      <p>Tous les autres clubs ont fait faillite.</p>
+      <button class="action-btn btn-buy" id="playAgainBtn">Quitter la partie</button>
+    `;
+    consoleEl.appendChild(panel);
+    document.getElementById('playAgainBtn').addEventListener('click', leaveRoom);
+  }
+
+  function buyProperty(){
+    if(state.phase !== 'awaiting-buy' || state.pendingBuy === null || !isMyTurn()) return;
+    const idx = state.pendingBuy;
+    const sp = BOARD[idx];
+    const player = currentPlayer();
+    player.money -= sp.price;
+    player.properties.push(idx);
+    state.ownership[idx] = player.id;
+    pushLog(`✅ ${player.name} achète ${sp.name} pour ${fmt(sp.price)}.`);
+    state.pendingBuy = null;
+    finishResolution(player, state.dice[0]===state.dice[1]);
+  }
+
+  function passBuy(){
+    if(state.phase !== 'awaiting-buy' || !isMyTurn()) return;
+    const player = currentPlayer();
+    const sp = BOARD[state.pendingBuy];
+    pushLog(`${player.name} laisse passer ${sp.name}.`);
+    state.pendingBuy = null;
+    finishResolution(player, state.dice[0]===state.dice[1]);
+  }
+
+  function endTurn(){
+    if(state.phase !== 'must-end' || !isMyTurn()) return;
+    advanceToNextPlayer();
+  }
+
+  function advanceToNextPlayer(){
+    const alive = activePlayers();
+    if(alive.length <= 1){ return; }
+    let next = state.current;
+    do{
+      next = (next + 1) % state.players.length;
+    } while(state.players[next].bankrupt);
+    state.current = next;
+    beginTurn(false);
+  }
+
+})();
+</script>
+</body>
+</html>
