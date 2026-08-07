@@ -814,10 +814,19 @@
 
   @media (max-width:980px){
     #game{height:100vh;}
-    .layout{flex-direction:column;align-items:center;padding:10px;overflow-y:auto;}
-    #sidebar{width:100%;max-width:600px;flex-direction:row;flex-wrap:wrap;overflow-y:visible;max-height:none;flex:none;}
-    .player-card{flex:1 1 150px;}
-    #boardWrap{flex:none;width:100%;min-height:min(92vw,560px);}
+    .layout{flex-direction:column;align-items:center;padding:8px;gap:8px;overflow-y:auto;}
+    #sidebar{width:100%;max-width:600px;flex-direction:row;flex-wrap:wrap;overflow-y:visible;max-height:none;flex:none;gap:6px;}
+    .player-card{flex:1 1 140px;padding:7px 9px;}
+    .player-card.active{transform:none;}
+    .pc-top{gap:6px;margin-bottom:2px;}
+    .pc-tok{width:22px;height:22px;font-size:11px;border-width:1.5px;}
+    .pc-name{font-size:12px;}
+    .you-tag{font-size:9px;}
+    .pc-money{font-size:13px;}
+    .pc-props{margin-top:3px;min-height:6px;gap:3px;}
+    .pc-props span{width:6px;height:6px;}
+    .pc-status{font-size:9px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    #boardWrap{flex:1;width:100%;min-height:0;}
   }
   @media (max-width:600px){
     .topbar{padding:8px 10px;gap:6px;}
@@ -1190,29 +1199,29 @@
 
   const BOARD = [
     {name:'COUP D\u2019ENVOI', type:'go'},
-    prop('Le Havre AC','promus',60),
-    {name:'Carton Jaune', type:'pokeball'},
+    prop('Le Havre','promus',60),
+    {name:'Carton', type:'pokeball'},
     prop('Clermont','promus',60),
-    {name:'Taxe Transfert', type:'tax', amount:200},
-    stadium('Stade France'),
+    {name:'Taxe', type:'tax', amount:200},
+    stadium('Stade'),
     prop('Ajax','eredivisie',100),
-    {name:'Carton Jaune', type:'pokeball'},
+    {name:'Carton', type:'pokeball'},
     prop('PSV','eredivisie',100),
     prop('Feyenoord','eredivisie',120),
     {name:'VESTIAIRES', type:'jail'},
-    prop('Sporting CP','portugal',140),
-    sponsor('Diffuseur TV'),
+    prop('Sporting','portugal',140),
+    sponsor('Diffuseur'),
     prop('FC Porto','portugal',140),
     prop('Benfica','portugal',160),
     stadium('Wembley'),
     prop('AC Milan','seriea',180),
     {name:'Transfert', type:'chest'},
-    prop('Inter Milan','seriea',180),
+    prop('Inter','seriea',180),
     prop('Juventus','seriea',200),
     {name:'MI-TEMPS', type:'freeparking'},
     prop('Dortmund','bundesliga',220),
-    {name:'Carton Jaune', type:'pokeball'},
-    prop('RB Leipzig','bundesliga',220),
+    {name:'Carton', type:'pokeball'},
+    prop('Leipzig','bundesliga',220),
     prop('Bayern','bundesliga',240),
     stadium('Camp Nou'),
     prop('Atlético','laliga',260),
@@ -1220,13 +1229,13 @@
     sponsor('Sponsor'),
     prop('Real Madrid','laliga',280),
     {name:'CARTON ROUGE', type:'gotojail'},
-    prop('Chelsea FC','premier',300),
-    prop('Arsenal FC','premier',300),
+    prop('Chelsea','premier',300),
+    prop('Arsenal','premier',300),
     {name:'Transfert', type:'chest'},
     prop('Liverpool','premier',320),
     stadium('San Siro'),
-    {name:'Carton Jaune', type:'pokeball'},
-    {name:'Amende UEFA', type:'tax', amount:100},
+    {name:'Carton', type:'pokeball'},
+    {name:'Amende', type:'tax', amount:100},
     prop('Paris SG','elite',350),
     prop('Man City','elite',400),
   ];
@@ -2224,7 +2233,11 @@
       die2.className = 'die face-' + state.dice[1];
     }
     const sumEl = document.getElementById('diceSum');
-    if(sumEl) sumEl.textContent = (state.phase!=='ready' || state.dice[0]!==1 || state.dice[1]!==1) ? `Total : ${state.dice[0]+state.dice[1]}` : '';
+    if(sumEl){
+      const showSum = state.phase!=='ready' || state.dice[0]!==1 || state.dice[1]!==1;
+      sumEl.textContent = showSum ? `Total : ${state.dice[0]+state.dice[1]}` : '';
+      sumEl.style.display = showSum ? 'inline-block' : 'none';
+    }
     updateTurnTimerDisplay();
 
     const zone = document.getElementById('actionZone');
