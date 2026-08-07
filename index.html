@@ -58,8 +58,8 @@
 
   /* ---------- Original shield / card badges (no copied club or league artwork) ---------- */
   .medal{
-    width:clamp(11px,calc(var(--board-px) * 0.022),18px);
-    height:clamp(11px,calc(var(--board-px) * 0.022),18px);
+    width:clamp(12px,calc(var(--board-px) * 0.03),24px);
+    height:clamp(12px,calc(var(--board-px) * 0.03),24px);
     flex:none;position:relative;
     display:flex;align-items:center;justify-content:center;overflow:hidden;
     filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));
@@ -93,8 +93,8 @@
   .glyph-tax{background:linear-gradient(160deg,#e6e6e6,#a3a3a3 80%);display:flex;align-items:center;justify-content:center;
     font-family:'Baloo 2',sans-serif;font-weight:800;font-size:10px;color:#4a4a4a;}
   .medal-corner{
-    width:clamp(16px,calc(var(--board-px) * 0.032),26px);
-    height:clamp(16px,calc(var(--board-px) * 0.032),26px);
+    width:clamp(18px,calc(var(--board-px) * 0.042),32px);
+    height:clamp(18px,calc(var(--board-px) * 0.042),32px);
   }
   .medal-corner .glyph{border-width:2px;}
   .glyph-kickoff{background:linear-gradient(160deg,#8fd6a0,var(--pitch) 80%);}
@@ -445,8 +445,8 @@
   .rules-section b{color:var(--ink);}
 
   .layout{
-    flex:1;min-height:0;display:flex;gap:16px;padding:14px;align-items:stretch;
-    max-width:1600px;margin:0 auto;width:100%;overflow:hidden;
+    flex:1;min-height:0;display:flex;gap:14px;padding:12px;align-items:stretch;
+    max-width:1700px;margin:0 auto;width:100%;overflow:hidden;
   }
   /* ---- Sidebar ---- */
   #sidebar{
@@ -486,7 +486,11 @@
   .pc-status{font-size:11px;color:var(--ink-soft);margin-top:4px;font-weight:600;}
 
   /* ---- Board ---- */
-  #boardWrap{flex:1;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .main-area{
+    flex:1;min-width:0;min-height:0;
+    display:flex;flex-direction:column;align-items:center;gap:12px;
+  }
+  #boardWrap{flex:1;width:100%;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
   #board{
     display:grid;
     grid-template-columns:repeat(11,minmax(0,1fr));
@@ -504,11 +508,11 @@
   #tokenLayer{position:absolute;inset:0;pointer-events:none;z-index:6;}
   .board-token{
     position:absolute;top:0;left:0;
-    width:clamp(13px,calc(var(--board-px) * 0.028),20px);
-    height:clamp(13px,calc(var(--board-px) * 0.028),20px);
+    width:clamp(14px,calc(var(--board-px) * 0.036),26px);
+    height:clamp(14px,calc(var(--board-px) * 0.036),26px);
     border-radius:50%;
     display:flex;align-items:center;justify-content:center;
-    font-size:clamp(7px,calc(var(--board-px) * 0.016),11px);border:1.4px solid var(--ink);
+    font-size:clamp(8px,calc(var(--board-px) * 0.02),14px);border:1.4px solid var(--ink);
     box-shadow:0 3px 6px rgba(0,0,0,.35);
     transition:transform .38s cubic-bezier(.34,1.1,.64,1);
     will-change:transform;
@@ -533,20 +537,28 @@
   }
   .cell-name{
     font-weight:700;color:var(--ink);word-break:break-word;max-width:100%;
-    font-size:clamp(6.5px,calc(var(--board-px) * 0.0135),9.5px);
-    line-height:1.08;
+    font-size:clamp(7px,calc(var(--board-px) * 0.018),13px);
+    line-height:1.1;
   }
   .cell-price{
     font-family:'JetBrains Mono',monospace;color:var(--ink-soft);font-weight:700;
-    font-size:clamp(6px,calc(var(--board-px) * 0.0125),8.5px);
+    font-size:clamp(6.5px,calc(var(--board-px) * 0.016),11px);
   }
   .cell.corner{border-radius:9px;background:#f2f6ea;}
-  .cell.corner .cell-name{font-size:clamp(7px,calc(var(--board-px) * 0.0155),10.5px);}
+  .cell.corner .cell-name{font-size:clamp(7.5px,calc(var(--board-px) * 0.02),14px);}
   .cell-owner-dot{position:absolute;bottom:2px;right:2px;width:7px;height:7px;border-radius:50%;border:1px solid var(--ink);}
   .cell-houses{display:flex;gap:1.5px;justify-content:center;}
   .cell-houses:not(:empty){margin-top:1px;}
-  .house-dot{width:5px;height:5px;border-radius:1px;background:var(--pitch);border:0.5px solid var(--ink);}
-  .hotel-dot{width:11px;height:6px;border-radius:1.5px;background:var(--gold);border:0.5px solid var(--ink);}
+  .house-dot{
+    width:clamp(4px,calc(var(--board-px) * 0.008),7px);
+    height:clamp(4px,calc(var(--board-px) * 0.008),7px);
+    border-radius:1px;background:var(--pitch);border:0.5px solid var(--ink);
+  }
+  .hotel-dot{
+    width:clamp(9px,calc(var(--board-px) * 0.018),15px);
+    height:clamp(5px,calc(var(--board-px) * 0.01),8px);
+    border-radius:1.5px;background:var(--gold);border:0.5px solid var(--ink);
+  }
 
   /* ---- Center console ---- */
   #console{
@@ -700,6 +712,11 @@
     background:rgba(255,255,255,.05);border-radius:999px;max-width:320px;
   }
   .waiting-note b{color:#fff;}
+  .spectator-note{
+    color:rgba(242,244,234,.85);font-size:13px;text-align:center;line-height:1.5;
+    padding:16px 20px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.1);
+    border-radius:14px;max-width:320px;
+  }
   .build-panel{
     width:100%;max-width:380px;max-height:clamp(90px,calc(var(--board-px) * 0.28),220px);overflow-y:auto;
     display:flex;flex-direction:column;gap:8px;padding-right:2px;
@@ -716,7 +733,7 @@
   }
   .build-row{display:flex;align-items:center;gap:6px;font-size:11.5px;color:rgba(242,244,234,.9);padding:3px 0;}
   .br-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .br-level{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--gold);flex:none;min-width:56px;text-align:right;}
+  .br-level{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--gold);flex:none;min-width:72px;text-align:right;line-height:1.3;}
   .br-btn{
     width:22px;height:22px;border-radius:6px;border:none;background:rgba(255,255,255,.14);
     color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;flex:none;
@@ -788,20 +805,22 @@
   .buy-panel .bp-btns{display:flex;gap:10px;justify-content:center;}
   .buy-panel .bp-btns .action-btn{padding:9px 20px;font-size:13px;}
 
-  .log-panel{
-    width:100%;max-width:380px;flex:none;
-    background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.08);
-    border-radius:12px;padding:clamp(6px,calc(var(--board-px) * 0.015),12px) 12px clamp(8px,calc(var(--board-px) * 0.018),12px);
+  .highlights-panel{
+    flex:none;width:100%;max-width:720px;margin:0 auto;
+    background:linear-gradient(160deg,#173a22,#0c1f13);
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:14px;padding:10px 18px 12px;
+    box-shadow:0 10px 24px rgba(0,0,0,.35);
   }
-  .log-title{
-    font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
-    color:rgba(241,196,15,.75);text-align:center;margin-bottom:5px;font-weight:700;
+  .highlights-title{
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--gold);text-align:center;margin-bottom:6px;font-weight:700;
   }
   #log{
-    width:100%;max-height:clamp(40px,calc(var(--board-px) * 0.12),100px);overflow-y:auto;
-    font-size:clamp(10.5px,calc(var(--board-px) * 0.0195),12.5px);color:rgba(242,244,234,.7);line-height:1.5;text-align:center;
+    width:100%;max-height:120px;overflow-y:auto;
+    font-size:13px;color:rgba(242,244,234,.72);line-height:1.6;text-align:center;
   }
-  #log div{opacity:.85;padding:1px 0;}
+  #log div{opacity:.85;padding:2px 0;}
   #log div:last-child{color:#fff;font-weight:600;opacity:1;}
 
   .gameover-panel{
@@ -827,6 +846,9 @@
     .pc-props span{width:6px;height:6px;}
     .pc-status{font-size:9px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     #boardWrap{flex:1;width:100%;min-height:0;}
+    .main-area{flex:1;width:100%;min-height:0;gap:8px;}
+    .highlights-panel{padding:8px 14px 10px;}
+    #log{max-height:70px;font-size:11.5px;}
   }
   @media (max-width:600px){
     .topbar{padding:8px 10px;gap:6px;}
@@ -1012,8 +1034,14 @@
 
   <div class="layout">
     <div id="sidebar"></div>
-    <div id="boardWrap">
-      <div id="board"></div>
+    <div class="main-area">
+      <div id="boardWrap">
+        <div id="board"></div>
+      </div>
+      <div class="highlights-panel">
+        <div class="highlights-title">⚡ Moments forts</div>
+        <div id="log"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1051,7 +1079,7 @@
       <h3>🏗️ Monopole &amp; construction</h3>
       <p>Dès que vous possédez tout un groupe de clubs, un bouton <b>Construire</b> apparaît pendant votre tour : ajoutez des maisons (jusqu'à 4) puis un hôtel pour multiplier vos loyers. Vous pouvez aussi revendre une construction à moitié prix si vous manquez de liquidités.</p>
       <p>🧱 <b>Construction uniforme</b> : impossible de poser une 2ᵉ maison sur un club tant que chaque club du groupe n'en a pas reçu une première. L'hôtel ne s'achète (au prix d'une maison) qu'une fois les 4 maisons posées sur <b>tous</b> les clubs du groupe.</p>
-      <p>Le coût d'une maison dépend du standing du championnat : de €50 (Clubs Promus) à €200 (Élite Mondiale).</p>
+      <p>Le coût de la première maison dépend du standing du championnat : de €50 (Clubs Promus) à €200 (Élite Mondiale). Chaque maison suivante sur le <b>même club</b> coûte 25% de plus que la précédente (arrondi), jusqu'à l'hôtel.</p>
     </div>
 
     <div class="rules-section">
@@ -1192,6 +1220,15 @@
   };
   // Rent multiplier applied to the base rent once a property has N houses (5 = hotel).
   const HOUSE_RENT_MULT = {1:5, 2:15, 3:30, 4:40, 5:55};
+
+  // Progressive per-property house cost: each house already sitting on THIS
+  // property makes the next one +25% pricier (rounded to a clean €5), so a
+  // lone first house stays cheap but stacking them up gets steadily costlier
+  // — without spiralling out of control.
+  function houseCostAtLevel(group, level){
+    const raw = BUILD_COST[group] * Math.pow(1.25, level);
+    return Math.round(raw / 5) * 5;
+  }
 
   function prop(name, group, price){ return {name, type:'property', group, price, rent:Math.round(price/5)}; }
   function stadium(name){ return {name, type:'station', price:200}; }
@@ -1782,7 +1819,7 @@
     if(!ownsFullGroup(player.id, sp.group)) return;
     if(!canBuildHouse(idx)) return;
     const houses = state.houses[idx] || 0;
-    const cost = BUILD_COST[sp.group];
+    const cost = houseCostAtLevel(sp.group, houses);
     if(houses >= 5 || player.money < cost) return;
     player.money -= cost;
     state.houses[idx] = houses + 1;
@@ -1798,7 +1835,7 @@
     if(!canSellHouse(idx)) return;
     const houses = state.houses[idx] || 0;
     if(houses <= 0) return;
-    const refund = Math.round(BUILD_COST[sp.group] / 2);
+    const refund = Math.round(houseCostAtLevel(sp.group, houses - 1) / 2 / 5) * 5;
     player.money += refund;
     state.houses[idx] = houses - 1;
     pushLog(`🧾 ${player.name} revend une construction sur ${sp.name} (+€${refund}).`);
@@ -2053,10 +2090,6 @@
           </div>
           <div class="dice-sum" id="diceSum"></div>
           <div id="actionZone"></div>
-          <div class="log-panel">
-            <div class="log-title">Derniers événements</div>
-            <div id="log"></div>
-          </div>
         </div>
       </div>
     `;
@@ -2076,7 +2109,7 @@
     const rect = wrap.getBoundingClientRect();
     const avail = Math.min(rect.width, rect.height);
     if(avail <= 0) return;
-    const size = Math.max(300, Math.floor(avail) - 4);
+    const size = Math.max(320, Math.floor(avail) - 4);
     board.style.width = size + 'px';
     board.style.height = size + 'px';
     document.documentElement.style.setProperty('--board-px', size + 'px');
@@ -2089,6 +2122,17 @@
     renderSidebar();
     renderBoardDynamic();
     renderConsole();
+    renderHighlights();
+  }
+
+  // The event log now lives in its own panel below the board, independent of
+  // whatever's happening in the center console — so it never gets shoved
+  // around or hidden by build/trade panels anymore.
+  function renderHighlights(){
+    const logEl = document.getElementById('log');
+    if(!logEl) return;
+    logEl.innerHTML = state.log.slice(-10).map(m => `<div>${m}</div>`).join('');
+    logEl.scrollTop = logEl.scrollHeight;
   }
 
   let lastMoneyById = {};
@@ -2145,7 +2189,7 @@
     };
   }
   // Small offsets so several tokens sharing one cell fan out instead of stacking exactly.
-  const TOKEN_CLUSTER_OFFSETS = [[0,0],[8,-8],[-8,8],[8,8],[-8,-8],[0,11]];
+  const TOKEN_CLUSTER_OFFSETS = [[0,0],[10,-10],[-10,10],[10,10],[-10,-10],[0,14]];
 
   function positionAllTokens(skipAnim){
     const layer = document.getElementById('tokenLayer');
@@ -2207,13 +2251,6 @@
     positionAllTokens(false);
   }
 
-  // Hides the log panel while a tall panel (build/trade builder) is open in
-  // the action zone, so it doesn't keep shifting position underneath it.
-  function setLogPanelVisible(visible){
-    const panel = document.querySelector('.log-panel');
-    if(panel) panel.style.display = visible ? '' : 'none';
-  }
-
   function renderConsole(){
     const cp = currentPlayer();
     const myTurn = isMyTurn();
@@ -2243,10 +2280,15 @@
     const zone = document.getElementById('actionZone');
     if(!zone) return;
     zone.innerHTML = '';
-    setLogPanelVisible(true);
 
     if(state.phase === 'gameover'){
       ensureGameOverPanel();
+      return;
+    }
+
+    const myP = state.myId !== null ? state.players[state.myId] : null;
+    if(myP && myP.bankrupt){
+      zone.innerHTML = `<div class="spectator-note">👀 Vous avez fait faillite — la partie continue sans vous, vous pouvez suivre la suite en mode spectateur.</div>`;
       return;
     }
 
@@ -2278,16 +2320,10 @@
       } else {
         zone.innerHTML = `<div class="waiting-note">🤝 ${proposer ? proposer.name : '...'} propose un échange à <b>${partner ? partner.name : '...'}</b>…</div>`;
       }
-      const logEl = document.getElementById('log');
-      if(logEl){
-        logEl.innerHTML = state.log.slice(-6).map(m => `<div>${m}</div>`).join('');
-        logEl.scrollTop = logEl.scrollHeight;
-      }
       return;
     }
 
     if(state.buildOpen && cp && myTurn){
-      setLogPanelVisible(false);
       zone.innerHTML = `
         <div class="build-header">🏗️ Constructions <button class="build-close" id="buildCloseBtn">Fermer ✕</button></div>
         ${renderBuildPanelHTML(cp)}
@@ -2308,7 +2344,6 @@
     }
 
     if(state.trade && cp && myTurn){
-      setLogPanelVisible(false);
       zone.innerHTML = renderTradePanelHTML(cp);
       const tCloseBtn = document.getElementById('tradeCloseBtn');
       if(tCloseBtn) tCloseBtn.addEventListener('click', () => { closeTrade(); renderConsole(); });
@@ -2394,12 +2429,6 @@
       tradeBtn.addEventListener('click', () => { openTrade(); renderConsole(); });
       zone.appendChild(tradeBtn);
     }
-
-    const logEl = document.getElementById('log');
-    if(logEl){
-      logEl.innerHTML = state.log.slice(-6).map(m => `<div>${m}</div>`).join('');
-      logEl.scrollTop = logEl.scrollHeight;
-    }
   }
 
   function renderBuildPanelHTML(player){
@@ -2407,17 +2436,17 @@
     if(groups.length === 0){
       return `<div class="build-empty">Vous ne possédez encore aucun groupe complet de clubs.</div>`;
     }
-    let html = '<div class="build-rule-hint">🧱 Construction uniforme : chaque club du groupe doit recevoir sa maison avant de passer au niveau suivant.</div>';
+    let html = '<div class="build-rule-hint">🧱 Construction uniforme : chaque club du groupe doit recevoir sa maison avant de passer au niveau suivant. Chaque maison en plus sur un même club coûte 25% de plus que la précédente.</div>';
     html += '<div class="build-panel">';
     groups.forEach(g => {
-      const cost = BUILD_COST[g];
       html += `<div class="build-group">
-        <div class="build-group-title"><span class="build-swatch glyph-${g}"></span> ${GROUP_LABEL[g]} · €${cost} / niveau</div>`;
+        <div class="build-group-title"><span class="build-swatch glyph-${g}"></span> ${GROUP_LABEL[g]} · à partir de €${BUILD_COST[g]}</div>`;
       BOARD.forEach((sp, idx) => {
         if(sp.type === 'property' && sp.group === g){
           const houses = state.houses[idx] || 0;
           const label = houses === 5 ? 'Hôtel' : houses > 0 ? `${houses} maison${houses > 1 ? 's' : ''}` : 'Aucune construction';
-          const affordBuild = houses < 5 && player.money >= cost;
+          const nextCost = houses < 5 ? houseCostAtLevel(g, houses) : null;
+          const affordBuild = nextCost !== null && player.money >= nextCost;
           const ruleAllowsBuild = canBuildHouse(idx);
           const canBuild = affordBuild && ruleAllowsBuild;
           const canSell = canSellHouse(idx);
@@ -2425,7 +2454,7 @@
             : (!ruleAllowsBuild ? 'Construisez d\u2019abord sur les autres clubs du groupe (règle de construction uniforme)' : '');
           html += `<div class="build-row">
             <div class="br-name">${sp.name}</div>
-            <div class="br-level">${label}</div>
+            <div class="br-level">${label}${nextCost !== null ? ` · €${nextCost}` : ''}</div>
             <button class="br-btn br-minus" data-idx="${idx}" ${canSell ? '' : 'disabled'}>−</button>
             <button class="br-btn br-plus" data-idx="${idx}" ${canBuild ? '' : 'disabled'}${buildTitle ? ` title="${buildTitle}"` : ''}>+</button>
           </div>`;
@@ -2652,8 +2681,13 @@
   }
 
   function finishResolution(player, isDouble){
-    if(player.bankrupt){ renderAll(); pushState(); return; }
     if(state.phase === 'gameover'){ renderAll(); pushState(); return; }
+    if(player.bankrupt){
+      // Game continues with the remaining players — move on instead of
+      // leaving state.current stuck pointing at the eliminated player.
+      advanceToNextPlayer();
+      return;
+    }
     if(isDouble){
       pushLog(`↻ Double ! ${player.name} rejoue.`);
       state.phase = 'ready';
