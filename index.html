@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Footopoly en ligne — Édition Champions</title>
+<title>MultiPoly — Édition Champions</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/mqtt@5/dist/mqtt.min.js"></script>
@@ -21,13 +21,14 @@
     --pitch:#2f9e44;
     --line:rgba(32,40,31,0.16);
     --shadow:0 10px 30px rgba(8,16,10,0.35);
-    --promus:#9c8465; --eredivisie:#e8842e; --portugal:#2f9e44; --seriea:#2f8fd1;
-    --bundesliga:#c0392b; --laliga:#f1c40f; --premier:#6c5ce7; --elite:#1f2a52;
+    --group-0:#9c8465; --group-1:#e8842e; --group-2:#2f9e44; --group-3:#2f8fd1;
+    --group-4:#c0392b; --group-5:#f1c40f; --group-6:#6c5ce7; --group-7:#1f2a52;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;height:100%;touch-action:manipulation;overscroll-behavior:none;}
   body{
     min-height:100vh;
+    min-height:100dvh;
     background:
       repeating-linear-gradient(115deg, rgba(255,255,255,.015) 0 46px, transparent 46px 92px),
       radial-gradient(1200px 700px at 15% -10%, #1c3a24 0%, transparent 60%),
@@ -53,77 +54,10 @@
     clip-path:polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%);transform:translate(-50%,-50%);
   }
 
-  /* Slot for your own sourced logo images (see LOGO_MAP in the script) */
-  .cell-logo{width:60%;height:60%;object-fit:contain;flex:none;}
-
-  /* ---------- Original shield / card badges (no copied club or league artwork) ---------- */
-  .medal{
-    width:clamp(12px,calc(var(--board-px) * 0.03),24px);
-    height:clamp(12px,calc(var(--board-px) * 0.03),24px);
-    flex:none;position:relative;
-    display:flex;align-items:center;justify-content:center;overflow:hidden;
-    filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));
-  }
-  .medal .glyph{
-    width:100%;height:100%;position:relative;overflow:hidden;
-    clip-path:polygon(50% 0%,84% 0%,100% 19%,100% 54%,50% 100%,0% 54%,0% 19%,16% 0%);
-    border:1.5px solid var(--ink);
-    box-shadow:inset 0 -4px 5px rgba(0,0,0,.3), inset 0 2px 2px rgba(255,255,255,.2);
-  }
-  .medal .glyph::before{
-    content:'';position:absolute;inset:0;pointer-events:none;
-    background:linear-gradient(150deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,.12) 32%, transparent 58%);
-  }
-  .medal.medal-lg{width:32px;height:32px;}
-  .medal.medal-lg .glyph{border-width:2px;}
-  .glyph-promus{background:linear-gradient(160deg,#c9b494,var(--promus) 78%);}
-  .glyph-eredivisie{background:linear-gradient(160deg,#ffbf78,var(--eredivisie) 78%);}
-  .glyph-portugal{background:linear-gradient(160deg,#8fd6a0,var(--portugal) 78%);}
-  .glyph-seriea{background:linear-gradient(160deg,#a9d3f5,var(--seriea) 78%);}
-  .glyph-bundesliga{background:linear-gradient(160deg,#ef8f84,var(--bundesliga) 78%);}
-  .glyph-laliga{background:linear-gradient(160deg,#fbe57e,var(--laliga) 78%);}
-  .glyph-premier{background:linear-gradient(160deg,#b6a9f5,var(--premier) 78%);}
-  .glyph-elite{background:linear-gradient(160deg,#4a5a8f,var(--elite) 78%);}
-  .glyph-elite::after{content:'★';position:absolute;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;
-    color:var(--gold);font-size:9px;top:2px;text-shadow:0 1px 1px rgba(0,0,0,.4);}
-  .glyph-stadium{background:linear-gradient(160deg,#e3e3e3,#8f8f8f 80%);}
-  .glyph-stadium::after{content:'';position:absolute;left:22%;right:22%;top:38%;height:34%;border:1.4px solid #fff;border-radius:50%;z-index:1;}
-  .glyph-sponsor{background:linear-gradient(160deg,#fff0b0,#c9a63c 80%);display:flex;align-items:center;justify-content:center;
-    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:10px;color:#5a4a12;}
-  .glyph-tax{background:linear-gradient(160deg,#e6e6e6,#a3a3a3 80%);display:flex;align-items:center;justify-content:center;
-    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:10px;color:#4a4a4a;}
-  .medal-corner{
-    width:clamp(18px,calc(var(--board-px) * 0.042),32px);
-    height:clamp(18px,calc(var(--board-px) * 0.042),32px);
-  }
-  .medal-corner .glyph{border-width:2px;}
-  .glyph-kickoff{background:linear-gradient(160deg,#8fd6a0,var(--pitch) 80%);}
-  .glyph-kickoff::after{content:'';position:absolute;top:50%;left:50%;width:32%;height:32%;background:#fff;z-index:1;
-    border:1.4px solid var(--ink);border-radius:50%;transform:translate(-50%,-50%);}
-  .glyph-bench{background:repeating-linear-gradient(90deg,#4a4a4a 0 3px,#c9c9c9 3px 7px);}
-  .glyph-halftime{background:linear-gradient(160deg,#a9dcf5,var(--seriea) 80%);display:flex;align-items:center;justify-content:center;
-    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:11px;color:#fff;}
-
-  /* Yellow / red card icons for the event-draw spaces */
-  .card-icon{
-    width:13px;height:18px;border-radius:2px;background:linear-gradient(160deg,#fff3b0,var(--gold) 60%);
-    border:1.4px solid var(--ink);flex:none;box-shadow:0 2px 3px rgba(0,0,0,.3), inset 0 -3px 4px rgba(0,0,0,.15);
-  }
-  .card-icon.red{background:linear-gradient(160deg,#ff9d8a,var(--red) 60%);}
-  .transfer-icon{
-    width:18px;height:18px;border-radius:50%;flex:none;position:relative;overflow:hidden;
-    background:linear-gradient(160deg,#8fb3ef,#3d6fc9);color:#fff;
-    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;
-    border:1.4px solid var(--ink);box-shadow:0 2px 3px rgba(0,0,0,.3), inset 0 -3px 4px rgba(0,0,0,.2);
-  }
-  .transfer-icon::before{
-    content:'';position:absolute;inset:0;pointer-events:none;
-    background:linear-gradient(150deg, rgba(255,255,255,.5) 0%, transparent 55%);
-  }
-
   /* ================= LANDING & LOBBY SCREENS ================= */
   #lobby, #localSetup{
     min-height:100vh;
+    min-height:100dvh;
     display:flex;align-items:center;justify-content:center;
     padding:32px 16px;position:relative;z-index:1;
   }
@@ -195,7 +129,7 @@
 
   /* ---------------- HERO (landing screen only) ---------------- */
   #landing{
-    position:relative;z-index:1;min-height:100vh;
+    position:relative;z-index:1;min-height:100vh;min-height:100dvh;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     padding:48px 20px 40px;gap:30px;
   }
@@ -282,6 +216,11 @@
     color:#fff;margin:6px 0 2px;text-shadow:0 3px 0 rgba(0,0,0,.2);
     word-break:break-all;
   }
+  .lobby-theme-badge{
+    display:inline-flex;align-items:center;gap:6px;margin-top:10px;
+    background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);
+    border-radius:999px;padding:5px 14px;font-size:12px;font-weight:700;color:#fff;
+  }
   .setup-body{padding:26px 28px 30px;}
   .field-label{
     font-size:12px;text-transform:uppercase;letter-spacing:.09em;
@@ -316,6 +255,14 @@
     flex:1;border:none;outline:none;font-size:15px;font-weight:600;
     color:var(--ink);background:transparent;min-width:0;
   }
+  .bot-toggle{
+    width:36px;height:36px;border-radius:10px;flex:none;
+    display:flex;align-items:center;justify-content:center;font-size:16px;
+    border:2px solid var(--parchment-dark);background:#fff;opacity:.4;
+    transition:all .15s ease;
+  }
+  .bot-toggle:hover{opacity:.7;}
+  .bot-toggle.active{opacity:1;border-color:var(--gold);background:rgba(241,196,15,.15);}
   .row-money{margin-bottom:22px;}
   .money-input-wrap{
     display:flex;align-items:center;gap:8px;background:#fff;
@@ -368,7 +315,18 @@
   .token-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
   .token-row .token-pick{cursor:pointer;opacity:.45;transition:all .15s ease;}
   .token-row .token-pick.picked{opacity:1;transform:scale(1.1);box-shadow:0 0 0 3px var(--gold);}
-  .token-preview{font-size:11.5px;color:var(--ink-soft);font-weight:600;margin:-8px 0 16px;text-align:center;}
+  .token-row .token-pick.taken{opacity:.2;cursor:not-allowed;filter:grayscale(1);}
+  .token-row .token-pick.taken:hover{opacity:.2;}
+  .theme-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+  .theme-pick{
+    flex:1 1 90px;display:flex;flex-direction:column;align-items:center;gap:3px;
+    background:#fff;border:2px solid var(--parchment-dark);border-radius:12px;
+    padding:10px 6px;cursor:pointer;transition:all .15s ease;
+  }
+  .theme-pick:hover{border-color:var(--pitch);}
+  .theme-pick.picked{border-color:var(--gold);background:rgba(241,196,15,.1);box-shadow:0 0 0 2px rgba(241,196,15,.35);}
+  .theme-pick-icon{font-size:22px;line-height:1;}
+  .theme-pick-label{font-size:11px;font-weight:700;color:var(--ink);text-align:center;}
   .form-error{color:var(--red);font-size:12.5px;font-weight:600;text-align:center;margin-top:10px;min-height:16px;}
   .copy-btn{margin-top:0;}
   .lobby-players{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;min-height:40px;}
@@ -471,6 +429,10 @@
   }
   .pc-name{font-weight:700;font-size:12.5px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .you-tag{font-weight:700;font-size:9.5px;color:var(--pitch);text-transform:uppercase;letter-spacing:.04em;}
+  .bot-tag{
+    font-weight:700;font-size:9px;color:#fff;background:#6c5ce7;
+    padding:1px 5px;border-radius:5px;letter-spacing:.03em;
+  }
   .pc-money{
     font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14.5px;color:#1e7a2f;
     display:inline-block;
@@ -536,21 +498,20 @@
   .cell.edge-top .bar{position:absolute;left:0;right:0;bottom:0;top:auto;width:auto;}
   .cell-body{
     flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    padding:1px 2px;text-align:center;overflow:hidden;min-height:0;
-    gap:clamp(1px,calc(var(--board-px) * 0.003),3px);
+    padding:1px 3px;text-align:center;overflow:hidden;min-height:0;
+    gap:clamp(1px,calc(var(--board-px) * 0.004),4px);
   }
-  .cell-top-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:clamp(2px,calc(var(--board-px) * 0.006),5px);}
   .cell-name{
     font-weight:700;color:var(--ink);word-break:break-word;max-width:100%;
-    font-size:clamp(7.5px,calc(var(--board-px) * 0.019),13.5px);
-    line-height:1.1;
+    font-size:clamp(6.5px,calc(var(--board-px) * 0.022 * var(--name-scale, 1)),17.5px);
+    line-height:1.12;
   }
   .cell-price{
     font-family:'JetBrains Mono',monospace;color:var(--ink-soft);font-weight:700;
-    font-size:clamp(6.5px,calc(var(--board-px) * 0.015),10.5px);
+    font-size:clamp(7px,calc(var(--board-px) * 0.017),11.5px);
   }
   .cell.corner{border-radius:9px;background:#f2f6ea;}
-  .cell.corner .cell-name{font-size:clamp(8px,calc(var(--board-px) * 0.021),14.5px);}
+  .cell.corner .cell-name{font-size:clamp(7px,calc(var(--board-px) * 0.024 * var(--name-scale, 1)),19px);}
   .cell-owner-dot{position:absolute;bottom:2px;right:2px;width:7px;height:7px;border-radius:50%;border:1px solid var(--ink);}
   .cell-houses{display:flex;gap:1.5px;justify-content:center;}
   .cell-houses:not(:empty){margin-top:1px;}
@@ -931,7 +892,7 @@
       </div>
     </div>
     <div class="hero-eyebrow">Édition Champions</div>
-    <h1 class="hero-title">FOOTOPOLY</h1>
+    <h1 class="hero-title">MULTIPOLY</h1>
     <p class="hero-tagline">Achetez, vendez, dominez le mercato — entre amis, où que vous soyez.</p>
     <div class="feature-strip">
       <span class="feature-pill">⏱️ 60s / tour</span>
@@ -973,11 +934,10 @@
     </div>
 
     <div id="createForm" class="landing-form" style="display:none">
+      <span class="field-label">Univers</span>
+      <div class="theme-row" id="createThemeRow"></div>
       <span class="field-label">Votre nom</span>
       <input type="text" id="createName" maxlength="16" placeholder="Président 1" class="text-input">
-      <span class="field-label">Votre emblème</span>
-      <div class="token-row" id="createTokenRow"></div>
-      <div class="token-preview" id="createTokenPreview"></div>
       <span class="field-label">Budget de départ</span>
       <div class="money-input-wrap">
         <span>€</span>
@@ -993,9 +953,6 @@
       <input type="text" id="joinCode" maxlength="6" placeholder="EX: PL4Y2" class="text-input code-input">
       <span class="field-label">Votre nom</span>
       <input type="text" id="joinName" maxlength="16" placeholder="Président 2" class="text-input">
-      <span class="field-label">Votre emblème</span>
-      <div class="token-row" id="joinTokenRow"></div>
-      <div class="token-preview" id="joinTokenPreview"></div>
       <button class="start-btn" id="joinConfirmBtn" type="button">Rejoindre ▶</button>
       <div id="joinError" class="form-error"></div>
       <button class="form-back form-back-bottom" type="button" data-back-form>← Retour</button>
@@ -1011,10 +968,13 @@
   <div class="setup-card">
     <div class="setup-banner">
       <div class="eyebrow">Partie locale</div>
-      <h1>FOOTOPOLY</h1>
+      <h1>MULTIPOLY</h1>
       <p>Un seul appareil, à faire tourner entre vous.</p>
     </div>
     <div class="setup-body">
+      <span class="field-label">Univers</span>
+      <div class="theme-row" id="localThemeRow"></div>
+
       <span class="field-label">Nombre de Présidents</span>
       <div class="stepper">
         <button id="localDecBtn" type="button" aria-label="Moins de joueurs">−</button>
@@ -1022,7 +982,7 @@
         <button id="localIncBtn" type="button" aria-label="Plus de joueurs">+</button>
       </div>
 
-      <span class="field-label">Présidents de club</span>
+      <span class="field-label">Présidents</span>
       <div id="localPlayerRows"></div>
 
       <div class="row-money">
@@ -1047,10 +1007,15 @@
       <p class="code-label">Code de la partie</p>
       <div class="code-display" id="lobbyCode">— — — — —</div>
       <p>Partage ce code avec les autres Présidents</p>
+      <div class="lobby-theme-badge" id="lobbyThemeBadge"></div>
     </div>
     <div class="setup-body">
       <button class="start-btn start-btn-alt copy-btn" id="copyCodeBtn" type="button">📋 Copier le code</button>
-      <span class="field-label" style="margin-top:18px;">Présidents dans le salon</span>
+
+      <span class="field-label" style="margin-top:18px;">Votre emblème</span>
+      <div class="token-row" id="lobbyTokenRow"></div>
+
+      <span class="field-label">Présidents dans le salon</span>
       <div id="lobbyPlayers" class="lobby-players"></div>
 
       <div id="lobbyHostControls" style="display:none">
@@ -1072,7 +1037,7 @@
 <!-- ============ GAME SCREEN ============ -->
 <div id="game">
   <div class="topbar">
-    <div class="topbar-title"><div class="footballicon"></div> <span class="topbar-word">FOOTOPOLY</span> <span class="topbar-code" id="topbarCode"></span></div>
+    <div class="topbar-title"><div class="footballicon"></div> <span class="topbar-word">MULTIPOLY</span> <span class="topbar-code" id="topbarCode"></span></div>
     <div class="turn-pill" id="turnPill"></div>
     <div class="topbar-right">
       <button class="reset-btn" id="rulesBtn" type="button">📖 Règles</button>
@@ -1102,11 +1067,11 @@
 <div id="rulesOverlay" class="rules-overlay" style="display:none">
   <div class="rules-card">
     <button class="rules-close" id="rulesCloseBtn" type="button">✕</button>
-    <h2>📖 Comment jouer à Footopoly</h2>
+    <h2>📖 Comment jouer à MultiPoly</h2>
 
     <div class="rules-section">
       <h3>🎯 Objectif</h3>
-      <p>Devenez le dernier Président de club encore solvable. Achetez des clubs, développez-les avec des maisons et un hôtel, et ruinez vos adversaires grâce aux loyers.</p>
+      <p>Devenez le dernier Président encore solvable. Achetez des propriétés, développez-les avec des maisons et un hôtel, et ruinez vos adversaires grâce aux loyers.</p>
     </div>
 
     <div class="rules-section">
@@ -1118,49 +1083,49 @@
     </div>
 
     <div class="rules-section">
-      <h3>💶 Acheter un club</h3>
+      <h3>💶 Acheter une propriété</h3>
       <p>Si la case est libre, vous pouvez l'acheter au prix affiché. Si vous refusez, elle reste disponible pour le prochain joueur qui s'y arrête.</p>
     </div>
 
     <div class="rules-section">
       <h3>🏟️ Payer un loyer</h3>
-      <p>Si un adversaire possède la case, vous lui payez automatiquement un loyer. Il double si l'adversaire possède tout le championnat (le groupe de couleur), et grimpe encore plus s'il y a des maisons ou un hôtel construits.</p>
+      <p>Si un adversaire possède la case, vous lui payez automatiquement un loyer. Il double si l'adversaire possède tout le groupe de couleur, et grimpe encore plus s'il y a des maisons ou un hôtel construits.</p>
     </div>
 
     <div class="rules-section">
       <h3>🏗️ Monopole &amp; construction</h3>
-      <p>Dès que vous possédez tout un groupe de clubs, un bouton <b>Construire</b> apparaît pendant votre tour : ajoutez des maisons (jusqu'à 4) puis un hôtel pour multiplier vos loyers. Vous pouvez aussi revendre une construction à moitié prix si vous manquez de liquidités.</p>
-      <p>🧱 <b>Construction uniforme</b> : impossible de poser une 2ᵉ maison sur un club tant que chaque club du groupe n'en a pas reçu une première. L'hôtel ne s'achète (au prix d'une maison) qu'une fois les 4 maisons posées sur <b>tous</b> les clubs du groupe.</p>
-      <p>Le coût de la première maison dépend du standing du championnat : de €50 (Clubs Promus) à €200 (Élite Mondiale). Chaque maison suivante sur le <b>même club</b> coûte 25% de plus que la précédente (arrondi), jusqu'à l'hôtel.</p>
+      <p>Dès que vous possédez tout un groupe de propriétés, un bouton <b>Construire</b> apparaît pendant votre tour : ajoutez des maisons (jusqu'à 4) puis un hôtel pour multiplier vos loyers. Vous pouvez aussi revendre une construction à moitié prix si vous manquez de liquidités.</p>
+      <p>🧱 <b>Construction uniforme</b> : impossible de poser une 2ᵉ maison sur une propriété tant que chaque propriété du groupe n'en a pas reçu une première. L'hôtel ne s'achète (au prix d'une maison) qu'une fois les 4 maisons posées sur <b>toutes</b> les propriétés du groupe.</p>
+      <p>Le coût de la première maison dépend du standing du groupe : de €50 (le moins cher) à €200 (le plus prestigieux). Chaque maison suivante sur la <b>même propriété</b> coûte 25% de plus que la précédente (arrondi), jusqu'à l'hôtel.</p>
     </div>
 
     <div class="rules-section">
-      <h3>🚉 Loyer des stades</h3>
-      <p>Le loyer d'un stade dépend du nombre de stades que vous possédez : €25 pour 1, €50 pour 2, €100 pour 3, €200 pour les 4.</p>
+      <h3>🚉 Loyer des stations</h3>
+      <p>Le loyer d'une station dépend du nombre de stations que vous possédez : €25 pour 1, €50 pour 2, €100 pour 3, €200 pour les 4.</p>
     </div>
 
     <div class="rules-section">
       <h3>🤝 Échanger entre joueurs</h3>
-      <p>Le bouton <b>Échanger</b> vous permet de proposer un club (ou de l'argent) contre un club d'un adversaire — utile pour compléter un championnat. Un club avec des maisons ne peut pas être échangé : revendez d'abord ses constructions.</p>
+      <p>Le bouton <b>Échanger</b> vous permet de proposer une propriété (ou de l'argent) contre une propriété d'un adversaire — utile pour compléter un groupe. Une propriété avec des maisons ne peut pas être échangée : revendez d'abord ses constructions.</p>
     </div>
 
     <div class="rules-section">
       <h3>🃏 Cartes événements</h3>
-      <p><b>🟨 Carton Jaune</b> : petit imprévu, gain ou perte modérée.<br>
-      <b>🔄 Transfert</b> : événement plus important, parfois un aller direct aux vestiaires.</p>
+      <p>🟨 <b id="ruleMinorDeck">Carton Jaune</b> : petit imprévu, gain ou perte modérée.<br>
+      🔄 <b id="ruleMajorDeck">Transfert</b> : événement plus important, parfois un aller direct en prison.</p>
     </div>
 
     <div class="rules-section">
       <h3>📍 Cases spéciales</h3>
-      <p><b>COUP D'ENVOI</b> : passez ici pour toucher €200.<br>
-      <b>VESTIAIRES</b> : simple visite, sauf si vous y êtes envoyé — vous passez alors un tour.<br>
-      <b>MI-TEMPS</b> : pause, rien ne se passe.<br>
-      <b>CARTON ROUGE</b> : direction les vestiaires, vous manquez votre prochain tour.</p>
+      <p><b id="ruleCornerGo">DÉPART</b> : passez ici pour toucher €200.<br>
+      <b id="ruleCornerJail">PRISON</b> : simple visite, sauf si vous y êtes envoyé — vous passez alors un tour.<br>
+      <b id="ruleCornerFree">REPOS</b> : pause, rien ne se passe.<br>
+      <b id="ruleCornerGoJail">RENVOI</b> : direction la case précédente, vous manquez votre prochain tour.</p>
     </div>
 
     <div class="rules-section">
       <h3>💀 Faillite &amp; victoire</h3>
-      <p>Si vous ne pouvez plus payer une dette, votre club fait faillite : vos biens repartent à la banque et vous quittez la partie. Le dernier Président encore debout remporte la partie !</p>
+      <p>Si vous ne pouvez plus payer une dette, vous faites faillite : vos biens repartent à la banque et vous quittez la partie. Le dernier Président encore debout remporte la partie !</p>
     </div>
   </div>
 </div>
@@ -1181,7 +1146,7 @@
      anything sensitive.
   --------------------------------------------------------------------- */
   const MQTT_BROKER_URL = 'wss://broker.hivemq.com:8884/mqtt';
-  const TOPIC_PREFIX = 'footopoly-app-v1/rooms/';
+  const TOPIC_PREFIX = 'multipoly-app-v1/rooms/';
   let mqttClient = null;
   let MQTT_READY = false;
   let currentTopic = null;
@@ -1204,7 +1169,7 @@
     setConnStatus('connecting', '🔌 Connexion au serveur multijoueur…');
     try {
       mqttClient = mqtt.connect(MQTT_BROKER_URL, {
-        clientId: 'footopoly-' + Math.random().toString(16).slice(2),
+        clientId: 'multipoly-' + Math.random().toString(16).slice(2),
         clean: true,
         reconnectPeriod: 2000,
         connectTimeout: 8000,
@@ -1247,29 +1212,17 @@
     mqttClient.publish(TOPIC_PREFIX + code, JSON.stringify(room), { retain: true, qos: 1 }, cb || function(){});
   }
 
-  /* ---------------- TOKENS ---------------- */
-  const TOKENS = [
-    {e:'⚽', c:'#2f8fd1', name:'Ballon'},
-    {e:'🧤', c:'#c0392b', name:'Gant'},
-    {e:'👟', c:'#9c8465', name:'Crampon'},
-    {e:'🏆', c:'#f1c40f', name:'Trophée'},
-    {e:'🎽', c:'#6c5ce7', name:'Maillot'},
-    {e:'🥅', c:'#2f9e44', name:'Cage'},
-  ];
+  /* ---------------- GROUP COLOR SYSTEM (theme-agnostic) ----------------
+     Every theme uses 8 generic groups g0..g7 (g7 = priciest). Colors are
+     applied as CSS custom properties when a theme is selected, so cell bars,
+     owner dots, and build-panel swatches all pick up the right color for
+     whichever theme is active. */
+  const G = {g0:'--group-0', g1:'--group-1', g2:'--group-2', g3:'--group-3',
+             g4:'--group-4', g5:'--group-5', g6:'--group-6', g7:'--group-7'};
 
-  /* ---------------- BOARD DATA ---------------- */
-  const G = {promus:'--promus', eredivisie:'--eredivisie', portugal:'--portugal', seriea:'--seriea',
-             bundesliga:'--bundesliga', laliga:'--laliga', premier:'--premier', elite:'--elite'};
-
-  const GROUP_LABEL = {
-    promus:'Clubs Promus', eredivisie:'Eredivisie', portugal:'Liga Portugal', seriea:'Serie A',
-    bundesliga:'Bundesliga', laliga:'La Liga', premier:'Premier League', elite:'Élite Mondiale',
-  };
-  // Cost of one construction step (house 1→4, then hotel), scaled by group tier — same spirit as classic Monopoly.
-  const BUILD_COST = {
-    promus:50, eredivisie:50, portugal:100, seriea:100,
-    bundesliga:150, laliga:150, premier:200, elite:200,
-  };
+  // Cost of one construction step (house 1→4, then hotel), scaled by group
+  // tier — identical across every theme, only the group *names* differ.
+  const BUILD_COST = {g0:50, g1:50, g2:100, g3:100, g4:150, g5:150, g6:200, g7:200};
   // Rent multiplier applied to the base rent once a property has N houses (5 = hotel).
   const HOUSE_RENT_MULT = {1:5, 2:15, 3:30, 4:40, 5:55};
 
@@ -1283,88 +1236,275 @@
   }
 
   function prop(name, group, price){ return {name, type:'property', group, price, rent:Math.round(price/5)}; }
-  function stadium(name){ return {name, type:'station', price:200}; }
-  function sponsor(name){ return {name, type:'utility', price:150}; }
+  function station(name){ return {name, type:'station', price:200}; }
+  function utility(name){ return {name, type:'utility', price:150}; }
 
-  const BOARD = [
-    {name:'COUP D\u2019ENVOI', type:'go'},
-    prop('Le Havre','promus',60),
-    {name:'Carton', type:'pokeball'},
-    prop('Clermont','promus',60),
-    {name:'Taxe', type:'tax', amount:200},
-    stadium('Stade'),
-    prop('Ajax','eredivisie',100),
-    {name:'Carton', type:'pokeball'},
-    prop('PSV','eredivisie',100),
-    prop('Feyenoord','eredivisie',120),
-    {name:'VESTIAIRES', type:'jail'},
-    prop('Sporting','portugal',140),
-    sponsor('Diffuseur'),
-    prop('FC Porto','portugal',140),
-    prop('Benfica','portugal',160),
-    stadium('Wembley'),
-    prop('AC Milan','seriea',180),
-    {name:'Transfert', type:'chest'},
-    prop('Inter','seriea',180),
-    prop('Juventus','seriea',200),
-    {name:'MI-TEMPS', type:'freeparking'},
-    prop('Dortmund','bundesliga',220),
-    {name:'Carton', type:'pokeball'},
-    prop('Leipzig','bundesliga',220),
-    prop('Bayern','bundesliga',240),
-    stadium('Camp Nou'),
-    prop('Atlético','laliga',260),
-    prop('Barcelone','laliga',260),
-    sponsor('Sponsor'),
-    prop('Real Madrid','laliga',280),
-    {name:'CARTON ROUGE', type:'gotojail'},
-    prop('Chelsea','premier',300),
-    prop('Arsenal','premier',300),
-    {name:'Transfert', type:'chest'},
-    prop('Liverpool','premier',320),
-    stadium('San Siro'),
-    {name:'Carton', type:'pokeball'},
-    {name:'Amende', type:'tax', amount:100},
-    prop('Paris SG','elite',350),
-    prop('Man City','elite',400),
-  ];
+  /* ---------------- THEMES ----------------
+     Each theme is a fully self-contained board: its own 40 spaces, token
+     set, group colors/labels and event-card decks. Only original content —
+     real place names (cities, stadiums, stations) are factual, not
+     copyrighted, and every badge/icon is drawn in CSS, not copied artwork. */
+  const THEMES = {
 
-  const POKEBALL_CARDS = [
-    {text:"Vous recevez une prime de performance.", money:50},
-    {text:"Un sponsor vous félicite pour la victoire.", money:75},
-    {text:"Billetterie exceptionnelle ce week-end.", money:60},
-    {text:"Frais de déplacement pour un match à l'extérieur.", money:-40},
-    {text:"Amende pour retard à l'entraînement.", money:-30},
-    {text:"Vente de maillots dédicacés.", money:45},
-    {text:"Avancez jusqu'à COUP D'ENVOI et récupérez 200.", money:0, moveTo:0},
-    {text:"Frais de kinésithérapie pour un joueur blessé.", money:-50},
-  ];
-  const SUPERBALL_CARDS = [
-    {text:"Un agent véreux détourne des fonds du club !", money:-75},
-    {text:"Vous vendez un jeune talent de la réserve.", money:40},
-    {text:"Bourse de la Fédération pour la formation.", money:100},
-    {text:"Réparation de la pelouse après les intempéries.", money:-25},
-    {text:"Vous remportez la Coupe locale !", money:90},
-    {text:"Amende de l'UEFA pour fair-play financier.", money:-60},
-    {text:"Un mécène investit dans le club.", money:45},
-    {text:"Carton rouge direct : direction les vestiaires.", money:0, goToJail:true},
-  ];
+    football: {
+      id:'football', label:'Football', icon:'⚽',
+      tagline:"Achetez, vendez, dominez le mercato — entre amis, où que vous soyez.",
+      tokens:[
+        {e:'⚽', c:'#2f8fd1', name:'Ballon'},
+        {e:'🧤', c:'#c0392b', name:'Gant'},
+        {e:'👟', c:'#9c8465', name:'Crampon'},
+        {e:'🏆', c:'#f1c40f', name:'Trophée'},
+        {e:'🎽', c:'#6c5ce7', name:'Maillot'},
+        {e:'🥅', c:'#2f9e44', name:'Cage'},
+      ],
+      groupColors:['#9c8465','#e8842e','#2f9e44','#2f8fd1','#c0392b','#f1c40f','#6c5ce7','#1f2a52'],
+      groupLabels:{g0:'Clubs Promus', g1:'Eredivisie', g2:'Liga Portugal', g3:'Serie A',
+                   g4:'Bundesliga', g5:'La Liga', g6:'Premier League', g7:'Élite Mondiale'},
+      minorDeckName:'Carton Jaune', majorDeckName:'Transfert',
+      minorCards:[
+        {text:"Vous recevez une prime de performance.", money:50},
+        {text:"Un sponsor vous félicite pour la victoire.", money:75},
+        {text:"Billetterie exceptionnelle ce week-end.", money:60},
+        {text:"Frais de déplacement pour un match à l'extérieur.", money:-40},
+        {text:"Amende pour retard à l'entraînement.", money:-30},
+        {text:"Vente de maillots dédicacés.", money:45},
+        {text:"Avancez jusqu'à DÉPART et récupérez 200.", money:0, moveTo:0},
+        {text:"Frais de kinésithérapie pour un joueur blessé.", money:-50},
+      ],
+      majorCards:[
+        {text:"Un agent véreux détourne des fonds du club !", money:-75},
+        {text:"Vous vendez un jeune talent de la réserve.", money:40},
+        {text:"Bourse de la Fédération pour la formation.", money:100},
+        {text:"Réparation de la pelouse après les intempéries.", money:-25},
+        {text:"Vous remportez la Coupe locale !", money:90},
+        {text:"Amende de l'UEFA pour fair-play financier.", money:-60},
+        {text:"Un mécène investit dans le club.", money:45},
+        {text:"Carton rouge direct : direction les vestiaires.", money:0, goToJail:true},
+      ],
+      board:[
+        {name:'DÉPART', type:'go'},
+        prop('Le Havre','g0',60),
+        {name:'Carton', type:'pokeball'},
+        prop('Clermont','g0',60),
+        {name:'Taxe', type:'tax', amount:200},
+        station('Stade'),
+        prop('Ajax','g1',100),
+        {name:'Carton', type:'pokeball'},
+        prop('PSV','g1',100),
+        prop('Feyenoord','g1',120),
+        {name:'VESTIAIRES', type:'jail'},
+        prop('Sporting','g2',140),
+        utility('Diffuseur'),
+        prop('FC Porto','g2',140),
+        prop('Benfica','g2',160),
+        station('Wembley'),
+        prop('AC Milan','g3',180),
+        {name:'Transfert', type:'chest'},
+        prop('Inter','g3',180),
+        prop('Juventus','g3',200),
+        {name:'MI-TEMPS', type:'freeparking'},
+        prop('Dortmund','g4',220),
+        {name:'Carton', type:'pokeball'},
+        prop('Leipzig','g4',220),
+        prop('Bayern','g4',240),
+        station('Camp Nou'),
+        prop('Atlético','g5',260),
+        prop('Barcelone','g5',260),
+        utility('Sponsor'),
+        prop('Real Madrid','g5',280),
+        {name:'CARTON ROUGE', type:'gotojail'},
+        prop('Chelsea','g6',300),
+        prop('Arsenal','g6',300),
+        {name:'Transfert', type:'chest'},
+        prop('Liverpool','g6',320),
+        station('San Siro'),
+        {name:'Carton', type:'pokeball'},
+        {name:'Amende', type:'tax', amount:100},
+        prop('Paris SG','g7',350),
+        prop('Man City','g7',400),
+      ],
+    },
 
-  /* ---------------------------------------------------------------------
-     OPTIONAL: your own logo images.
-     I can't ship real club/league crests (they're trademarked), but if you
-     source your own image files (e.g. from each club's official press/media
-     page, respecting their usage terms for your school project), drop them
-     next to this HTML file in a folder named "assets", then list them here.
-     The exact key must match the space's name in BOARD above.
-     Example:
-       'Real Madrid': 'assets/real-madrid.png',
-       'Barcelone': 'assets/barcelone.png',
-     Anything left out just keeps the original drawn shield badge.
-  --------------------------------------------------------------------- */
-  const LOGO_MAP = {
-    // 'Real Madrid': 'assets/real-madrid.png',
+    world:{
+      id:'world', label:'Monde', icon:'🌍',
+      tagline:"Traversez les continents et bâtissez votre empire de voyage.",
+      tokens:[
+        {e:'🌍', c:'#3d9dbf', name:'Globe'},
+        {e:'✈️', c:'#5b7fd1', name:'Avion'},
+        {e:'🎒', c:'#5fae6b', name:'Sac à dos'},
+        {e:'📷', c:'#c9a63c', name:'Appareil photo'},
+        {e:'🧳', c:'#a97c50', name:'Valise'},
+        {e:'🗺️', c:'#9b6bc9', name:'Carte'},
+      ],
+      groupColors:['#a97c50','#e08283','#dba13d','#5fae6b','#3d9dbf','#5b7fd1','#9b6bc9','#c9a63c'],
+      groupLabels:{g0:'Afrique du Nord', g1:'Afrique', g2:'Asie du Sud-Est', g3:'Amérique Latine',
+                   g4:'Moyen-Orient', g5:'Europe', g6:'Asie-Pacifique', g7:'Mégapoles'},
+      minorDeckName:'Visa', majorDeckName:'Voyage',
+      minorCards:[
+        {text:"Vous obtenez un visa touristique gratuit.", money:50},
+        {text:"Un ami local vous héberge pendant votre voyage.", money:40},
+        {text:"Vous trouvez un vol pas cher au dernier moment.", money:60},
+        {text:"Bagages perdus à l'aéroport.", money:-40},
+        {text:"Amende pour photo interdite dans un lieu sacré.", money:-30},
+        {text:"Vous revendez des souvenirs locaux.", money:45},
+        {text:"Avancez jusqu'à DÉPART et récupérez 200.", money:0, moveTo:0},
+        {text:"Vaccins obligatoires avant le départ.", money:-50},
+      ],
+      majorCards:[
+        {text:"Un guide malhonnête vous escroque !", money:-75},
+        {text:"Vous vendez vos photos de voyage à un magazine.", money:40},
+        {text:"Bourse pour un échange culturel.", money:100},
+        {text:"Réparation de votre valise cassée.", money:-25},
+        {text:"Vous gagnez un concours de blog voyage !", money:90},
+        {text:"Amende douanière pour marchandise non déclarée.", money:-60},
+        {text:"Un mécène finance votre prochain voyage.", money:45},
+        {text:"Contrôle surprise : direction la douane.", money:0, goToJail:true},
+      ],
+      board:[
+        {name:'DÉPART', type:'go'},
+        prop('Rabat','g0',60),
+        {name:'Visa', type:'pokeball'},
+        prop('Dakar','g0',60),
+        {name:'Douane', type:'tax', amount:200},
+        station('Aéroport CDG'),
+        prop('Le Caire','g1',100),
+        {name:'Visa', type:'pokeball'},
+        prop('Nairobi','g1',100),
+        prop('Lagos','g1',120),
+        {name:'DOUANE / VISITE', type:'jail'},
+        prop('Bangkok','g2',140),
+        utility('Cie Électrique'),
+        prop('Jakarta','g2',140),
+        prop('Manille','g2',160),
+        station('Aéroport JFK'),
+        prop('Mexico','g3',180),
+        {name:'Voyage', type:'chest'},
+        prop('Lima','g3',180),
+        prop('Bogota','g3',200),
+        {name:'ESCALE', type:'freeparking'},
+        prop('Istanbul','g4',220),
+        {name:'Visa', type:'pokeball'},
+        prop('Dubaï','g4',220),
+        prop('Doha','g4',240),
+        station('Aéroport Heathrow'),
+        prop('Londres','g5',260),
+        prop('Berlin','g5',260),
+        utility('Cie des Eaux'),
+        prop('Rome','g5',280),
+        {name:'EXPULSION', type:'gotojail'},
+        prop('Sydney','g6',300),
+        prop('Tokyo','g6',300),
+        {name:'Voyage', type:'chest'},
+        prop('Séoul','g6',320),
+        station('Aéroport Changi'),
+        {name:'Visa', type:'pokeball'},
+        {name:'Taxe Douanière', type:'tax', amount:100},
+        prop('New York','g7',350),
+        prop('Paris','g7',400),
+      ],
+    },
+
+    france:{
+      id:'france', label:'France', icon:'🥖',
+      tagline:"Sillonnez les régions et devenez le plus grand propriétaire de France.",
+      tokens:[
+        {e:'🥖', c:'#bc6c25', name:'Baguette'},
+        {e:'🧀', c:'#e8b13d', name:'Fromage'},
+        {e:'🍷', c:'#8a3a4a', name:'Vin'},
+        {e:'🚲', c:'#2a9d8f', name:'Vélo'},
+        {e:'🎨', c:'#7b6cd9', name:'Palette'},
+        {e:'🗼', c:'#3d5a80', name:'Tour Eiffel'},
+      ],
+      groupColors:['#8a8f99','#d1495b','#3d5a80','#588157','#bc6c25','#2a9d8f','#7b6cd9','#c9a63c'],
+      groupLabels:{g0:'Côte du Nord', g1:'Hauts-de-France', g2:'Grand Est', g3:'Bretagne & Loire',
+                   g4:'Sud-Ouest', g5:'Sud-Est', g6:'Alpes', g7:'Île-de-France'},
+      minorDeckName:'Aléas', majorDeckName:'Entraide',
+      minorCards:[
+        {text:"Vous gagnez à la loterie locale.", money:50},
+        {text:"Un voisin vous rend un service.", money:40},
+        {text:"Vous trouvez une place de parking gratuite.", money:30},
+        {text:"Amende pour stationnement gênant.", money:-40},
+        {text:"Grève des transports, taxi obligatoire.", money:-30},
+        {text:"Vous revendez des meubles en ligne.", money:45},
+        {text:"Avancez jusqu'à DÉPART et récupérez 200.", money:0, moveTo:0},
+        {text:"Réparation de votre vélo.", money:-25},
+      ],
+      majorCards:[
+        {text:"Un cousin éloigné vous emprunte de l'argent sans le rendre.", money:-75},
+        {text:"Cagnotte de quartier organisée pour vous.", money:60},
+        {text:"Bourse d'étude méritée.", money:100},
+        {text:"Travaux de rénovation imprévus.", money:-50},
+        {text:"Vous gagnez un concours de pétanque !", money:40},
+        {text:"Redressement fiscal.", money:-60},
+        {text:"Un mécène local vous soutient.", money:45},
+        {text:"Contrôle surprise : direction le tribunal.", money:0, goToJail:true},
+      ],
+      board:[
+        {name:'DÉPART', type:'go'},
+        prop('Calais','g0',60),
+        {name:'Aléas', type:'pokeball'},
+        prop('Dunkerque','g0',60),
+        {name:'Impôts', type:'tax', amount:200},
+        station('Gare du Nord'),
+        prop('Lille','g1',100),
+        {name:'Aléas', type:'pokeball'},
+        prop('Amiens','g1',100),
+        prop('Reims','g1',120),
+        {name:'GARDE À VUE', type:'jail'},
+        prop('Strasbourg','g2',140),
+        utility('Cie du Gaz'),
+        prop('Nancy','g2',140),
+        prop('Metz','g2',160),
+        station('Gare de l\u2019Est'),
+        prop('Nantes','g3',180),
+        {name:'Entraide', type:'chest'},
+        prop('Rennes','g3',180),
+        prop('Brest','g3',200),
+        {name:'PAUSE DÉJEUNER', type:'freeparking'},
+        prop('Bordeaux','g4',220),
+        {name:'Aléas', type:'pokeball'},
+        prop('Toulouse','g4',220),
+        prop('Biarritz','g4',240),
+        station('Gare Montparnasse'),
+        prop('Marseille','g5',260),
+        prop('Nice','g5',260),
+        utility('Cie des Eaux'),
+        prop('Montpellier','g5',280),
+        {name:'AU TRIBUNAL', type:'gotojail'},
+        prop('Lyon','g6',300),
+        prop('Grenoble','g6',300),
+        {name:'Entraide', type:'chest'},
+        prop('Annecy','g6',320),
+        station('Gare de Lyon'),
+        {name:'Aléas', type:'pokeball'},
+        {name:'Amende', type:'tax', amount:100},
+        prop('Paris','g7',350),
+        prop('Versailles','g7',400),
+      ],
+    },
+
   };
+
+  const THEME_ORDER = ['football','world','france'];
+  let currentTheme = THEMES.football;
+  let TOKENS = currentTheme.tokens;
+  let GROUP_LABEL = currentTheme.groupLabels;
+  let BOARD = currentTheme.board;
+
+  // Applies a theme's tokens/board/colors everywhere — sets the CSS group
+  // colors as custom properties (picked up by cell bars, owner dots, and
+  // build-panel swatches) and swaps the data every render function reads.
+  function applyTheme(themeId){
+    const theme = THEMES[themeId] || THEMES.football;
+    currentTheme = theme;
+    TOKENS = theme.tokens;
+    GROUP_LABEL = theme.groupLabels;
+    BOARD = theme.board;
+    theme.groupColors.forEach((color, i) => {
+      document.documentElement.style.setProperty(`--group-${i}`, color);
+    });
+  }
+  applyTheme('football');
 
   /* ---------------- STATE ---------------- */
   const state = {
@@ -1390,9 +1530,19 @@
   };
   // In local (pass-and-play) mode everyone shares one device, so every
   // action is always "your turn" — only online mode gates by player identity.
+  // (UI visibility for bot turns is handled separately by shouldShowControls,
+  // since bots still need isMyTurn to stay true for their own actions to work.)
   function isMyTurn(){
     if(state.mode === 'local') return true;
     return state.myId !== null && state.myId === state.current;
+  }
+  // Whether THIS device should show interactive controls right now — false
+  // during a bot's turn even in local mode, so a human can't fight the bot
+  // for the same buttons.
+  function shouldShowControls(){
+    if(!isMyTurn()) return false;
+    const cp = currentPlayer();
+    return !(cp && cp.isBot);
   }
   function myPlayer(){ return state.myId !== null ? state.players[state.myId] : null; }
 
@@ -1404,31 +1554,35 @@
     return c;
   }
 
-  let myTokenChoice = 0;
   let suppressIncoming = false;
 
-  function renderTokenRow(containerId){
+  // Theme picker: choosing a theme swaps the active BOARD/TOKENS/group colors
+  // immediately (applyTheme), then every dependent bit of UI (both theme
+  // rows, local player rows) refreshes to match.
+  function renderThemeRow(containerId){
     const row = document.getElementById(containerId);
-    const previewEl = document.getElementById(containerId.replace('Row', 'Preview'));
-    const setPreview = (i) => { if(previewEl) previewEl.textContent = `Emblème choisi : ${TOKENS[i].name}`; };
+    if(!row) return;
     row.innerHTML = '';
-    TOKENS.forEach((tok, i) => {
+    THEME_ORDER.forEach(id => {
+      const theme = THEMES[id];
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'token-pick' + (i===myTokenChoice ? ' picked' : '');
-      btn.style.background = tok.c;
-      btn.textContent = tok.e;
+      btn.className = 'theme-pick' + (currentTheme.id === id ? ' picked' : '');
+      btn.innerHTML = `<span class="theme-pick-icon">${theme.icon}</span><span class="theme-pick-label">${theme.label}</span>`;
       btn.addEventListener('click', () => {
-        myTokenChoice = i;
-        row.querySelectorAll('.token-pick').forEach((el, j) => el.classList.toggle('picked', j===i));
-        setPreview(i);
+        applyTheme(id);
+        refreshThemeUI();
       });
       row.appendChild(btn);
     });
-    setPreview(myTokenChoice);
   }
-  renderTokenRow('createTokenRow');
-  renderTokenRow('joinTokenRow');
+  function refreshThemeUI(){
+    renderThemeRow('createThemeRow');
+    renderThemeRow('localThemeRow');
+    renderLocalPlayerRows();
+  }
+  renderThemeRow('createThemeRow');
+  renderThemeRow('localThemeRow');
 
   document.getElementById('showCreateBtn').addEventListener('click', () => {
     document.getElementById('modeGrid').style.display = 'none';
@@ -1462,10 +1616,11 @@
     if(!MQTT_READY){ errorEl.textContent = 'Connexion au serveur en cours, réessaie dans un instant.'; return; }
     const name = (document.getElementById('createName').value.trim() || 'Président 1').slice(0,16);
     const startMoney = Math.max(200, parseInt(document.getElementById('createStartMoney').value, 10) || 1500);
-    const tok = TOKENS[myTokenChoice];
+    const tok = TOKENS[0];
     const code = generateCode();
     const initialRoom = {
       status: 'lobby',
+      themeId: currentTheme.id,
       startMoney: startMoney,
       players: [{ name, token: tok.e, color: tok.c, money: 0, pos: 0, properties: [], bankrupt: false, skipTurn: false }],
       current: 0,
@@ -1498,7 +1653,6 @@
     const code = document.getElementById('joinCode').value.trim().toUpperCase();
     const name = (document.getElementById('joinName').value.trim() || 'Président').slice(0,16);
     if(!code){ errorEl.textContent = 'Entrez un code de partie.'; return; }
-    const tok = TOKENS[myTokenChoice];
     latestKnownRoom = null;
     currentTopic = TOPIC_PREFIX + code;
     errorEl.textContent = 'Connexion au salon…';
@@ -1515,16 +1669,15 @@
         }
         if(room.status !== 'lobby'){ errorEl.textContent = 'Cette partie a déjà commencé.'; return; }
         if((room.players || []).length >= 6){ errorEl.textContent = 'Le salon est complet (6 max).'; return; }
+        applyTheme(room.themeId || 'football');
         const existingPlayers = room.players || [];
         const nameLower = name.trim().toLowerCase();
         if(existingPlayers.some(p => p.name.trim().toLowerCase() === nameLower)){
           errorEl.textContent = 'Ce nom est déjà pris dans cette partie — choisissez-en un autre.';
           return;
         }
-        if(existingPlayers.some(p => p.token === tok.e)){
-          errorEl.textContent = 'Cet emblème est déjà pris dans cette partie — choisissez-en un autre.';
-          return;
-        }
+        const usedTokens = new Set(existingPlayers.map(p => p.token));
+        const tok = TOKENS.find(t => !usedTokens.has(t.e)) || TOKENS[existingPlayers.length % TOKENS.length];
         const players = existingPlayers.slice();
         players.push({ name, token: tok.e, color: tok.c, money: 0, pos: 0, properties: [], bankrupt: false, skipTurn: false });
         const newRoom = Object.assign({}, room, { players });
@@ -1550,6 +1703,8 @@
   let localPlayerCount = 4;
   const localPlayerRows = document.getElementById('localPlayerRows');
 
+  let localBotFlags = [];
+
   function renderLocalPlayerRows(){
     const existing = Array.from(localPlayerRows.querySelectorAll('.player-row')).map(row => ({
       name: row.querySelector('input').value,
@@ -1559,12 +1714,21 @@
       const tok = TOKENS[i % TOKENS.length];
       const row = document.createElement('div');
       row.className = 'player-row';
+      const isBot = !!localBotFlags[i];
       row.innerHTML = `
         <div class="token-pick" style="background:${tok.c}">${tok.e}</div>
         <input type="text" maxlength="16" placeholder="Président ${i+1}" value="${existing[i] ? existing[i].name.replace(/"/g,'&quot;') : ''}">
+        <button type="button" class="bot-toggle${isBot ? ' active' : ''}" data-idx="${i}" title="Contrôlé par un bot">🤖</button>
       `;
       localPlayerRows.appendChild(row);
     }
+    localPlayerRows.querySelectorAll('.bot-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.idx, 10);
+        localBotFlags[idx] = !localBotFlags[idx];
+        btn.classList.toggle('active', localBotFlags[idx]);
+      });
+    });
   }
   renderLocalPlayerRows();
 
@@ -1594,9 +1758,11 @@
     state.players = rows.map((row, i) => {
       const input = row.querySelector('input');
       const tok = TOKENS[i % TOKENS.length];
+      const isBot = !!localBotFlags[i];
+      const defaultName = isBot ? `🤖 Bot ${i+1}` : `Président ${i+1}`;
       return {
         id: i,
-        name: (input.value.trim() || `Président ${i+1}`).slice(0,16),
+        name: (input.value.trim() || defaultName).slice(0,16),
         token: tok.e,
         color: tok.c,
         money: startMoney,
@@ -1604,6 +1770,7 @@
         properties: [],
         bankrupt: false,
         skipTurn: false,
+        isBot: isBot,
       };
     });
     state.current = 0;
@@ -1644,6 +1811,7 @@
     }));
     publishRoom(state.code, {
       status: 'playing',
+      themeId: currentTheme.id,
       startMoney: startMoney,
       players,
       current: 0,
@@ -1709,6 +1877,7 @@
     state.status = room.status || 'lobby';
     state.startMoney = room.startMoney || 1500;
     state.turnStartedAt = room.turnStartedAt || null;
+    applyTheme(room.themeId || 'football');
 
     if(state.status === 'lobby'){
       renderLobby();
@@ -1728,6 +1897,9 @@
   }
 
   function renderLobby(){
+    const badge = document.getElementById('lobbyThemeBadge');
+    if(badge) badge.textContent = `${currentTheme.icon} Univers : ${currentTheme.label}`;
+    renderLobbyTokenRow();
     const list = document.getElementById('lobbyPlayers');
     list.innerHTML = '';
     state.players.forEach((p, i) => {
@@ -1748,6 +1920,38 @@
     if(hint) hint.style.display = state.players.length < 2 ? 'block' : 'none';
   }
 
+  // Live emblem picker shown in the lobby: everyone picks their own token
+  // once they can see who else is in the room, instead of blind-guessing
+  // during create/join. Tokens already taken by someone else are disabled.
+  function renderLobbyTokenRow(){
+    const row = document.getElementById('lobbyTokenRow');
+    if(!row || state.myId === null) return;
+    const me = state.players[state.myId];
+    if(!me) return;
+    const usedByOthers = new Set(
+      state.players.filter((p, i) => i !== state.myId).map(p => p.token)
+    );
+    row.innerHTML = '';
+    TOKENS.forEach(tok => {
+      const taken = usedByOthers.has(tok.e) && tok.e !== me.token;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'token-pick' + (me.token === tok.e ? ' picked' : '') + (taken ? ' taken' : '');
+      btn.style.background = tok.c;
+      btn.textContent = tok.e;
+      btn.title = taken ? 'Déjà pris par un autre Président' : tok.name;
+      if(taken) btn.disabled = true;
+      btn.addEventListener('click', () => {
+        if(taken || me.token === tok.e) return;
+        me.token = tok.e;
+        me.color = tok.c;
+        renderLobby();
+        pushState();
+      });
+      row.appendChild(btn);
+    });
+  }
+
   /* ---- push local state changes to every connected phone, at "settle
      points" only (never mid-animation) so everyone converges on the same
      state. MQTT publish always replaces the whole retained message, so we
@@ -1757,6 +1961,7 @@
     suppressIncoming = true;
     publishRoom(state.code, {
       status: state.status,
+      themeId: currentTheme.id,
       startMoney: state.startMoney,
       players: state.players,
       current: state.current,
@@ -1773,7 +1978,21 @@
   }
 
   /* ---------------- RULES OVERLAY ---------------- */
-  function openRules(){ document.getElementById('rulesOverlay').style.display = 'flex'; }
+  function refreshRuleCornerNames(){
+    const map = { ruleCornerGo: 0, ruleCornerJail: 10, ruleCornerFree: 20, ruleCornerGoJail: 30 };
+    Object.keys(map).forEach(id => {
+      const el = document.getElementById(id);
+      if(el && BOARD[map[id]]) el.textContent = BOARD[map[id]].name;
+    });
+    const minorEl = document.getElementById('ruleMinorDeck');
+    const majorEl = document.getElementById('ruleMajorDeck');
+    if(minorEl) minorEl.textContent = currentTheme.minorDeckName;
+    if(majorEl) majorEl.textContent = currentTheme.majorDeckName;
+  }
+  function openRules(){
+    refreshRuleCornerNames();
+    document.getElementById('rulesOverlay').style.display = 'flex';
+  }
   function closeRules(){ document.getElementById('rulesOverlay').style.display = 'none'; }
   document.getElementById('rulesLinkSetup').addEventListener('click', openRules);
   document.getElementById('rulesBtn').addEventListener('click', openRules);
@@ -1922,12 +2141,12 @@
     if(moneyGive > proposer.money) return 'Le budget proposé dépasse ce que vous avez.';
     if(moneyReceive > partner.money) return `${partner.name} n'a pas assez de budget pour cette offre.`;
     for(const idx of give){
-      if(!proposer.properties.includes(idx)) return 'Un des clubs proposés ne vous appartient plus.';
-      if((state.houses[idx]||0) > 0) return 'Revendez les constructions avant d\u2019échanger ce club.';
+      if(!proposer.properties.includes(idx)) return 'Une des propriétés proposées ne vous appartient plus.';
+      if((state.houses[idx]||0) > 0) return 'Revendez les constructions avant d\u2019échanger cette propriété.';
     }
     for(const idx of receive){
-      if(!partner.properties.includes(idx)) return `${partner.name} ne possède plus un des clubs demandés.`;
-      if((state.houses[idx]||0) > 0) return 'Ce club a des constructions : impossible de l\u2019échanger.';
+      if(!partner.properties.includes(idx)) return `${partner.name} ne possède plus une des propriétés demandées.`;
+      if((state.houses[idx]||0) > 0) return 'Cette propriété a des constructions : impossible de l\u2019échanger.';
     }
     return '';
   }
@@ -2088,32 +2307,19 @@
       else if(sp.type==='station') barColor = '#7a7a7a';
       else if(sp.type==='utility') barColor = '#c9a63c';
 
-      // Original hand-drawn shield / card badges (no copied club or league artwork),
-      // unless the user has supplied their own sourced logo via LOGO_MAP.
-      const userLogo = LOGO_MAP[sp.name];
-      let medalHtml = '';
-      if(userLogo){
-        medalHtml = `<img class="cell-logo" src="${userLogo}" alt="${sp.name}" onerror="this.style.display='none'">`;
-      } else if(sp.type==='property') medalHtml = `<div class="medal"><div class="glyph glyph-${sp.group}"></div></div>`;
-      else if(sp.type==='station') medalHtml = `<div class="medal"><div class="glyph glyph-stadium"></div></div>`;
-      else if(sp.type==='utility') medalHtml = `<div class="medal"><div class="glyph glyph-sponsor">€</div></div>`;
-      else if(sp.type==='tax') medalHtml = `<div class="medal"><div class="glyph glyph-tax">€</div></div>`;
-      else if(sp.type==='go') medalHtml = `<div class="medal medal-corner"><div class="glyph glyph-kickoff"></div></div>`;
-      else if(sp.type==='jail') medalHtml = `<div class="medal medal-corner"><div class="glyph glyph-bench"></div></div>`;
-      else if(sp.type==='freeparking') medalHtml = `<div class="medal medal-corner"><div class="glyph glyph-halftime">½</div></div>`;
-      else if(sp.type==='gotojail') medalHtml = `<div class="card-icon red" style="width:22px;height:30px;"></div>`;
-      else if(sp.type==='pokeball') medalHtml = `<div class="card-icon"></div>`;
-      else if(sp.type==='chest') medalHtml = `<div class="transfer-icon">⇄</div>`;
-
       const priceHtml = sp.price ? `<div class="cell-price">€${sp.price}</div>` : '';
       const housesHtml = sp.type==='property' ? `<div class="cell-houses" data-houses="${i}"></div>` : '';
-      const topRowHtml = (medalHtml || priceHtml) ? `<div class="cell-top-row">${medalHtml}${priceHtml}</div>` : '';
+
+      // Shorter names get to render bigger, longer ones shrink to fit —
+      // keeps every board (and every theme's differently-sized names)
+      // comfortably readable instead of using one flat size for everyone.
+      const nameScale = Math.max(0.6, Math.min(1.2, 7.2 / sp.name.length)).toFixed(2);
 
       cell.innerHTML = `
         <div class="bar" style="background:${barColor}"></div>
         <div class="cell-body">
-          ${topRowHtml}
-          <div class="cell-name">${sp.name}</div>
+          ${priceHtml}
+          <div class="cell-name" style="--name-scale:${nameScale}">${sp.name}</div>
           ${housesHtml}
         </div>
         <div class="cell-owner-dot" data-owner="${i}" style="display:none"></div>
@@ -2181,6 +2387,55 @@
     renderBoardDynamic();
     renderConsole();
     renderHighlights();
+    maybeRunBotTurn();
+  }
+
+  /* ---------------- LOCAL BOT PLAYERS ----------------
+     Simple, predictable AI for local (pass-and-play) games: rolls dice on
+     its turn, buys a property if it can comfortably afford it, otherwise
+     passes, and ends its turn once done. Bots never build or trade — kept
+     deliberately simple so games stay quick and readable to follow. */
+  let botActionScheduled = false;
+
+  function maybeRunBotTurn(){
+    if(state.mode !== 'local') return;
+    if(state.phase === 'gameover') return;
+    const cp = currentPlayer();
+    if(!cp || !cp.isBot || cp.bankrupt) return;
+    if(state.buildOpen || state.trade || state.pendingTrade) return; // shouldn't happen for bots, but stay safe
+    if(botActionScheduled) return;
+    botActionScheduled = true;
+    setTimeout(() => {
+      botActionScheduled = false;
+      runBotAction();
+    }, 650 + Math.floor(Math.random() * 500));
+  }
+
+  function runBotAction(){
+    if(state.mode !== 'local' || state.phase === 'gameover') return;
+    const cp = currentPlayer();
+    if(!cp || !cp.isBot || cp.bankrupt) return;
+    if(state.phase === 'ready'){
+      rollDice();
+    } else if(state.phase === 'awaiting-buy'){
+      botDecideBuy();
+    } else if(state.phase === 'must-end'){
+      endTurn();
+    }
+  }
+
+  // Buys whenever it can afford it while keeping a small cash buffer, so
+  // bots don't routinely bankrupt themselves on their very first lap.
+  function botDecideBuy(){
+    const sp = BOARD[state.pendingBuy];
+    const cp = currentPlayer();
+    if(!sp || !cp) return;
+    const buffer = 150;
+    if(cp.money - sp.price >= buffer){
+      buyProperty();
+    } else {
+      passBuy();
+    }
   }
 
   // The event log now lives in its own panel below the board, independent of
@@ -2230,11 +2485,11 @@
       card.innerHTML = `
         <div class="pc-top">
           <div class="pc-tok" style="background:${p.color}">${p.token}</div>
-          <div class="pc-name">${p.name}${idx===state.myId ? ' <span class="you-tag">(vous)</span>' : ''}</div>
+          <div class="pc-name">${p.name}${idx===state.myId ? ' <span class="you-tag">(vous)</span>' : ''}${p.isBot ? ' <span class="bot-tag">BOT</span>' : ''}</div>
         </div>
         <div class="pc-money mono${flashClass}">${fmt(p.money)}</div>
         <div class="pc-props">${chips}</div>
-        <div class="pc-status">${p.bankrupt ? 'Éliminé — club en faillite' : (p.skipTurn ? 'Suspendu, passe son tour' : (BOARD[p.pos].name))}</div>
+        <div class="pc-status">${p.bankrupt ? 'Éliminé — faillite' : (p.skipTurn ? 'Suspendu, passe son tour' : (BOARD[p.pos].name))}</div>
       `;
     });
     // Drop any stale card left over from a previous game with more players.
@@ -2322,7 +2577,7 @@
 
   function renderConsole(){
     const cp = currentPlayer();
-    const myTurn = isMyTurn();
+    const myTurn = shouldShowControls();
     const showYou = myTurn && state.mode === 'online';
     document.getElementById('turnPill').innerHTML = cp
       ? `<div class="tok" style="background:${cp.color}">${cp.token}</div><span class="turn-pill-text">${showYou ? 'À vous de jouer !' : 'Au tour de ' + cp.name}</span>`
@@ -2512,13 +2767,13 @@
   function renderBuildPanelHTML(player){
     const groups = playerMonopolyGroups(player.id);
     if(groups.length === 0){
-      return `<div class="build-empty">Vous ne possédez encore aucun groupe complet de clubs.</div>`;
+      return `<div class="build-empty">Vous ne possédez encore aucun groupe complet de propriétés.</div>`;
     }
-    let html = '<div class="build-rule-hint">🧱 Construction uniforme : chaque club du groupe doit recevoir sa maison avant de passer au niveau suivant. Chaque maison en plus sur un même club coûte 25% de plus que la précédente.</div>';
+    let html = '<div class="build-rule-hint">🧱 Construction uniforme : chaque propriété du groupe doit recevoir sa maison avant de passer au niveau suivant. Chaque maison en plus sur une même propriété coûte 25% de plus que la précédente.</div>';
     html += '<div class="build-panel">';
     groups.forEach(g => {
       html += `<div class="build-group">
-        <div class="build-group-title"><span class="build-swatch glyph-${g}"></span> ${GROUP_LABEL[g]} · à partir de €${BUILD_COST[g]}</div>`;
+        <div class="build-group-title"><span class="build-swatch" style="background:var(${G[g]})"></span> ${GROUP_LABEL[g]} · à partir de €${BUILD_COST[g]}</div>`;
       BOARD.forEach((sp, idx) => {
         if(sp.type === 'property' && sp.group === g){
           const houses = state.houses[idx] || 0;
@@ -2529,7 +2784,7 @@
           const canBuild = affordBuild && ruleAllowsBuild;
           const canSell = canSellHouse(idx);
           const buildTitle = !affordBuild ? 'Budget insuffisant'
-            : (!ruleAllowsBuild ? 'Construisez d\u2019abord sur les autres clubs du groupe (règle de construction uniforme)' : '');
+            : (!ruleAllowsBuild ? 'Construisez d\u2019abord sur les autres propriétés du groupe (règle de construction uniforme)' : '');
           html += `<div class="build-row">
             <div class="br-name">${sp.name}</div>
             <div class="br-level">${label}${nextCost !== null ? ` · €${nextCost}` : ''}</div>
@@ -2559,7 +2814,7 @@
           <span class="tp-tok" style="background:${p.color}">${p.token}</span>
           <span class="tp-info">
             <span class="tp-name">${p.name}</span>
-            <span class="tp-meta">${p.properties.length} club${p.properties.length > 1 ? 's' : ''} · ${fmt(p.money)}</span>
+            <span class="tp-meta">${p.properties.length} propriété${p.properties.length > 1 ? 's' : ''} · ${fmt(p.money)}</span>
           </span>
         </button>`;
       });
@@ -2583,10 +2838,10 @@
     const receiveProps = tradeableProps(partner);
     const giveHtml = giveProps.length
       ? giveProps.map(idx => propRow(idx, t.give.has(idx), 'give')).join('')
-      : '<div class="trade-empty">Aucun club libre à offrir</div>';
+      : '<div class="trade-empty">Aucune propriété libre à offrir</div>';
     const receiveHtml = receiveProps.length
       ? receiveProps.map(idx => propRow(idx, t.receive.has(idx), 'receive')).join('')
-      : '<div class="trade-empty">Aucun club libre chez lui/elle</div>';
+      : '<div class="trade-empty">Aucune propriété libre chez lui/elle</div>';
 
     const giveNames = Array.from(t.give).map(idx => BOARD[idx].name);
     const receiveNames = Array.from(t.receive).map(idx => BOARD[idx].name);
@@ -2739,7 +2994,7 @@
       remaining--;
       if(player.pos === 0){
         player.money += 200;
-        pushLog(`💰 ${player.name} passe par COUP D'ENVOI et récupère €200.`);
+        pushLog(`💰 ${player.name} passe par ${BOARD[0].name} et récupère €200.`);
       }
       renderAll();
       setTimeout(step, 130);
@@ -2751,7 +3006,7 @@
     const sp = BOARD[player.pos];
     switch(sp.type){
       case 'go':
-        pushLog(`${player.name} arrive sur COUP D'ENVOI.`);
+        pushLog(`${player.name} arrive sur ${sp.name}.`);
         break;
       case 'property': case 'station': case 'utility': {
         const ownerId = state.ownership[player.pos];
@@ -2775,18 +3030,18 @@
       case 'tax':
         applyMoney(player, -sp.amount, `💸 ${player.name} paie ${sp.name} : ${fmt(-sp.amount)}.`);
         break;
-      case 'pokeball': drawCard(player, POKEBALL_CARDS, 'Carton Jaune'); return;
-      case 'chest': drawCard(player, SUPERBALL_CARDS, 'Transfert'); return;
+      case 'pokeball': drawCard(player, currentTheme.minorCards, currentTheme.minorDeckName, '🟨'); return;
+      case 'chest': drawCard(player, currentTheme.majorCards, currentTheme.majorDeckName, '🔄'); return;
       case 'jail':
-        pushLog(`👀 ${player.name} passe simplement par les vestiaires.`);
+        pushLog(`👀 ${player.name} passe simplement par ${sp.name}.`);
         break;
       case 'freeparking':
-        pushLog(`⏸️ ${player.name} profite de la mi-temps. Rien ne se passe.`);
+        pushLog(`⏸️ ${player.name} profite de ${sp.name}. Rien ne se passe.`);
         break;
       case 'gotojail':
         player.pos = 10;
         player.skipTurn = true;
-        pushLog(`🟥 ${player.name} reçoit un carton rouge et file aux vestiaires !`);
+        pushLog(`🟥 ${player.name} est envoyé directement à ${BOARD[10].name} !`);
         break;
     }
     finishResolution(player, isDouble);
@@ -2824,13 +3079,13 @@
       rent = count >= 2 ? sum*10 : sum*4;
     }
     applyMoney(payer, -rent, `🏟️ ${payer.name} paie une indemnité de ${fmt(-rent)} à ${owner.name} pour ${sp.name}.`);
-    if(!payer.bankrupt) owner.money += rent;
+    owner.money += rent;
   }
 
-  function drawCard(player, deck, label){
+  function drawCard(player, deck, label, icon){
     const card = deck[Math.floor(Math.random()*deck.length)];
     const amountText = card.money ? ` (${card.money > 0 ? '+' : ''}${fmt(card.money)})` : '';
-    pushLog(`${label === 'Carton Jaune' ? '🟨' : '🔄'} ${label} — ${card.text}${amountText}`);
+    pushLog(`${icon} ${label} — ${card.text}${amountText}`);
     if(card.money){
       applyMoney(player, card.money, null);
     }
@@ -2879,7 +3134,7 @@
     panel.innerHTML = `
       <div class="footballicon" style="width:44px;height:44px;"></div>
       <h2>${winner ? winner.name + ' remporte la partie !' : 'Partie terminée'}</h2>
-      <p>Tous les autres clubs ont fait faillite.</p>
+      <p>Tous les autres joueurs ont fait faillite.</p>
       <button class="action-btn btn-buy" id="playAgainBtn">Quitter la partie</button>
     `;
     consoleEl.appendChild(panel);
