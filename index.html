@@ -447,7 +447,7 @@
   }
   .pc-money.flash-up{animation:moneyFlashUp .7s cubic-bezier(.34,1.4,.64,1);}
   .pc-money.flash-down{animation:moneyFlashDown .7s cubic-bezier(.34,1.4,.64,1);}
-  .pc-props{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;min-height:10px;}
+  .pc-props{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;min-height:10px;max-height:24px;overflow:hidden;}
   .pc-props span{width:10px;height:10px;border-radius:3px;display:block;}
   .pc-status{font-size:11px;color:var(--ink-soft);margin-top:4px;font-weight:600;}
 
@@ -497,15 +497,20 @@
   .cell.edge-left .bar{right:0;}
   .cell.edge-right .bar{left:0;}
   .cell.edge-top .bar{position:absolute;left:0;right:0;bottom:0;top:auto;width:auto;}
+  .cell.edge-left .cell-body{padding-right:clamp(5px,calc(var(--board-px) * 0.015),12px);}
+  .cell.edge-right .cell-body{padding-left:clamp(5px,calc(var(--board-px) * 0.015),12px);}
+  .cell.edge-top .cell-body{padding-bottom:clamp(5px,calc(var(--board-px) * 0.015),12px);}
   .cell-body{
-    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
     padding:2px 3px 1px;text-align:center;overflow:hidden;min-height:0;
     gap:clamp(0px,calc(var(--board-px) * 0.003),3px);
   }
   .cell-name{
-    font-weight:700;color:var(--ink);word-break:break-word;max-width:100%;
+    font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;
+    width:100%;text-align:center;
     font-size:clamp(6.5px,calc(var(--board-px) * 0.022 * var(--name-scale, 1)),19px);
     line-height:1.12;
+    display:block;
   }
   .cell-price{
     font-family:'JetBrains Mono',monospace;color:var(--ink-soft);font-weight:700;
@@ -514,17 +519,23 @@
   .cell.corner{border-radius:9px;background:#f2f6ea;}
   .cell.corner .cell-name{font-size:clamp(7px,calc(var(--board-px) * 0.024 * var(--name-scale, 1)),21px);}
   .cell-owner-dot{position:absolute;bottom:2px;right:2px;width:7px;height:7px;border-radius:50%;border:1px solid var(--ink);}
-  .cell-houses{display:flex;gap:1.5px;justify-content:center;}
-  .cell-houses:not(:empty){margin-top:1px;}
+  .cell-houses{display:flex;gap:2px;justify-content:center;flex-wrap:wrap;}
+  .cell-houses:not(:empty){margin-top:2px;}
   .house-dot{
-    width:clamp(4px,calc(var(--board-px) * 0.008),7px);
-    height:clamp(4px,calc(var(--board-px) * 0.008),7px);
-    border-radius:1px;background:var(--pitch);border:0.5px solid var(--ink);
+    width:clamp(7px,calc(var(--board-px) * 0.015),13px);
+    height:clamp(7px,calc(var(--board-px) * 0.015),13px);
+    border-radius:2px;background:#2ecc55;border:1px solid var(--ink);
+    box-shadow:0 1px 2px rgba(0,0,0,.35);
+  }
+  .cell-houses.houses-crowded .house-dot{
+    width:clamp(5px,calc(var(--board-px) * 0.009),8px);
+    height:clamp(5px,calc(var(--board-px) * 0.009),8px);
   }
   .hotel-dot{
     width:clamp(9px,calc(var(--board-px) * 0.018),15px);
-    height:clamp(5px,calc(var(--board-px) * 0.01),8px);
-    border-radius:1.5px;background:var(--gold);border:0.5px solid var(--ink);
+    height:clamp(6px,calc(var(--board-px) * 0.011),10px);
+    border-radius:2px;background:var(--red);border:1px solid var(--ink);
+    box-shadow:0 1px 2px rgba(0,0,0,.35);
   }
 
   /* ---- Center console ---- */
@@ -844,7 +855,7 @@
     }
     .player-card{
       flex:1 1 auto;min-width:0;padding:5px 8px;border-radius:10px;
-      display:flex;align-items:center;gap:6px;
+      display:flex;flex-wrap:wrap;align-items:center;gap:3px 6px;
     }
     .player-card.active{transform:none;}
     .pc-top{gap:5px;margin-bottom:0;flex:1;min-width:0;}
@@ -852,20 +863,23 @@
     .pc-name{font-size:11px;}
     .you-tag{display:none;}
     .pc-money{font-size:12px;flex:none;}
-    .pc-props{display:none;}
+    .pc-props{display:flex;flex-basis:100%;margin-top:0;min-height:0;max-height:9px;overflow:hidden;gap:3px;}
+    .pc-props span{width:6px;height:6px;}
     .pc-status{display:none;}
     .main-area{flex:1;width:100%;min-height:0;gap:6px;}
     #boardWrap{flex:1;width:100%;min-height:0;}
     .action-panel{flex:none;height:clamp(150px,calc(var(--board-px) * 0.4),230px);}
-    .action-panel-scroll{padding:7px 10px 9px;}
-    .action-panel-content{gap:5px;}
-    .die{width:clamp(32px,calc(var(--board-px) * 0.08),50px);height:clamp(32px,calc(var(--board-px) * 0.08),50px);}
-    #diceArea{gap:clamp(6px,calc(var(--board-px) * 0.014),12px);}
+    .action-panel-scroll{padding:6px 8px 7px;}
+    .action-panel-content{gap:4px;}
+    .die{width:clamp(26px,calc(var(--board-px) * 0.068),38px);height:clamp(26px,calc(var(--board-px) * 0.068),38px);}
+    #diceArea{gap:clamp(5px,calc(var(--board-px) * 0.012),8px);}
     .action-btn{
-      padding:clamp(7px,calc(var(--board-px) * 0.013),11px) clamp(14px,calc(var(--board-px) * 0.028),24px);
-      font-size:clamp(11.5px,calc(var(--board-px) * 0.016),14px);
+      padding:clamp(6px,calc(var(--board-px) * 0.011),9px) clamp(12px,calc(var(--board-px) * 0.024),18px);
+      font-size:clamp(10.5px,calc(var(--board-px) * 0.014),13px);
     }
-    .turn-banner{padding:4px 12px 4px 4px;}
+    .turn-banner{padding:3px 10px 3px 3px;font-size:clamp(10.5px,calc(var(--board-px) * 0.018),13px);}
+    .turn-banner .tb-tok{width:clamp(15px,calc(var(--board-px) * 0.03),22px);height:clamp(15px,calc(var(--board-px) * 0.03),22px);}
+    .turn-timer{padding:2px 10px;font-size:clamp(10px,calc(var(--board-px) * 0.016),12px);}
   }
   @media (max-width:600px){
     .topbar{padding:8px 10px;gap:6px;}
@@ -1816,6 +1830,7 @@
     const codeEl = document.getElementById('topbarCode');
     if(codeEl) codeEl.style.display = 'none';
     lastMoneyById = {};
+    lastHousesById = {};
     document.getElementById('sidebar').innerHTML = '';
     buildBoardCells();
     beginTurn(true);
@@ -1912,6 +1927,7 @@
         const codeEl = document.getElementById('topbarCode');
         if(codeEl){ codeEl.style.display = 'inline-block'; codeEl.textContent = state.code || ''; }
         lastMoneyById = {};
+        lastHousesById = {};
         document.getElementById('sidebar').innerHTML = '';
         buildBoardCells();
         requestAnimationFrame(() => requestAnimationFrame(sizeBoard));
@@ -2389,8 +2405,27 @@
     board.style.height = size + 'px';
     document.documentElement.style.setProperty('--board-px', size + 'px');
     positionAllTokens(true);
+    fitCellNames();
   }
   window.addEventListener('resize', sizeBoard);
+
+  // Measures each cell name's actual rendered width against the space
+  // really available for it, shrinking font-size just enough to fit on one
+  // line — reliable regardless of how wide any particular character happens
+  // to render, unlike estimating purely from character count.
+  function fitOneCellName(el){
+    el.style.fontSize = '';
+    let fontSize = parseFloat(getComputedStyle(el).fontSize);
+    let guard = 0;
+    while(el.scrollWidth > el.clientWidth + 0.5 && fontSize > 5.5 && guard < 30){
+      fontSize -= 0.4;
+      el.style.fontSize = fontSize + 'px';
+      guard++;
+    }
+  }
+  function fitCellNames(){
+    document.querySelectorAll('.cell-name').forEach(fitOneCellName);
+  }
 
   /* ---------------- RENDER ---------------- */
   function renderAll(){
@@ -2451,10 +2486,12 @@
 
   // The event log now lives inside the center console, in place of the old
   // dice/buttons (which moved to #actionPanel below the board instead).
+  // Capped to the 5 most recent events so it stays compact rather than
+  // filling the whole console.
   function renderHighlights(){
     const logEl = document.getElementById('log');
     if(!logEl) return;
-    logEl.innerHTML = state.log.slice(-14).map(m => `<div>${m}</div>`).join('');
+    logEl.innerHTML = state.log.slice(-5).map(m => `<div>${m}</div>`).join('');
     logEl.scrollTop = logEl.scrollHeight;
   }
 
@@ -2549,6 +2586,7 @@
     });
   }
 
+  let lastHousesById = {};
   function renderBoardDynamic(){
     for(let i=0;i<BOARD.length;i++){
       const oEl = cellEls[i].querySelector(`[data-owner="${i}"]`);
@@ -2564,10 +2602,18 @@
         const houses = state.houses[i] || 0;
         if(houses === 5){
           hEl.innerHTML = `<div class="hotel-dot"></div>`;
+          hEl.classList.remove('houses-crowded');
         } else if(houses > 0){
           hEl.innerHTML = '<div class="house-dot"></div>'.repeat(houses);
+          hEl.classList.toggle('houses-crowded', houses >= 4);
         } else {
           hEl.innerHTML = '';
+          hEl.classList.remove('houses-crowded');
+        }
+        if(lastHousesById[i] !== houses){
+          lastHousesById[i] = houses;
+          const nameEl = cellEls[i].querySelector('.cell-name');
+          if(nameEl) fitOneCellName(nameEl);
         }
       }
     }
