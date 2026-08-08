@@ -497,16 +497,16 @@
   #boardWrap{flex:1;width:100%;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
   #board{
     display:grid;
-    grid-template-columns:1.35fr repeat(9,minmax(0,1fr)) 1.35fr;
-    grid-template-rows:1.35fr repeat(9,minmax(0,1fr)) 1.35fr;
-    width:min(92vw,780px);height:min(92vw,780px);
+    grid-template-columns:repeat(11,minmax(0,1fr));
+    grid-template-rows:repeat(11,minmax(0,1fr));
+    width:min(94vw,780px);height:min(94vw,780px);
     flex:none;
     background:
       radial-gradient(circle at 30% 20%, rgba(255,255,255,.35), transparent 55%),
       var(--parchment);
-    border-radius:16px;border:5px solid #4a5c3a;
+    border-radius:14px;border:3px solid #4a5c3a;
     box-shadow:var(--shadow);
-    padding:6px;gap:3px;
+    padding:4px;gap:2px;
     position:relative;
   }
   #tokenLayer{position:absolute;inset:0;pointer-events:none;z-index:6;}
@@ -529,27 +529,28 @@
     border:1px solid var(--line);
     font-size:9px;
   }
-  .cell .bar{height:9px;flex:none;}
-  .cell.edge-left .bar,.cell.edge-right .bar{height:auto;width:9px;position:absolute;top:0;bottom:0;}
+  .cell .bar{height:clamp(4px,calc(var(--board-px) * 0.011),9px);flex:none;}
+  .cell.edge-left .bar,.cell.edge-right .bar{height:auto;width:clamp(4px,calc(var(--board-px) * 0.011),9px);position:absolute;top:0;bottom:0;}
   .cell.edge-left .bar{right:0;}
   .cell.edge-right .bar{left:0;}
-  .cell.edge-top .bar{position:absolute;left:0;right:0;bottom:0;top:auto;height:9px;width:auto;}
+  .cell.edge-top .bar{position:absolute;left:0;right:0;bottom:0;top:auto;width:auto;}
   .cell-body{
     flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    padding:2px 3px;text-align:center;overflow:hidden;min-height:0;
-    gap:clamp(1px,calc(var(--board-px) * 0.0025),3px);
+    padding:1px 2px;text-align:center;overflow:hidden;min-height:0;
+    gap:clamp(1px,calc(var(--board-px) * 0.003),3px);
   }
+  .cell-top-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:clamp(2px,calc(var(--board-px) * 0.006),5px);}
   .cell-name{
     font-weight:700;color:var(--ink);word-break:break-word;max-width:100%;
-    font-size:clamp(7px,calc(var(--board-px) * 0.018),13px);
+    font-size:clamp(7.5px,calc(var(--board-px) * 0.019),13.5px);
     line-height:1.1;
   }
   .cell-price{
     font-family:'JetBrains Mono',monospace;color:var(--ink-soft);font-weight:700;
-    font-size:clamp(6.5px,calc(var(--board-px) * 0.016),11px);
+    font-size:clamp(6.5px,calc(var(--board-px) * 0.015),10.5px);
   }
   .cell.corner{border-radius:9px;background:#f2f6ea;}
-  .cell.corner .cell-name{font-size:clamp(7.5px,calc(var(--board-px) * 0.02),14px);}
+  .cell.corner .cell-name{font-size:clamp(8px,calc(var(--board-px) * 0.021),14.5px);}
   .cell-owner-dot{position:absolute;bottom:2px;right:2px;width:7px;height:7px;border-radius:50%;border:1px solid var(--ink);}
   .cell-houses{display:flex;gap:1.5px;justify-content:center;}
   .cell-houses:not(:empty){margin-top:1px;}
@@ -2106,13 +2107,13 @@
 
       const priceHtml = sp.price ? `<div class="cell-price">€${sp.price}</div>` : '';
       const housesHtml = sp.type==='property' ? `<div class="cell-houses" data-houses="${i}"></div>` : '';
+      const topRowHtml = (medalHtml || priceHtml) ? `<div class="cell-top-row">${medalHtml}${priceHtml}</div>` : '';
 
       cell.innerHTML = `
         <div class="bar" style="background:${barColor}"></div>
         <div class="cell-body">
-          ${medalHtml}
+          ${topRowHtml}
           <div class="cell-name">${sp.name}</div>
-          ${priceHtml}
           ${housesHtml}
         </div>
         <div class="cell-owner-dot" data-owner="${i}" style="display:none"></div>
