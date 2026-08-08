@@ -672,6 +672,8 @@
   .btn-build{background:linear-gradient(135deg,#caa23a,#8a6a1c);}
   .btn-trade{background:linear-gradient(135deg,#3d6fc9,#274a8a);}
   .btn-build,.btn-trade{padding:7px 18px;font-size:clamp(11.5px,calc(var(--board-px) * 0.016),13.5px);}
+  .secondary-actions{display:flex;gap:8px;width:100%;justify-content:center;flex-wrap:wrap;}
+  .secondary-actions .action-btn{flex:1 1 0;min-width:0;}
 
   .build-header{
     display:flex;align-items:center;justify-content:space-between;width:100%;max-width:380px;
@@ -1565,6 +1567,7 @@
     doublesStreak: 0,
     dice: [1,1],
     turnStartedAt: null, // ms timestamp — drives the 60s turn timer in online mode
+    timerPaused: false,  // synced: true while the active player is browsing build/trade, so everyone sees "Pause" not just them
   };
   // In local (pass-and-play) mode everyone shares one device, so every
   // action is always "your turn" — only online mode gates by player identity.
@@ -1916,6 +1919,7 @@
     state.status = room.status || 'lobby';
     state.startMoney = room.startMoney || 1500;
     state.turnStartedAt = room.turnStartedAt || null;
+    state.timerPaused = room.timerPaused || false;
     applyTheme(room.themeId || 'football');
 
     if(state.status === 'lobby'){
@@ -2014,6 +2018,7 @@
       dice: state.dice,
       log: state.log,
       turnStartedAt: state.turnStartedAt,
+      timerPaused: state.timerPaused,
     }, () => { suppressIncoming = false; });
   }
 
@@ -2711,14 +2716,14 @@
         pushState();
       }));
       const closeBtn = document.getElementById('buildCloseBtn');
-      if(closeBtn) closeBtn.addEventListener('click', () => { state.buildOpen = false; resumeTimer(); renderConsole(); });
+      if(closeBtn) closeBtn.addEventListener('click', () => { state.buildOpen = false; resumeTimer(); renderConsole(); pushState(); });
       return;
     }
 
     if(state.trade && cp && myTurn){
       zone.innerHTML = renderTradePanelHTML(cp);
       const tCloseBtn = document.getElementById('tradeCloseBtn');
-      if(tCloseBtn) tCloseBtn.addEventListener('click', () => { closeTrade(); renderConsole(); });
+      if(tCloseBtn) tCloseBtn.addEventListener('click', () => { closeTrade(); renderConsole(); pushState(); });
       zone.querySelectorAll('.trade-partner-btn').forEach(btn => btn.addEventListener('click', () => {
         pickTradePartner(parseInt(btn.dataset.pid, 10));
         renderConsole();
@@ -2795,21 +2800,26 @@
       if(!myTurn) zone.innerHTML = `<div class="waiting-note">🚶 ${cp ? cp.name : '...'} se déplace…</div>`;
     }
 
-    if(myTurn && (state.phase === 'ready' || state.phase === 'must-end') && cp && playerMonopolyGroups(cp.id).length > 0){
-      const buildBtn = document.createElement('button');
-      buildBtn.className = 'action-btn btn-build';
-      buildBtn.textContent = '🏗️ Construire';
-      buildBtn.addEventListener('click', () => { state.buildOpen = true; pauseTimer(); renderConsole(); });
-      zone.appendChild(buildBtn);
-    }
+    const secondaryRow = document.createElement('div');
+    secondaryRow.className = 'secondary-actions';
 
     if(myTurn && (state.phase === 'ready' || state.phase === 'must-end') && cp && activePlayers().length > 1){
       const tradeBtn = document.createElement('button');
       tradeBtn.className = 'action-btn btn-trade';
       tradeBtn.textContent = '🤝 Échanger';
       tradeBtn.addEventListener('click', () => { openTrade(); renderConsole(); });
-      zone.appendChild(tradeBtn);
+      secondaryRow.appendChild(tradeBtn);
     }
+
+    if(myTurn && (state.phase === 'ready' || state.phase === 'must-end') && cp && playerMonopolyGroups(cp.id).length > 0){
+      const buildBtn = document.createElement('button');
+      buildBtn.className = 'action-btn btn-build';
+      buildBtn.textContent = '🏗️ Construire';
+      buildBtn.addEventListener('click', () => { state.buildOpen = true; pauseTimer(); renderConsole(); });
+      secondaryRow.appendChild(buildBtn);
+    }
+
+    if(secondaryRow.children.length > 0) zone.appendChild(secondaryRow);
   }
 
   function renderBuildPanelHTML(player){
@@ -3238,13 +3248,18 @@
   let timerPauseStart = null;
 
   function pauseTimer(){
-    if(timerPauseStart === null) timerPauseStart = Date.now();
+    if(timerPauseStart === null){
+      timerPauseStart = Date.now();
+      state.timerPaused = true;
+      pushState();
+    }
   }
   function resumeTimer(){
     if(timerPauseStart !== null && state.turnStartedAt){
       state.turnStartedAt += (Date.now() - timerPauseStart);
     }
     timerPauseStart = null;
+    state.timerPaused = false;
   }
 
   function forceSkipTurn(){
@@ -3255,6 +3270,7 @@
     state.pendingTrade = null;
     state.buildOpen = false;
     state.trade = null;
+    state.timerPaused = false;
     timerPauseStart = null;
     advanceToNextPlayer();
   }
@@ -3264,11 +3280,11 @@
     if(!el) return;
     const gameVisible = document.getElementById('game').style.display === 'flex';
     const relevantPhase = state.phase === 'ready' || state.phase === 'must-end' || state.phase === 'awaiting-buy';
-    if(state.mode !== 'online' || !gameVisible || !state.turnStartedAt || !relevantPhase || state.pendingTrade){
+    if(state.mode !== 'online' || !gameVisible || !state.turnStartedAt || !relevantPhase){
       el.style.display = 'none';
       return;
     }
-    if(timerPauseStart !== null){
+    if(state.timerPaused){
       el.style.display = 'inline-flex';
       el.textContent = '⏸️ Pause';
       el.classList.remove('timer-warning');
@@ -3286,7 +3302,7 @@
     if(turnTimerLoopId) return;
     turnTimerLoopId = setInterval(() => {
       updateTurnTimerDisplay();
-      if(state.mode === 'online' && isMyTurn() && state.turnStartedAt && !state.pendingTrade &&
+      if(state.mode === 'online' && isMyTurn() && state.turnStartedAt &&
          timerPauseStart === null &&
          (state.phase === 'ready' || state.phase === 'must-end' || state.phase === 'awaiting-buy') &&
          Date.now() - state.turnStartedAt >= TURN_TIME_LIMIT_MS){
