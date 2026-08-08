@@ -732,47 +732,65 @@
     font-weight:700;font-size:13px;color:#fff;margin-bottom:8px;
   }
   .trade-pick-title{font-size:12px;color:rgba(242,244,234,.75);margin-bottom:8px;}
-  .trade-partners{display:flex;flex-direction:column;gap:6px;width:100%;max-width:300px;max-height:clamp(90px,calc(var(--board-px) * 0.26),200px);overflow-y:auto;}
+  .trade-partners{display:flex;flex-direction:column;gap:6px;width:100%;max-width:340px;max-height:clamp(90px,calc(var(--board-px) * 0.26),200px);overflow-y:auto;}
   .trade-partner-btn{
-    display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);
-    border:1px solid rgba(255,255,255,.14);color:#fff;border-radius:10px;padding:8px 12px;
-    font-size:13px;font-weight:600;font-family:'Inter',sans-serif;
+    display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.14);color:#fff;border-radius:12px;padding:10px 12px;
+    font-size:13px;font-weight:600;font-family:'Inter',sans-serif;transition:background .12s ease;
   }
   .trade-partner-btn:hover{background:rgba(255,255,255,.14);}
-  .tp-tok{width:30px;height:30px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
-    font-size:15px;border:2px solid var(--ink);}
-  .tp-info{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:0;}
+  .tp-tok{width:32px;height:32px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+    font-size:16px;border:2px solid var(--ink);}
+  .tp-info{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:0;flex:1;}
   .tp-name{font-weight:700;font-size:13px;}
   .tp-meta{font-size:10.5px;color:rgba(242,244,234,.6);font-weight:600;}
+  .tp-arrow{flex:none;font-size:18px;color:rgba(242,244,234,.4);}
 
-  .trade-columns{display:flex;flex-wrap:wrap;gap:10px;width:100%;max-width:380px;justify-content:center;}
-  .trade-col{flex:1 1 150px;min-width:130px;background:rgba(255,255,255,.05);border-radius:10px;padding:8px 10px;}
-  .trade-col-title{font-size:10.5px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
-  .trade-list{max-height:clamp(60px,calc(var(--board-px) * 0.17),130px);overflow-y:auto;display:flex;flex-direction:column;gap:3px;margin-bottom:8px;}
+  .trade-side{
+    width:100%;max-width:360px;background:rgba(255,255,255,.045);border-radius:12px;
+    padding:10px 12px 12px;border-left:3px solid transparent;
+  }
+  .trade-side-give{border-left-color:#e67e22;}
+  .trade-side-receive{border-left-color:#2ecc71;}
+  .trade-side-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:7px;}
+  .trade-side-title{font-size:11.5px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.04em;}
+  .trade-side-sub{font-size:10px;color:rgba(242,244,234,.5);font-weight:600;white-space:nowrap;}
+  .trade-swap-divider{
+    display:flex;align-items:center;justify-content:center;width:100%;max-width:360px;
+    color:var(--gold);font-size:15px;margin:-4px 0;opacity:.8;
+  }
+  .trade-list{max-height:clamp(60px,calc(var(--board-px) * 0.16),120px);overflow-y:auto;display:flex;flex-direction:column;gap:3px;margin-bottom:9px;}
   .trade-row{
-    display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(242,244,234,.85);
-    padding:4px 6px;border-radius:6px;background:rgba(255,255,255,.03);border:1px solid transparent;
+    display:flex;align-items:center;gap:7px;font-size:11.5px;color:rgba(242,244,234,.85);
+    padding:5px 7px;border-radius:7px;background:rgba(255,255,255,.035);cursor:pointer;
+    transition:background .12s ease;
   }
   .trade-row:hover{background:rgba(255,255,255,.09);}
-  .trade-row.selected{background:rgba(241,196,15,.18);border-color:rgba(241,196,15,.5);color:#fff;}
+  .trade-row.selected{background:rgba(241,196,15,.16);color:#fff;}
+  .trade-check{
+    width:15px;height:15px;border-radius:4px;flex:none;
+    border:1.5px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;
+    font-size:10px;font-weight:800;color:var(--gold);
+  }
+  .trade-row.selected .trade-check{border-color:var(--gold);background:rgba(241,196,15,.22);}
   .trade-swatch{width:9px;height:9px;border-radius:2px;flex:none;}
   .tr-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .tr-price{flex:none;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(242,244,234,.55);}
   .trade-row.selected .tr-price{color:var(--gold);}
   .trade-empty{font-size:10.5px;color:rgba(242,244,234,.5);padding:4px 0;}
-  .trade-money{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--gold);font-weight:700;}
+  .trade-money{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gold);font-weight:700;}
   .tm-label{flex:none;}
   .trade-money input{
     width:100%;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);border-radius:6px;
-    color:#fff;font-family:'JetBrains Mono',monospace;font-size:12px;padding:4px 6px;text-align:center;
+    color:#fff;font-family:'JetBrains Mono',monospace;font-size:12px;padding:5px 6px;text-align:center;
   }
   .tm-step{
-    flex:none;width:22px;height:22px;border-radius:6px;border:none;background:rgba(255,255,255,.14);
+    flex:none;width:24px;height:24px;border-radius:7px;border:none;background:rgba(255,255,255,.14);
     color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;
   }
   .tm-step:hover{background:var(--pitch);}
   .trade-summary{
-    display:flex;align-items:center;gap:8px;width:100%;max-width:380px;margin-top:2px;
+    display:flex;align-items:center;gap:8px;width:100%;max-width:360px;margin-top:2px;
     background:rgba(241,196,15,.08);border:1px solid rgba(241,196,15,.25);border-radius:10px;padding:8px 12px;
   }
   .trade-summary-side{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
@@ -781,7 +799,7 @@
   .trade-summary-value{font-size:11.5px;color:#fff;font-weight:600;line-height:1.35;}
   .trade-summary-arrow{flex:none;font-size:16px;color:var(--gold);}
   .trade-error{
-    width:100%;max-width:380px;background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.5);
+    width:100%;max-width:360px;background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.5);
     color:#ffd6d2;font-size:11.5px;border-radius:8px;padding:6px 10px;margin-top:8px;text-align:center;
   }
   .trade-actions{display:flex;gap:10px;justify-content:center;margin-top:10px;}
@@ -2887,13 +2905,16 @@
 
   function renderTradePanelHTML(cp){
     const t = state.trade;
-    const errorHtml = t.error ? `<div class="trade-error">${t.error}</div>` : '';
+    const errorHtml = t.error ? `<div class="trade-error">⚠️ ${t.error}</div>` : '';
 
     if(t.partnerId === null){
       const others = activePlayers().filter(p => p.id !== cp.id);
       let html = `
-        <div class="trade-header">🤝 Échanger <button class="build-close" id="tradeCloseBtn">Fermer ✕</button></div>
-        <div class="trade-pick-title">Choisissez un partenaire :</div>
+        <div class="trade-header">
+          <span>🤝 Échanger</span>
+          <button class="build-close" id="tradeCloseBtn">Fermer ✕</button>
+        </div>
+        <div class="trade-pick-title">Avec qui souhaitez-vous échanger ?</div>
         <div class="trade-partners">`;
       others.forEach(p => {
         html += `<button class="trade-partner-btn" data-pid="${p.id}">
@@ -2902,6 +2923,7 @@
             <span class="tp-name">${p.name}</span>
             <span class="tp-meta">${p.properties.length} propriété${p.properties.length > 1 ? 's' : ''} · ${fmt(p.money)}</span>
           </span>
+          <span class="tp-arrow">›</span>
         </button>`;
       });
       html += `</div>`;
@@ -2914,6 +2936,7 @@
     function propRow(idx, selected, side){
       const sp = BOARD[idx];
       return `<div class="trade-row ${selected ? 'selected' : ''}" data-idx="${idx}" data-side="${side}">
+        <span class="trade-check">${selected ? '✓' : ''}</span>
         <span class="trade-swatch" style="background:var(${G[sp.group]})"></span>
         <span class="tr-name">${sp.name}</span>
         <span class="tr-price">€${sp.price}</span>
@@ -2947,29 +2970,41 @@
     ` : '';
 
     return `
-      <div class="trade-header">🤝 Échange avec ${partner.name} <button class="build-close" id="tradeCloseBtn">Fermer ✕</button></div>
-      <div class="trade-columns">
-        <div class="trade-col">
-          <div class="trade-col-title">Vous donnez</div>
-          <div class="trade-list">${giveHtml}</div>
-          <div class="trade-money">
-            <span class="tm-label">€</span>
-            <button type="button" class="tm-step" data-target="tradeMoneyGive" data-delta="-50">−</button>
-            <input type="number" min="0" id="tradeMoneyGive" value="${t.moneyGive}">
-            <button type="button" class="tm-step" data-target="tradeMoneyGive" data-delta="50">+</button>
-          </div>
+      <div class="trade-header">
+        <span>🤝 Échange avec ${partner.name}</span>
+        <button class="build-close" id="tradeCloseBtn">Fermer ✕</button>
+      </div>
+
+      <div class="trade-side trade-side-give">
+        <div class="trade-side-head">
+          <span class="trade-side-title">📤 Vous donnez</span>
+          <span class="trade-side-sub">Votre budget : ${fmt(cp.money)}</span>
         </div>
-        <div class="trade-col">
-          <div class="trade-col-title">Vous recevez</div>
-          <div class="trade-list">${receiveHtml}</div>
-          <div class="trade-money">
-            <span class="tm-label">€</span>
-            <button type="button" class="tm-step" data-target="tradeMoneyReceive" data-delta="-50">−</button>
-            <input type="number" min="0" id="tradeMoneyReceive" value="${t.moneyReceive}">
-            <button type="button" class="tm-step" data-target="tradeMoneyReceive" data-delta="50">+</button>
-          </div>
+        <div class="trade-list">${giveHtml}</div>
+        <div class="trade-money">
+          <span class="tm-label">€</span>
+          <button type="button" class="tm-step" data-target="tradeMoneyGive" data-delta="-50">−</button>
+          <input type="number" min="0" id="tradeMoneyGive" value="${t.moneyGive}">
+          <button type="button" class="tm-step" data-target="tradeMoneyGive" data-delta="50">+</button>
         </div>
       </div>
+
+      <div class="trade-swap-divider"><span>⇄</span></div>
+
+      <div class="trade-side trade-side-receive">
+        <div class="trade-side-head">
+          <span class="trade-side-title">📥 Vous recevez</span>
+          <span class="trade-side-sub">Son budget : ${fmt(partner.money)}</span>
+        </div>
+        <div class="trade-list">${receiveHtml}</div>
+        <div class="trade-money">
+          <span class="tm-label">€</span>
+          <button type="button" class="tm-step" data-target="tradeMoneyReceive" data-delta="-50">−</button>
+          <input type="number" min="0" id="tradeMoneyReceive" value="${t.moneyReceive}">
+          <button type="button" class="tm-step" data-target="tradeMoneyReceive" data-delta="50">+</button>
+        </div>
+      </div>
+
       ${summaryHtml}
       ${errorHtml}
       <div class="trade-actions">
