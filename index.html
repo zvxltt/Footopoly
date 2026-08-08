@@ -497,9 +497,14 @@
   .cell.edge-left .bar{right:0;}
   .cell.edge-right .bar{left:0;}
   .cell.edge-top .bar{position:absolute;left:0;right:0;bottom:0;top:auto;width:auto;}
-  .cell.edge-left .cell-body{padding-right:clamp(5px,calc(var(--board-px) * 0.015),12px);}
-  .cell.edge-right .cell-body{padding-left:clamp(5px,calc(var(--board-px) * 0.015),12px);}
-  .cell.edge-top .cell-body{padding-bottom:clamp(5px,calc(var(--board-px) * 0.015),12px);}
+  .cell.edge-left .cell-body,.cell.edge-right .cell-body{
+    padding-left:clamp(5px,calc(var(--board-px) * 0.015),12px);
+    padding-right:clamp(5px,calc(var(--board-px) * 0.015),12px);
+  }
+  .cell.edge-top .cell-body{
+    padding-top:clamp(5px,calc(var(--board-px) * 0.015),12px);
+    padding-bottom:clamp(5px,calc(var(--board-px) * 0.015),12px);
+  }
   .cell-body{
     flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
     padding:2px 3px 1px;text-align:center;overflow:hidden;min-height:0;
@@ -519,7 +524,7 @@
   .cell.corner{border-radius:9px;background:#f2f6ea;}
   .cell.corner .cell-name{font-size:clamp(7px,calc(var(--board-px) * 0.024 * var(--name-scale, 1)),21px);}
   .cell-owner-dot{position:absolute;bottom:2px;right:2px;width:7px;height:7px;border-radius:50%;border:1px solid var(--ink);}
-  .cell-houses{display:flex;gap:2px;justify-content:center;flex-wrap:wrap;}
+  .cell-houses{display:flex;gap:2px;justify-content:center;flex-wrap:wrap;width:100%;}
   .cell-houses:not(:empty){margin-top:2px;}
   .house-dot{
     width:clamp(7px,calc(var(--board-px) * 0.015),13px);
@@ -673,7 +678,7 @@
   .btn-trade{background:linear-gradient(135deg,#3d6fc9,#274a8a);}
   .btn-build,.btn-trade{padding:7px 18px;font-size:clamp(11.5px,calc(var(--board-px) * 0.016),13.5px);}
   .secondary-actions{display:flex;gap:8px;width:100%;justify-content:center;flex-wrap:wrap;}
-  .secondary-actions .action-btn{flex:1 1 0;min-width:0;}
+  .secondary-actions .action-btn{flex:0 0 auto;}
 
   .build-header{
     display:flex;align-items:center;justify-content:space-between;width:100%;max-width:380px;
@@ -1222,6 +1227,9 @@
     mqttClient.on('connect', () => {
       MQTT_READY = true;
       setConnStatus('ok', '');
+      if(currentTopic){
+        mqttClient.subscribe(currentTopic, { qos: 1 }, () => {});
+      }
     });
     mqttClient.on('reconnect', () => {
       MQTT_READY = false;
@@ -1247,7 +1255,7 @@
   try { connectMQTT(); } catch(e){ MQTT_READY = false; setConnStatus('error', "⚠️ Le mode en ligne n'a pas pu démarrer. Le mode local fonctionne normalement."); }
 
   function publishRoom(code, room, cb){
-    if(!mqttClient) return;
+    if(!mqttClient){ if(cb) cb(); return; }
     latestKnownRoom = room;
     mqttClient.publish(TOPIC_PREFIX + code, JSON.stringify(room), { retain: true, qos: 1 }, cb || function(){});
   }
@@ -1264,7 +1272,7 @@
   // tier — identical across every theme, only the group *names* differ.
   const BUILD_COST = {g0:50, g1:50, g2:100, g3:100, g4:150, g5:150, g6:200, g7:200};
   // Rent multiplier applied to the base rent once a property has N houses (5 = hotel).
-  const HOUSE_RENT_MULT = {1:5, 2:15, 3:30, 4:40, 5:55};
+  const HOUSE_RENT_MULT = {1:4, 2:12, 3:20, 4:30, 5:45};
 
   // Progressive per-property house cost: each house already sitting on THIS
   // property makes the next one +25% pricier (rounded to a clean €5), so a
@@ -2003,6 +2011,11 @@
   function pushState(){
     if(!state.code || !mqttClient || !MQTT_READY) return;
     suppressIncoming = true;
+    // Safety net: if the publish callback never fires for any reason, this
+    // client would otherwise silently stop applying everyone else's updates
+    // forever — a real bug that was found and fixed at the source (see
+    // publishRoom), but this timeout stays as a second line of defense.
+    const safety = setTimeout(() => { suppressIncoming = false; }, 4000);
     publishRoom(state.code, {
       status: state.status,
       themeId: currentTheme.id,
@@ -2019,7 +2032,7 @@
       log: state.log,
       turnStartedAt: state.turnStartedAt,
       timerPaused: state.timerPaused,
-    }, () => { suppressIncoming = false; });
+    }, () => { clearTimeout(safety); suppressIncoming = false; });
   }
 
   /* ---------------- RULES OVERLAY ---------------- */
@@ -2204,7 +2217,7 @@
     const partner = state.players[t.partnerId];
     const giveArr = Array.from(t.give), receiveArr = Array.from(t.receive);
     const err = validateTradeOffer(cp, partner, giveArr, receiveArr, t.moneyGive, t.moneyReceive);
-    if(err){ t.error = err; renderConsole(); return; }
+    if(err){ t.error = err; renderConsoleContent(); return; }
 
     applyTradeTransfer(cp, partner, giveArr, receiveArr, t.moneyGive, t.moneyReceive);
     pushLog(describeTradeResult(cp, partner, giveArr, receiveArr, t.moneyGive, t.moneyReceive, '🤝', 'concluent un échange'));
@@ -2223,7 +2236,7 @@
     const partner = state.players[t.partnerId];
     const giveArr = Array.from(t.give), receiveArr = Array.from(t.receive);
     const err = validateTradeOffer(cp, partner, giveArr, receiveArr, t.moneyGive, t.moneyReceive);
-    if(err){ t.error = err; renderConsole(); return; }
+    if(err){ t.error = err; renderConsoleContent(); return; }
 
     state.pendingTrade = {
       proposerId: cp.id,
@@ -2388,8 +2401,8 @@
         <div class="halfway"></div>
       </div>
       <div class="console-inner">
-        <div class="console-content">
-          <div class="console-log-title">⚡ Moments forts</div>
+        <div class="console-content" id="consoleContent">
+          <div class="console-log-title" id="consoleLogTitle">⚡ Moments forts</div>
           <div id="log"></div>
         </div>
       </div>
@@ -2437,7 +2450,7 @@
     renderSidebar();
     renderBoardDynamic();
     renderConsole();
-    renderHighlights();
+    renderConsoleContent();
     maybeRunBotTurn();
   }
 
@@ -2489,15 +2502,59 @@
     }
   }
 
-  // The event log now lives inside the center console, in place of the old
-  // dice/buttons (which moved to #actionPanel below the board instead).
-  // Capped to the 5 most recent events so it stays compact rather than
-  // filling the whole console.
-  function renderHighlights(){
+  // The console shows the event log by default, but swaps to the trade
+  // panel while the active player is composing an offer — making trading
+  // the obvious, prominent thing happening on the board, then swaps back
+  // to the log the moment it's closed.
+  function renderConsoleContent(){
+    const container = document.getElementById('consoleContent');
+    if(!container) return;
+    const cp = currentPlayer();
+    const myTurn = shouldShowControls();
+
+    if(state.trade && cp && myTurn){
+      container.innerHTML = renderTradePanelHTML(cp);
+      const tCloseBtn = document.getElementById('tradeCloseBtn');
+      if(tCloseBtn) tCloseBtn.addEventListener('click', () => { closeTrade(); renderAll(); pushState(); });
+      container.querySelectorAll('.trade-partner-btn').forEach(btn => btn.addEventListener('click', () => {
+        pickTradePartner(parseInt(btn.dataset.pid, 10));
+        renderConsoleContent();
+      }));
+      const backBtn = document.getElementById('tradeBackBtn');
+      if(backBtn) backBtn.addEventListener('click', () => { pickTradePartner(null); renderConsoleContent(); });
+      container.querySelectorAll('.trade-row').forEach(row => row.addEventListener('click', () => {
+        toggleTradeProperty(parseInt(row.dataset.idx, 10), row.dataset.side);
+        renderConsoleContent();
+      }));
+      const mg = document.getElementById('tradeMoneyGive');
+      const mr = document.getElementById('tradeMoneyReceive');
+      if(mg) mg.addEventListener('input', () => { state.trade.moneyGive = Math.max(0, parseInt(mg.value, 10) || 0); state.trade.error=''; });
+      if(mr) mr.addEventListener('input', () => { state.trade.moneyReceive = Math.max(0, parseInt(mr.value, 10) || 0); state.trade.error=''; });
+      container.querySelectorAll('.tm-step').forEach(btn => btn.addEventListener('click', () => {
+        const targetId = btn.dataset.target;
+        const delta = parseInt(btn.dataset.delta, 10);
+        const current = targetId === 'tradeMoneyGive' ? state.trade.moneyGive : state.trade.moneyReceive;
+        const next = Math.max(0, current + delta);
+        if(targetId === 'tradeMoneyGive') state.trade.moneyGive = next; else state.trade.moneyReceive = next;
+        state.trade.error = '';
+        renderConsoleContent();
+      }));
+      const confirmBtn = document.getElementById('tradeConfirmBtn');
+      if(confirmBtn) confirmBtn.addEventListener('click', () => {
+        if(state.mode === 'online') proposeTrade(); else executeTrade();
+      });
+      return;
+    }
+
+    // Not trading (or not this client's own turn to trade) — show the log.
+    if(!document.getElementById('log')){
+      container.innerHTML = `<div class="console-log-title" id="consoleLogTitle">⚡ Moments forts</div><div id="log"></div>`;
+    }
     const logEl = document.getElementById('log');
-    if(!logEl) return;
-    logEl.innerHTML = state.log.slice(-5).map(m => `<div>${m}</div>`).join('');
-    logEl.scrollTop = logEl.scrollHeight;
+    if(logEl){
+      logEl.innerHTML = state.log.slice(-5).map(m => `<div>${m}</div>`).join('');
+      logEl.scrollTop = logEl.scrollHeight;
+    }
   }
 
   let lastMoneyById = {};
@@ -2721,36 +2778,7 @@
     }
 
     if(state.trade && cp && myTurn){
-      zone.innerHTML = renderTradePanelHTML(cp);
-      const tCloseBtn = document.getElementById('tradeCloseBtn');
-      if(tCloseBtn) tCloseBtn.addEventListener('click', () => { closeTrade(); renderConsole(); pushState(); });
-      zone.querySelectorAll('.trade-partner-btn').forEach(btn => btn.addEventListener('click', () => {
-        pickTradePartner(parseInt(btn.dataset.pid, 10));
-        renderConsole();
-      }));
-      const backBtn = document.getElementById('tradeBackBtn');
-      if(backBtn) backBtn.addEventListener('click', () => { pickTradePartner(null); renderConsole(); });
-      zone.querySelectorAll('.trade-row').forEach(row => row.addEventListener('click', () => {
-        toggleTradeProperty(parseInt(row.dataset.idx, 10), row.dataset.side);
-        renderConsole();
-      }));
-      const mg = document.getElementById('tradeMoneyGive');
-      const mr = document.getElementById('tradeMoneyReceive');
-      if(mg) mg.addEventListener('input', () => { state.trade.moneyGive = Math.max(0, parseInt(mg.value, 10) || 0); state.trade.error=''; });
-      if(mr) mr.addEventListener('input', () => { state.trade.moneyReceive = Math.max(0, parseInt(mr.value, 10) || 0); state.trade.error=''; });
-      zone.querySelectorAll('.tm-step').forEach(btn => btn.addEventListener('click', () => {
-        const targetId = btn.dataset.target;
-        const delta = parseInt(btn.dataset.delta, 10);
-        const current = targetId === 'tradeMoneyGive' ? state.trade.moneyGive : state.trade.moneyReceive;
-        const next = Math.max(0, current + delta);
-        if(targetId === 'tradeMoneyGive') state.trade.moneyGive = next; else state.trade.moneyReceive = next;
-        state.trade.error = '';
-        renderConsole();
-      }));
-      const confirmBtn = document.getElementById('tradeConfirmBtn');
-      if(confirmBtn) confirmBtn.addEventListener('click', () => {
-        if(state.mode === 'online') proposeTrade(); else executeTrade();
-      });
+      zone.innerHTML = `<div class="waiting-note">🤝 Composez votre échange dans le plateau ci-dessus ⬆️</div>`;
       return;
     }
 
@@ -2807,7 +2835,7 @@
       const tradeBtn = document.createElement('button');
       tradeBtn.className = 'action-btn btn-trade';
       tradeBtn.textContent = '🤝 Échanger';
-      tradeBtn.addEventListener('click', () => { openTrade(); renderConsole(); });
+      tradeBtn.addEventListener('click', () => { openTrade(); renderConsole(); renderConsoleContent(); });
       secondaryRow.appendChild(tradeBtn);
     }
 
