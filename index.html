@@ -459,16 +459,16 @@
   #boardWrap{flex:1;width:100%;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
   #board{
     display:grid;
-    grid-template-columns:repeat(11,minmax(0,1fr));
-    grid-template-rows:repeat(11,minmax(0,1fr));
-    width:min(94vw,780px);height:min(94vw,780px);
+    grid-template-columns:1.32fr repeat(9,minmax(0,1fr)) 1.32fr;
+    grid-template-rows:1.32fr repeat(9,minmax(0,1fr)) 1.32fr;
+    width:min(97vw,830px);height:min(97vw,830px);
     flex:none;
     background:
       radial-gradient(circle at 30% 20%, rgba(255,255,255,.35), transparent 55%),
       var(--parchment);
-    border-radius:14px;border:3px solid #4a5c3a;
+    border-radius:16px;border:4px solid #4a5c3a;
     box-shadow:var(--shadow);
-    padding:4px;gap:2px;
+    padding:7px;gap:3.5px;
     position:relative;
   }
   #tokenLayer{position:absolute;inset:0;pointer-events:none;z-index:6;}
@@ -486,9 +486,10 @@
   .board-token.no-anim{transition:none;}
 
   .cell{
-    background:#fffdf6;border-radius:6px;position:relative;
+    background:#fffdf6;border-radius:7px;position:relative;
     display:flex;flex-direction:column;overflow:hidden;
-    border:1px solid var(--line);
+    border:1.5px solid var(--line);
+    box-shadow:0 1px 2px rgba(0,0,0,.08);
     font-size:9px;
   }
   .cell .bar{height:clamp(4px,calc(var(--board-px) * 0.011),9px);flex:none;}
@@ -503,7 +504,7 @@
   }
   .cell-name{
     font-weight:700;color:var(--ink);word-break:break-word;max-width:100%;
-    font-size:clamp(6.5px,calc(var(--board-px) * 0.022 * var(--name-scale, 1)),17.5px);
+    font-size:clamp(6.5px,calc(var(--board-px) * 0.022 * var(--name-scale, 1)),19px);
     line-height:1.12;
   }
   .cell-price{
@@ -511,7 +512,7 @@
     font-size:clamp(7px,calc(var(--board-px) * 0.017),11.5px);
   }
   .cell.corner{border-radius:9px;background:#f2f6ea;}
-  .cell.corner .cell-name{font-size:clamp(7px,calc(var(--board-px) * 0.024 * var(--name-scale, 1)),19px);}
+  .cell.corner .cell-name{font-size:clamp(7px,calc(var(--board-px) * 0.024 * var(--name-scale, 1)),21px);}
   .cell-owner-dot{position:absolute;bottom:2px;right:2px;width:7px;height:7px;border-radius:50%;border:1px solid var(--ink);}
   .cell-houses{display:flex;gap:1.5px;justify-content:center;}
   .cell-houses:not(:empty){margin-top:1px;}
@@ -792,39 +793,38 @@
   .buy-panel .bp-btns{display:flex;gap:10px;justify-content:center;}
   .buy-panel .bp-btns .action-btn{padding:9px 20px;font-size:13px;}
 
-  .highlights-panel{
-    flex:none;width:100%;max-width:720px;margin:0 auto;
+  .action-panel{
+    flex:none;width:100%;max-width:420px;margin:0 auto;
     background:linear-gradient(160deg,#173a22,#0c1f13);
-    border:1px solid rgba(255,255,255,.09);
-    border-radius:14px;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:16px;
     box-shadow:0 10px 24px rgba(0,0,0,.35);
+    height:clamp(190px,calc(var(--board-px) * 0.42),290px);
     overflow:hidden;
+    display:flex;
   }
-  .highlights-toggle{
-    display:flex;align-items:center;gap:8px;width:100%;
-    background:none;border:none;color:inherit;font-family:inherit;
-    padding:9px 14px;text-align:left;
+  .action-panel-scroll{
+    width:100%;height:100%;
+    display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
+    overflow-y:auto;overflow-x:hidden;
+    padding:14px 16px 16px;
+    scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent;
   }
-  .highlights-title-text{
-    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--gold);font-weight:700;flex:none;
+  .action-panel-scroll::-webkit-scrollbar{width:5px;}
+  .action-panel-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:3px;}
+  .action-panel-content{
+    margin:auto 0;width:100%;
+    display:flex;flex-direction:column;align-items:center;gap:12px;
   }
-  .highlights-latest{
-    flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-    font-size:12px;color:rgba(242,244,234,.85);font-weight:600;
+  .console-log-title{
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--gold);text-align:center;font-weight:700;flex:none;
   }
-  .highlights-chevron{
-    flex:none;color:rgba(242,244,234,.5);font-size:11px;
-    transition:transform .2s ease;
-  }
-  .highlights-panel.expanded .highlights-chevron{transform:rotate(180deg);}
-  .highlights-panel.expanded .highlights-latest{opacity:0;}
   #log{
-    width:100%;max-height:0;overflow-y:auto;
-    font-size:13px;color:rgba(242,244,234,.72);line-height:1.6;text-align:center;
-    padding:0 18px;transition:max-height .25s ease, padding .25s ease;
+    width:100%;max-height:100%;overflow-y:auto;
+    font-size:clamp(10.5px,calc(var(--board-px) * 0.021),13.5px);
+    color:rgba(242,244,234,.72);line-height:1.55;text-align:center;
   }
-  .highlights-panel.expanded #log{max-height:150px;padding:0 18px 12px;}
   #log div{opacity:.85;padding:2px 0;}
   #log div:last-child{color:#fff;font-weight:600;opacity:1;}
 
@@ -856,8 +856,16 @@
     .pc-status{display:none;}
     .main-area{flex:1;width:100%;min-height:0;gap:6px;}
     #boardWrap{flex:1;width:100%;min-height:0;}
-    .highlights-toggle{padding:7px 12px;}
-    .highlights-title-text{display:none;}
+    .action-panel{flex:none;height:clamp(150px,calc(var(--board-px) * 0.4),230px);}
+    .action-panel-scroll{padding:7px 10px 9px;}
+    .action-panel-content{gap:5px;}
+    .die{width:clamp(32px,calc(var(--board-px) * 0.08),50px);height:clamp(32px,calc(var(--board-px) * 0.08),50px);}
+    #diceArea{gap:clamp(6px,calc(var(--board-px) * 0.014),12px);}
+    .action-btn{
+      padding:clamp(7px,calc(var(--board-px) * 0.013),11px) clamp(14px,calc(var(--board-px) * 0.028),24px);
+      font-size:clamp(11.5px,calc(var(--board-px) * 0.016),14px);
+    }
+    .turn-banner{padding:4px 12px 4px 4px;}
   }
   @media (max-width:600px){
     .topbar{padding:8px 10px;gap:6px;}
@@ -1051,13 +1059,29 @@
       <div id="boardWrap">
         <div id="board"></div>
       </div>
-      <div class="highlights-panel" id="highlightsPanel">
-        <button class="highlights-toggle" id="highlightsToggle" type="button">
-          <span class="highlights-title-text">⚡ Moments forts</span>
-          <span class="highlights-latest" id="highlightsLatest"></span>
-          <span class="highlights-chevron">▾</span>
-        </button>
-        <div id="log"></div>
+      <div class="action-panel" id="actionPanel">
+        <div class="action-panel-scroll">
+          <div class="action-panel-content">
+            <div class="status-row">
+              <div class="turn-banner" id="turnBanner"></div>
+              <div class="turn-timer" id="turnTimer" style="display:none"></div>
+            </div>
+            <div id="diceArea">
+              <div class="die face-1" id="die1">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+              </div>
+              <div class="die face-1" id="die2">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+              </div>
+            </div>
+            <div class="dice-sum" id="diceSum"></div>
+            <div id="actionZone"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -2332,7 +2356,8 @@
     tokenLayer.id = 'tokenLayer';
     board.appendChild(tokenLayer);
 
-    // center console
+    // center console — now hosts the event log; the action controls (dice,
+    // turn banner, buttons) live below the board instead, see #actionPanel.
     const consoleEl = document.createElement('div');
     consoleEl.id = 'console';
     consoleEl.innerHTML = `
@@ -2343,26 +2368,12 @@
       </div>
       <div class="console-inner">
         <div class="console-content">
-          <div class="status-row">
-            <div class="turn-banner" id="turnBanner"></div>
-            <div class="turn-timer" id="turnTimer" style="display:none"></div>
-          </div>
-          <div class="console-divider"></div>
-          <div id="diceArea">
-            <div class="die face-1" id="die1"></div>
-            <div class="die face-1" id="die2"></div>
-          </div>
-          <div class="dice-sum" id="diceSum"></div>
-          <div id="actionZone"></div>
+          <div class="console-log-title">⚡ Moments forts</div>
+          <div id="log"></div>
         </div>
       </div>
     `;
     board.appendChild(consoleEl);
-
-    for(const id of ['die1','die2']){
-      const d = document.getElementById(id);
-      for(let k=0;k<9;k++){ const dot=document.createElement('div'); dot.className='dot'; d.appendChild(dot); }
-    }
   }
 
   /* ---------------- FULL-PAGE BOARD SIZING ---------------- */
@@ -2373,7 +2384,7 @@
     const rect = wrap.getBoundingClientRect();
     const avail = Math.min(rect.width, rect.height);
     if(avail <= 0) return;
-    const size = Math.max(320, Math.floor(avail) - 4);
+    const size = Math.max(365, Math.floor(avail) - 4);
     board.style.width = size + 'px';
     board.style.height = size + 'px';
     document.documentElement.style.setProperty('--board-px', size + 'px');
@@ -2438,25 +2449,13 @@
     }
   }
 
-  // The event log now lives in its own panel below the board, independent of
-  // whatever's happening in the center console — so it never gets shoved
-  // around or hidden by build/trade panels anymore. Collapsed by default
-  // (just the latest line, in the toggle bar itself) to save space on
-  // phones; tapping it reveals the full scrollable history.
+  // The event log now lives inside the center console, in place of the old
+  // dice/buttons (which moved to #actionPanel below the board instead).
   function renderHighlights(){
     const logEl = document.getElementById('log');
-    const latestEl = document.getElementById('highlightsLatest');
-    if(latestEl) latestEl.textContent = state.log.length ? state.log[state.log.length - 1] : '';
     if(!logEl) return;
-    logEl.innerHTML = state.log.slice(-10).map(m => `<div>${m}</div>`).join('');
+    logEl.innerHTML = state.log.slice(-14).map(m => `<div>${m}</div>`).join('');
     logEl.scrollTop = logEl.scrollHeight;
-  }
-
-  const highlightsToggleBtn = document.getElementById('highlightsToggle');
-  if(highlightsToggleBtn){
-    highlightsToggleBtn.addEventListener('click', () => {
-      document.getElementById('highlightsPanel').classList.toggle('expanded');
-    });
   }
 
   let lastMoneyById = {};
@@ -2593,9 +2592,12 @@
       die1.className = 'die face-' + state.dice[0];
       die2.className = 'die face-' + state.dice[1];
     }
+    const diceAreaEl = document.getElementById('diceArea');
     const sumEl = document.getElementById('diceSum');
+    const showDice = state.phase !== 'awaiting-buy' && !state.buildOpen && !state.trade;
+    if(diceAreaEl) diceAreaEl.style.display = showDice ? 'flex' : 'none';
     if(sumEl){
-      const showSum = state.phase!=='ready' || state.dice[0]!==1 || state.dice[1]!==1;
+      const showSum = showDice && (state.phase!=='ready' || state.dice[0]!==1 || state.dice[1]!==1);
       sumEl.textContent = showSum ? `Total : ${state.dice[0]+state.dice[1]}` : '';
       sumEl.style.display = showSum ? 'inline-block' : 'none';
     }
