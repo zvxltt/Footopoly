@@ -3831,7 +3831,7 @@
       const buildBtn = document.createElement('button');
       buildBtn.className = 'action-btn btn-build';
       buildBtn.textContent = '🏗️ Construire';
-      buildBtn.addEventListener('click', () => { state.buildOpen = true; pauseTimer(); renderConsole(); });
+      buildBtn.addEventListener('click', () => { state.buildOpen = true; pauseTimer(); renderConsoleContent(); renderConsole(); });
       secondaryRow.appendChild(buildBtn);
     }
 
@@ -4072,7 +4072,6 @@
     }
     state.phase = 'moving';
     renderAll();
-    pushState();
     movePlayer(cp, sum, isDouble);
   }
 
@@ -4148,7 +4147,7 @@
       advanceToNextPlayer();
       return;
     }
-    if(isDouble){
+    if(isDouble && !player.skipTurn){
       pushLog(`↻ Double ! ${player.name} rejoue.`);
       state.phase = 'ready';
     } else {
