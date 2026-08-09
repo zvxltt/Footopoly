@@ -220,8 +220,7 @@
   .menu-panel{
     position:relative;width:100%;max-width:440px;
     background:
-      repeating-linear-gradient(135deg, rgba(0,0,0,0.015) 0 10px, transparent 10px 20px),
-      radial-gradient(ellipse at 50% 0%, rgba(241,196,15,.09), transparent 60%),
+      repeating-linear-gradient(135deg, rgba(0,0,0,0.02) 0 10px, transparent 10px 20px),
       var(--parchment);
     border-radius:20px;
     box-shadow:0 24px 60px rgba(0,0,0,.45), var(--shadow);
@@ -232,11 +231,6 @@
   .menu-panel::before{
     content:'';position:absolute;top:0;left:22%;right:22%;height:3px;
     background:linear-gradient(90deg,transparent,var(--gold),transparent);
-  }
-  .hero{position:relative;}
-  .hero::after{
-    content:'';display:block;width:60%;max-width:220px;height:1px;margin:16px auto 0;
-    background:linear-gradient(90deg,transparent,var(--parchment-dark),transparent);
   }
 
   .mode-grid{display:flex;flex-direction:column;gap:13px;}
@@ -558,6 +552,7 @@
     display:none;flex-direction:column;width:100vw;overflow:hidden;position:relative;z-index:1;
     height:100vh;height:100dvh;
     overscroll-behavior:none;
+    background:repeating-linear-gradient(100deg, rgba(255,255,255,.022) 0 70px, transparent 70px 140px), var(--bg-deep);
   }
   .topbar{
     display:flex;align-items:center;justify-content:space-between;gap:8px;
@@ -3445,6 +3440,61 @@
     const cp = currentPlayer();
     const myTurn = shouldShowControls();
 
+    if(state.pendingTrade){
+      const t = state.pendingTrade;
+      const proposer = state.players[t.proposerId];
+      const partner = state.players[t.partnerId];
+      if(state.myId === t.partnerId){
+        container.innerHTML = `
+          <div class="trade-header"><span>🤝 Proposition de ${proposer ? proposer.name : '...'}</span></div>
+          ${tradeOfferSummaryHTML(t)}
+          <div class="trade-actions">
+            <button class="action-btn btn-buy" id="tradeAcceptBtn">✅ Accepter</button>
+            <button class="action-btn btn-pass" id="tradeDeclineBtn">❌ Refuser</button>
+          </div>
+        `;
+        document.getElementById('tradeAcceptBtn').addEventListener('click', acceptTrade);
+        document.getElementById('tradeDeclineBtn').addEventListener('click', declineTrade);
+      } else if(state.myId === t.proposerId){
+        container.innerHTML = `
+          <div class="trade-header"><span>🤝 Votre proposition</span></div>
+          <div class="bot-offer-intro">En attente de la réponse de <b>${partner ? partner.name : '...'}</b>…</div>
+          ${tradeOfferSummaryHTML(t)}
+          <div class="trade-actions">
+            <button class="action-btn btn-pass" id="tradeCancelBtn">🚫 Annuler la proposition</button>
+          </div>
+        `;
+        document.getElementById('tradeCancelBtn').addEventListener('click', cancelTrade);
+      } else {
+        container.innerHTML = `
+          <div class="trade-header"><span>🤝 Échange en cours</span></div>
+          <div class="bot-offer-intro">${proposer ? proposer.name : '...'} propose un échange à <b>${partner ? partner.name : '...'}</b>…</div>
+          ${tradeOfferSummaryHTML(t)}
+        `;
+      }
+      return;
+    }
+
+    if(state.buildOpen && cp && myTurn){
+      container.innerHTML = `
+        <div class="trade-header"><span>🏗️ Constructions</span><button class="build-close" id="buildCloseBtn">Fermer ✕</button></div>
+        ${renderBuildPanelHTML(cp)}
+      `;
+      container.querySelectorAll('.br-plus').forEach(btn => btn.addEventListener('click', () => {
+        buildHouse(parseInt(btn.dataset.idx, 10));
+        renderAll();
+        pushState();
+      }));
+      container.querySelectorAll('.br-minus').forEach(btn => btn.addEventListener('click', () => {
+        sellHouse(parseInt(btn.dataset.idx, 10));
+        renderAll();
+        pushState();
+      }));
+      const buildCloseBtn = document.getElementById('buildCloseBtn');
+      if(buildCloseBtn) buildCloseBtn.addEventListener('click', () => { state.buildOpen = false; resumeTimer(); renderAll(); pushState(); });
+      return;
+    }
+
     if(state.botOffer){
       const offer = state.botOffer;
       const proposer = state.players[offer.proposerId];
@@ -3705,53 +3755,12 @@
     }
 
     if(state.pendingTrade){
-      const t = state.pendingTrade;
-      const proposer = state.players[t.proposerId];
-      const partner = state.players[t.partnerId];
-      if(state.myId === t.partnerId){
-        zone.innerHTML = `
-          <div class="build-header">🤝 Proposition de ${proposer ? proposer.name : '...'}</div>
-          ${tradeOfferSummaryHTML(t)}
-          <div class="trade-actions">
-            <button class="action-btn btn-buy" id="tradeAcceptBtn">✅ Accepter</button>
-            <button class="action-btn btn-pass" id="tradeDeclineBtn">❌ Refuser</button>
-          </div>
-        `;
-        document.getElementById('tradeAcceptBtn').addEventListener('click', acceptTrade);
-        document.getElementById('tradeDeclineBtn').addEventListener('click', declineTrade);
-      } else if(state.myId === t.proposerId){
-        zone.innerHTML = `
-          <div class="waiting-note">🕐 En attente de la réponse de <b>${partner ? partner.name : '...'}</b>…</div>
-        `;
-        const cancelBtn = document.createElement('button');
-        cancelBtn.className = 'action-btn btn-pass';
-        cancelBtn.style.marginTop = '8px';
-        cancelBtn.textContent = '🚫 Annuler la proposition';
-        cancelBtn.addEventListener('click', cancelTrade);
-        zone.appendChild(cancelBtn);
-      } else {
-        zone.innerHTML = `<div class="waiting-note">🤝 ${proposer ? proposer.name : '...'} propose un échange à <b>${partner ? partner.name : '...'}</b>…</div>`;
-      }
+      zone.innerHTML = `<div class="waiting-note">🤝 Un échange est en cours dans le plateau ci-dessus ⬆️</div>`;
       return;
     }
 
     if(state.buildOpen && cp && myTurn){
-      zone.innerHTML = `
-        <div class="build-header">🏗️ Constructions <button class="build-close" id="buildCloseBtn">Fermer ✕</button></div>
-        ${renderBuildPanelHTML(cp)}
-      `;
-      zone.querySelectorAll('.br-plus').forEach(btn => btn.addEventListener('click', () => {
-        buildHouse(parseInt(btn.dataset.idx, 10));
-        renderAll();
-        pushState();
-      }));
-      zone.querySelectorAll('.br-minus').forEach(btn => btn.addEventListener('click', () => {
-        sellHouse(parseInt(btn.dataset.idx, 10));
-        renderAll();
-        pushState();
-      }));
-      const closeBtn = document.getElementById('buildCloseBtn');
-      if(closeBtn) closeBtn.addEventListener('click', () => { state.buildOpen = false; resumeTimer(); renderConsole(); pushState(); });
+      zone.innerHTML = `<div class="waiting-note">🏗️ Constructions ouvertes dans le plateau ci-dessus ⬆️</div>`;
       return;
     }
 
