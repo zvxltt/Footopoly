@@ -554,6 +554,7 @@
     overscroll-behavior:none;
     background:repeating-linear-gradient(100deg, rgba(255,255,255,.022) 0 70px, transparent 70px 140px), var(--bg-deep);
   }
+  .game-bg{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
   .topbar{
     display:flex;align-items:center;justify-content:space-between;gap:8px;
     padding:10px 20px;background:var(--bg-deep-2);
@@ -750,7 +751,9 @@
   /* ---- Center console ---- */
   #console{
     grid-row:2 / 11;grid-column:2 / 11;
-    background: radial-gradient(120% 90% at 50% 0%, #1e4c2a 0%, #0c1f13 72%);
+    background:
+      repeating-linear-gradient(100deg, rgba(255,255,255,.025) 0 40px, transparent 40px 80px),
+      radial-gradient(120% 90% at 50% 0%, #173a22 0%, #0c1f13 72%);
     border-radius:16px;
     display:flex;align-items:center;justify-content:center;
     padding:clamp(8px,calc(var(--board-px) * 0.02),16px);color:var(--parchment);
@@ -761,17 +764,6 @@
     position:relative;overflow:hidden;
   }
   /* decorative pitch markings, purely original, sits behind the UI */
-  .pitch-lines{position:absolute;inset:0;z-index:0;pointer-events:none;}
-  .pitch-lines .circle{
-    position:absolute;width:50%;aspect-ratio:1;border:2px solid rgba(255,255,255,.055);
-    border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);
-  }
-  .pitch-lines .spot{
-    position:absolute;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.08);
-    top:50%;left:50%;transform:translate(-50%,-50%);
-  }
-  .pitch-lines .halfway{position:absolute;left:5%;right:5%;top:50%;height:2px;background:rgba(255,255,255,.045);}
-
   /* `.console-inner` is a scroll container as a safety net: if a lot of content
      needs to show at once (build/trade panel + dice) on a small board,
      it scrolls internally instead of silently clipping under #console's
@@ -1013,23 +1005,26 @@
     width:100%;max-width:360px;background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.5);
     color:#ffd6d2;font-size:11.5px;border-radius:8px;padding:6px 10px;margin-top:8px;text-align:center;
   }
-  .trade-actions{display:flex;gap:10px;justify-content:center;margin-top:10px;}
+  .trade-actions{display:flex;gap:10px;justify-content:center;margin-top:10px;flex-wrap:wrap;}
   .trade-actions .action-btn{padding:9px 20px;font-size:13px;}
 
   .trade-offer{
-    display:flex;align-items:center;gap:10px;width:100%;max-width:380px;justify-content:center;
+    display:flex;align-items:center;gap:8px;width:100%;max-width:360px;justify-content:center;
   }
   .trade-offer-side{
-    flex:1 1 140px;min-width:120px;background:rgba(255,255,255,.06);border-radius:10px;padding:10px 12px;
+    flex:1;min-width:0;background:rgba(255,255,255,.06);border-radius:10px;padding:8px 10px;
   }
   .trade-offer-label{
-    font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
-    color:var(--gold);margin-bottom:6px;
+    font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--gold);margin-bottom:5px;
   }
-  .trade-offer-item{font-size:12.5px;color:#fff;font-weight:600;padding:2px 0;}
+  .trade-offer-item{
+    font-size:11.5px;color:#fff;font-weight:600;padding:2px 0;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
   .trade-offer-item.money{color:var(--gold);font-family:'JetBrains Mono',monospace;}
   .trade-offer-item.empty{color:rgba(242,244,234,.5);font-weight:400;font-style:italic;}
-  .trade-offer-arrow{font-size:18px;color:rgba(242,244,234,.6);flex:none;}
+  .trade-offer-arrow{font-size:16px;color:rgba(242,244,234,.6);flex:none;}
 
   .buy-panel{
     background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12);
@@ -1384,6 +1379,10 @@
 
 <!-- ============ GAME SCREEN ============ -->
 <div id="game">
+  <div class="game-bg" aria-hidden="true">
+    <div class="stadium-glow stadium-glow-1"></div>
+    <div class="stadium-glow stadium-glow-2"></div>
+  </div>
   <div class="topbar">
     <div class="topbar-title"><div class="footballicon"></div> <span class="topbar-word">MULTIPOLY</span> <span class="topbar-code" id="topbarCode"></span></div>
     <div class="turn-pill" id="turnPill"></div>
@@ -3211,11 +3210,6 @@
     const consoleEl = document.createElement('div');
     consoleEl.id = 'console';
     consoleEl.innerHTML = `
-      <div class="pitch-lines">
-        <div class="circle"></div>
-        <div class="spot"></div>
-        <div class="halfway"></div>
-      </div>
       <div class="console-inner">
         <div class="status-row">
           <div class="turn-banner" id="turnBanner"></div>
