@@ -3136,6 +3136,8 @@
   function tradeOfferSummaryHTML(t){
     const giveNames = t.give.map(idx => BOARD[idx].name);
     const receiveNames = t.receive.map(idx => BOARD[idx].name);
+    const proposer = state.players[t.proposerId];
+    const partner = state.players[t.partnerId];
     const side = (names, money) => {
       let html = '';
       names.forEach(n => { html += `<div class="trade-offer-item">${n}</div>`; });
@@ -3146,12 +3148,12 @@
     return `
       <div class="trade-offer">
         <div class="trade-offer-side">
-          <div class="trade-offer-label">Vous recevriez</div>
+          <div class="trade-offer-label">${proposer ? proposer.name : '...'} donne</div>
           ${side(giveNames, t.moneyGive)}
         </div>
         <div class="trade-offer-arrow">⇄</div>
         <div class="trade-offer-side">
-          <div class="trade-offer-label">Vous donneriez</div>
+          <div class="trade-offer-label">${partner ? partner.name : '...'} donne</div>
           ${side(receiveNames, t.moneyReceive)}
         </div>
       </div>
