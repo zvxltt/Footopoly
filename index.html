@@ -55,13 +55,48 @@
   }
 
   /* ================= LANDING & LOBBY SCREENS ================= */
-  #lobby, #localSetup, #profileScreen{
+  #lobby, #profileScreen{
     height:100vh;
     height:100dvh;
     overflow-y:auto;
     display:flex;align-items:center;justify-content:center;
     padding:20px 16px;position:relative;z-index:1;
   }
+  #localSetup{
+    height:100vh;height:100dvh;
+    display:flex;flex-direction:column;
+    position:relative;z-index:1;
+  }
+  .local-header{
+    flex:none;display:flex;align-items:center;gap:10px;
+    padding:14px 16px;
+    background:
+      repeating-linear-gradient(45deg, rgba(0,0,0,0.045) 0 3px, transparent 3px 7px),
+      linear-gradient(120deg, var(--pitch), #227a35 55%, #1c6b2d);
+    color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.25);
+  }
+  .local-back-btn{
+    width:32px;height:32px;border-radius:50%;flex:none;
+    background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);
+    color:#fff;font-size:20px;font-weight:700;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .local-back-btn:active{background:rgba(255,255,255,.3);}
+  .local-header-title{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:16px;flex:1;}
+  .local-header-spacer{width:32px;flex:none;}
+  .local-scroll{
+    flex:1;min-height:0;overflow-y:auto;
+    background:var(--parchment);
+    padding:16px 18px 8px;
+  }
+  .local-footer{
+    flex:none;padding:12px 18px calc(12px + env(safe-area-inset-bottom, 0px));
+    background:var(--parchment);
+    border-top:1px solid var(--parchment-dark);
+    box-shadow:0 -4px 14px rgba(0,0,0,.1);
+  }
+  .local-footer .start-btn{margin:0;}
+  .field-label.section.first{border-top:none;padding-top:0;margin-top:0;}
   .setup-card{
     width:100%;max-width:640px;
     background:var(--parchment);
@@ -251,8 +286,6 @@
   }
   #localPlayerRows{
     display:flex;flex-direction:column;gap:6px;margin-bottom:14px;
-    max-height:clamp(140px,32vh,260px);max-height:clamp(140px,32dvh,260px);
-    overflow-y:auto;padding-right:2px;
   }
   .player-row{
     display:flex;align-items:center;gap:8px;
@@ -1134,37 +1167,35 @@
 
 <!-- ============ LOCAL SETUP SCREEN ============ -->
 <div id="localSetup" style="display:none">
-  <div class="setup-card">
-    <div class="setup-banner">
-      <div class="eyebrow">Partie locale</div>
-      <h1>MULTIPOLY</h1>
-      <p>Un seul appareil, à faire tourner entre vous.</p>
+  <div class="local-header">
+    <button class="local-back-btn" id="localBackBtn" type="button" aria-label="Retour">‹</button>
+    <span class="local-header-title">Partie locale</span>
+    <span class="local-header-spacer"></span>
+  </div>
+
+  <div class="local-scroll">
+    <span class="field-label section first">Univers</span>
+    <div class="theme-row" id="localThemeRow"></div>
+
+    <span class="field-label section">Nombre de Présidents</span>
+    <div class="stepper">
+      <button id="localDecBtn" type="button" aria-label="Moins de joueurs">−</button>
+      <div class="count" id="localCountLabel">4</div>
+      <button id="localIncBtn" type="button" aria-label="Plus de joueurs">+</button>
     </div>
-    <div class="setup-body">
-      <span class="field-label section">Univers</span>
-      <div class="theme-row" id="localThemeRow"></div>
 
-      <span class="field-label section">Nombre de Présidents</span>
-      <div class="stepper">
-        <button id="localDecBtn" type="button" aria-label="Moins de joueurs">−</button>
-        <div class="count" id="localCountLabel">4</div>
-        <button id="localIncBtn" type="button" aria-label="Plus de joueurs">+</button>
-      </div>
+    <span class="field-label section">Présidents</span>
+    <div id="localPlayerRows"></div>
 
-      <span class="field-label section">Présidents</span>
-      <div id="localPlayerRows"></div>
-
-      <div class="row-money">
-        <span class="field-label section">Budget de départ</span>
-        <div class="money-input-wrap">
-          <span>€</span>
-          <input type="number" id="localStartMoney" value="1500" min="200" step="50">
-        </div>
-      </div>
-
-      <button class="start-btn" id="localStartBtn" type="button">Lancer la partie ▶</button>
-      <button class="rules-link" id="localBackBtn" type="button">← Retour</button>
+    <span class="field-label section">Budget de départ</span>
+    <div class="money-input-wrap">
+      <span>€</span>
+      <input type="number" id="localStartMoney" value="1500" min="200" step="50">
     </div>
+  </div>
+
+  <div class="local-footer">
+    <button class="start-btn" id="localStartBtn" type="button">Lancer la partie ▶</button>
   </div>
 </div>
 
