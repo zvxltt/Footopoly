@@ -64,52 +64,56 @@
   }
   #localSetup{
     height:100vh;height:100dvh;
-    display:flex;flex-direction:column;
-    position:relative;z-index:1;
+    display:flex;align-items:center;justify-content:center;
+    padding:10px;position:relative;z-index:1;
+  }
+  .local-card{
+    position:relative;width:100%;max-width:440px;max-height:100%;
+    background:var(--parchment);border-radius:20px;
+    box-shadow:0 24px 60px rgba(0,0,0,.45), var(--shadow);
+    border:1px solid var(--parchment-dark);
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .local-card::before{
+    content:'';position:absolute;top:0;left:22%;right:22%;height:3px;z-index:1;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
   }
   .local-header{
-    flex:none;display:flex;align-items:center;gap:8px;
-    padding:9px 14px;
-    background:
-      repeating-linear-gradient(45deg, rgba(0,0,0,0.045) 0 3px, transparent 3px 7px),
-      repeating-linear-gradient(135deg, rgba(255,255,255,0.06) 0 12px, transparent 12px 24px),
-      linear-gradient(120deg, var(--pitch), #227a35 55%, #1c6b2d);
-    color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.25);
+    flex:none;
+    padding:14px 18px 8px;
     position:relative;
   }
   .local-header::after{
-    content:'';position:absolute;bottom:0;left:22%;right:22%;height:2px;
-    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+    content:'';position:absolute;left:18px;bottom:0;width:34px;height:3px;
+    border-radius:2px;background:linear-gradient(90deg,var(--pitch),var(--gold));
   }
-  .local-back-btn{
-    width:28px;height:28px;border-radius:50%;flex:none;
-    background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);
-    color:#fff;font-size:18px;font-weight:700;line-height:1;
-    display:flex;align-items:center;justify-content:center;
-    transition:background .15s ease, transform .15s cubic-bezier(.34,1.4,.64,1);
-  }
-  .local-back-btn:hover{background:rgba(255,255,255,.26);transform:scale(1.05);}
-  .local-back-btn:active{background:rgba(255,255,255,.3);transform:scale(.94);}
-  .local-header-title{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:14.5px;flex:1;text-shadow:0 2px 0 rgba(0,0,0,.18);}
-  .local-header-spacer{width:28px;flex:none;}
+  .local-header-title{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:14px;color:var(--ink);}
   .local-scroll{
     flex:1;min-height:0;overflow:hidden;
-    background:var(--parchment);
-    padding:11px 18px 4px;
+    padding:0 18px 2px;
   }
   .local-footer{
-    flex:none;padding:8px 18px calc(8px + env(safe-area-inset-bottom, 0px));
-    background:var(--parchment);
+    flex:none;padding:8px 18px calc(10px + env(safe-area-inset-bottom, 0px));
     border-top:1px solid var(--parchment-dark);
-    box-shadow:0 -4px 14px rgba(0,0,0,.1);
   }
   .local-summary{
-    font-size:11px;color:var(--ink-soft);text-align:center;font-weight:600;
-    margin-bottom:6px;
+    font-size:10.5px;color:var(--ink-soft);text-align:center;font-weight:600;
+    margin-bottom:5px;
   }
   .local-summary b{color:var(--ink);}
   .local-footer .start-btn{margin:0;}
+  .local-footer .rules-link{margin-top:8px;}
   .field-label.section.first{border-top:none;padding-top:0;margin-top:0;}
+  .form-title{
+    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:15px;color:var(--ink);
+    text-align:left;margin-bottom:16px;padding-bottom:8px;
+    position:relative;
+  }
+  .form-title::after{
+    content:'';position:absolute;left:0;bottom:0;width:34px;height:3px;
+    border-radius:2px;background:linear-gradient(90deg,var(--pitch),var(--gold));
+  }
+  .form-title + .field-label.section{border-top:none;padding-top:0;margin-top:0;}
   .setup-card{
     width:100%;max-width:640px;
     background:var(--parchment);
@@ -1166,6 +1170,7 @@
     </div>
 
     <div id="createForm" class="landing-form" style="display:none">
+      <div class="form-title">Créer une partie</div>
       <span class="field-label section">Univers</span>
       <div class="theme-row-wrap">
         <button class="theme-scroll-arrow left" type="button" data-target="createThemeRow" aria-label="Défiler à gauche">‹</button>
@@ -1183,6 +1188,7 @@
     </div>
 
     <div id="joinForm" class="landing-form" style="display:none">
+      <div class="form-title">Rejoindre une partie</div>
       <span class="field-label section">Code de la partie</span>
       <input type="text" id="joinCode" maxlength="6" placeholder="EX: PL4Y2" class="text-input code-input">
       <button class="start-btn" id="joinConfirmBtn" type="button">Rejoindre ▶</button>
@@ -1229,43 +1235,44 @@
 
 <!-- ============ LOCAL SETUP SCREEN ============ -->
 <div id="localSetup" style="display:none">
-  <div class="local-header">
-    <button class="local-back-btn" id="localBackBtn" type="button" aria-label="Retour">‹</button>
-    <span class="local-header-title">Partie locale</span>
-    <span class="local-header-spacer"></span>
-  </div>
-
-  <div class="local-scroll">
-    <span class="field-label section first">Univers</span>
-    <div class="theme-row-wrap">
-      <button class="theme-scroll-arrow left" type="button" data-target="localThemeRow" aria-label="Défiler à gauche">‹</button>
-      <div class="theme-row" id="localThemeRow"></div>
-      <button class="theme-scroll-arrow right" type="button" data-target="localThemeRow" aria-label="Défiler à droite">›</button>
+  <div class="local-card">
+    <div class="local-header">
+      <div class="local-header-title">Partie locale</div>
     </div>
 
-    <span class="field-label section">Nombre de Présidents</span>
-    <div class="stepper-card">
-      <div class="stepper">
-        <button id="localDecBtn" type="button" aria-label="Moins de joueurs">−</button>
-        <div class="count" id="localCountLabel">4</div>
-        <button id="localIncBtn" type="button" aria-label="Plus de joueurs">+</button>
+    <div class="local-scroll">
+      <span class="field-label section first">Univers</span>
+      <div class="theme-row-wrap">
+        <button class="theme-scroll-arrow left" type="button" data-target="localThemeRow" aria-label="Défiler à gauche">‹</button>
+        <div class="theme-row" id="localThemeRow"></div>
+        <button class="theme-scroll-arrow right" type="button" data-target="localThemeRow" aria-label="Défiler à droite">›</button>
+      </div>
+
+      <span class="field-label section">Nombre de Présidents</span>
+      <div class="stepper-card">
+        <div class="stepper">
+          <button id="localDecBtn" type="button" aria-label="Moins de joueurs">−</button>
+          <div class="count" id="localCountLabel">4</div>
+          <button id="localIncBtn" type="button" aria-label="Plus de joueurs">+</button>
+        </div>
+      </div>
+
+      <span class="field-label section">Présidents</span>
+      <p class="local-bot-hint">🤖 Activez le mode Bot</p>
+      <div id="localPlayerRows"></div>
+
+      <span class="field-label section">Budget de départ</span>
+      <div class="money-input-wrap">
+        <span>€</span>
+        <input type="number" id="localStartMoney" value="1500" min="200" step="50">
       </div>
     </div>
 
-    <span class="field-label section">Présidents</span>
-    <p class="local-bot-hint">🤖 Activez le mode Bot</p>
-    <div id="localPlayerRows"></div>
-
-    <span class="field-label section">Budget de départ</span>
-    <div class="money-input-wrap">
-      <span>€</span>
-      <input type="number" id="localStartMoney" value="1500" min="200" step="50">
+    <div class="local-footer">
+      <div class="local-summary" id="localSummary"></div>
+      <button class="start-btn" id="localStartBtn" type="button">Lancer la partie ▶</button>
+      <button class="rules-link" id="localBackBtn" type="button">← Retour</button>
     </div>
-  </div>
-
-  <div class="local-footer">
-    <div class="local-summary" id="localSummary"></div>
-    <button class="start-btn" id="localStartBtn" type="button">Lancer la partie ▶</button>
   </div>
 </div>
 
