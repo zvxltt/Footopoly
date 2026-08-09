@@ -249,7 +249,11 @@
     font-family:'Baloo 2',sans-serif;font-size:21px;font-weight:700;
     min-width:28px;text-align:center;
   }
-  #localPlayerRows{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+  #localPlayerRows{
+    display:flex;flex-direction:column;gap:6px;margin-bottom:14px;
+    max-height:clamp(140px,32vh,260px);max-height:clamp(140px,32dvh,260px);
+    overflow-y:auto;padding-right:2px;
+  }
   .player-row{
     display:flex;align-items:center;gap:8px;
     background:#fff;border:1px solid var(--parchment-dark);
@@ -334,11 +338,6 @@
     font-family:'JetBrains Mono',monospace;letter-spacing:.2em;text-transform:uppercase;
     text-align:center;font-size:20px;
   }
-  .token-row{display:flex;gap:11px;flex-wrap:wrap;margin-bottom:16px;}
-  .token-row .token-pick{cursor:pointer;opacity:.45;transition:all .15s ease;}
-  .token-row .token-pick.picked{opacity:1;transform:scale(1.1);box-shadow:0 0 0 3px var(--gold);}
-  .token-row .token-pick.taken{opacity:.2;cursor:not-allowed;filter:grayscale(1);}
-  .token-row .token-pick.taken:hover{opacity:.2;}
   .theme-row{display:flex;gap:11px;flex-wrap:wrap;margin-bottom:18px;}
 
   /* ---------------- PROFILE ---------------- */
@@ -1182,10 +1181,7 @@
     <div class="setup-body">
       <button class="start-btn start-btn-alt copy-btn" id="copyCodeBtn" type="button">📋 Copier le code</button>
 
-      <span class="field-label" style="margin-top:18px;">Votre emblème</span>
-      <div class="token-row" id="lobbyTokenRow"></div>
-
-      <span class="field-label">Présidents dans le salon</span>
+      <span class="field-label" style="margin-top:18px;">Présidents dans le salon</span>
       <div id="lobbyPlayers" class="lobby-players"></div>
 
       <div id="lobbyHostControls" style="display:none">
@@ -1967,7 +1963,7 @@
     if(!MQTT_READY){ errorEl.textContent = 'Connexion au serveur en cours, réessaie dans un instant.'; return; }
     const name = ((profile.pseudo && profile.pseudo.trim()) || 'Président 1').slice(0,16);
     const startMoney = Math.max(200, parseInt(document.getElementById('createStartMoney').value, 10) || 1500);
-    const tok = TOKENS[0];
+    const tok = currentEmblem();
     const code = generateCode();
     const initialRoom = {
       status: 'lobby',
@@ -2030,8 +2026,7 @@
           name = `${baseName} (${suffix})`.slice(0,16);
           suffix++;
         }
-        const usedTokens = new Set(existingPlayers.map(p => p.token));
-        const tok = TOKENS.find(t => !usedTokens.has(t.e)) || TOKENS[existingPlayers.length % TOKENS.length];
+        const tok = currentEmblem();
         const players = existingPlayers.slice();
         players.push({ name, token: tok.e, color: tok.c, money: 0, pos: 0, properties: [], bankrupt: false, skipTurn: false });
         const newRoom = Object.assign({}, room, { players });
@@ -2257,7 +2252,6 @@
   function renderLobby(){
     const badge = document.getElementById('lobbyThemeBadge');
     if(badge) badge.textContent = `${currentTheme.icon} Univers : ${currentTheme.label}`;
-    renderLobbyTokenRow();
     const list = document.getElementById('lobbyPlayers');
     list.innerHTML = '';
     state.players.forEach((p, i) => {
@@ -2281,35 +2275,6 @@
   // Live emblem picker shown in the lobby: everyone picks their own token
   // once they can see who else is in the room, instead of blind-guessing
   // during create/join. Tokens already taken by someone else are disabled.
-  function renderLobbyTokenRow(){
-    const row = document.getElementById('lobbyTokenRow');
-    if(!row || state.myId === null) return;
-    const me = state.players[state.myId];
-    if(!me) return;
-    const usedByOthers = new Set(
-      state.players.filter((p, i) => i !== state.myId).map(p => p.token)
-    );
-    row.innerHTML = '';
-    TOKENS.forEach(tok => {
-      const taken = usedByOthers.has(tok.e) && tok.e !== me.token;
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'token-pick' + (me.token === tok.e ? ' picked' : '') + (taken ? ' taken' : '');
-      btn.style.background = tok.c;
-      btn.textContent = tok.e;
-      btn.title = taken ? 'Déjà pris par un autre Président' : tok.name;
-      if(taken) btn.disabled = true;
-      btn.addEventListener('click', () => {
-        if(taken || me.token === tok.e) return;
-        me.token = tok.e;
-        me.color = tok.c;
-        renderLobby();
-        pushState();
-      });
-      row.appendChild(btn);
-    });
-  }
-
   /* ---- push local state changes to every connected phone, at "settle
      points" only (never mid-animation) so everyone converges on the same
      state. MQTT publish always replaces the whole retained message, so we
