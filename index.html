@@ -3831,7 +3831,7 @@
       const buildBtn = document.createElement('button');
       buildBtn.className = 'action-btn btn-build';
       buildBtn.textContent = '🏗️ Construire';
-      buildBtn.addEventListener('click', () => { state.buildOpen = true; pauseTimer(); renderConsoleContent(); renderConsole(); });
+      buildBtn.addEventListener('click', () => { state.buildOpen = true; pauseTimer(); renderConsole(); renderConsoleContent(); });
       secondaryRow.appendChild(buildBtn);
     }
 
