@@ -95,6 +95,11 @@
     border-top:1px solid var(--parchment-dark);
     box-shadow:0 -4px 14px rgba(0,0,0,.1);
   }
+  .local-summary{
+    font-size:11.5px;color:var(--ink-soft);text-align:center;font-weight:600;
+    margin-bottom:9px;
+  }
+  .local-summary b{color:var(--ink);}
   .local-footer .start-btn{margin:0;}
   .field-label.section.first{border-top:none;padding-top:0;margin-top:0;}
   .setup-card{
@@ -268,8 +273,12 @@
     border-top:1px solid var(--parchment-dark);
   }
   .field-label.section:first-child{border-top:none;padding-top:0;margin-top:0;}
+  .stepper-card{
+    background:#fff;border:1px solid var(--parchment-dark);border-radius:12px;
+    padding:10px 14px;margin-bottom:16px;display:flex;
+  }
   .stepper{
-    display:flex;align-items:center;gap:14px;margin-bottom:16px;
+    display:flex;align-items:center;gap:14px;margin-bottom:0;
   }
   .stepper button{
     width:32px;height:32px;border-radius:10px;border:none;
@@ -283,6 +292,9 @@
   .stepper .count{
     font-family:'Baloo 2',sans-serif;font-size:21px;font-weight:700;
     min-width:28px;text-align:center;
+  }
+  .local-bot-hint{
+    font-size:11px;color:var(--ink-soft);line-height:1.4;margin:0 0 8px;
   }
   #localPlayerRows{
     display:flex;flex-direction:column;gap:6px;margin-bottom:14px;
@@ -849,6 +861,7 @@
     font-weight:700;font-size:13px;color:#fff;margin-bottom:8px;
   }
   .trade-pick-title{font-size:12px;color:rgba(242,244,234,.75);margin-bottom:8px;}
+  .bot-offer-intro{font-size:12.5px;color:rgba(242,244,234,.85);text-align:center;margin:0 0 10px;max-width:340px;}
   .trade-partners{display:flex;flex-direction:column;gap:6px;width:100%;max-width:340px;max-height:clamp(90px,calc(var(--board-px) * 0.26),200px);overflow-y:auto;}
   .trade-partner-btn{
     display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.07);
@@ -1178,13 +1191,16 @@
     <div class="theme-row" id="localThemeRow"></div>
 
     <span class="field-label section">Nombre de Présidents</span>
-    <div class="stepper">
-      <button id="localDecBtn" type="button" aria-label="Moins de joueurs">−</button>
-      <div class="count" id="localCountLabel">4</div>
-      <button id="localIncBtn" type="button" aria-label="Plus de joueurs">+</button>
+    <div class="stepper-card">
+      <div class="stepper">
+        <button id="localDecBtn" type="button" aria-label="Moins de joueurs">−</button>
+        <div class="count" id="localCountLabel">4</div>
+        <button id="localIncBtn" type="button" aria-label="Plus de joueurs">+</button>
+      </div>
     </div>
 
     <span class="field-label section">Présidents</span>
+    <p class="local-bot-hint">🤖 Activez le mode Bot sur une ligne pour ajouter une IA qui joue, négocie et achète toute seule.</p>
     <div id="localPlayerRows"></div>
 
     <span class="field-label section">Budget de départ</span>
@@ -1195,6 +1211,7 @@
   </div>
 
   <div class="local-footer">
+    <div class="local-summary" id="localSummary"></div>
     <button class="start-btn" id="localStartBtn" type="button">Lancer la partie ▶</button>
   </div>
 </div>
@@ -1863,6 +1880,8 @@
     dice: [1,1],
     turnStartedAt: null, // ms timestamp — drives the 60s turn timer in online mode
     timerPaused: false,  // synced: true while the active player is browsing build/trade, so everyone sees "Pause" not just them
+    botOffer: null,      // local-only (not synced): a bot's pending trade proposal to a human, awaiting accept/decline
+    botTradeConsidered: false, // local-only: whether the current bot turn has already weighed proposing a trade
   };
   // In local (pass-and-play) mode everyone shares one device, so every
   // action is always "your turn" — only online mode gates by player identity.
@@ -2085,6 +2104,16 @@
 
   let localBotFlags = [];
 
+  function updateLocalSummary(){
+    const el = document.getElementById('localSummary');
+    if(!el) return;
+    const botCount = localBotFlags.slice(0, localPlayerCount).filter(Boolean).length;
+    const botText = botCount > 0 ? ` (dont ${botCount} bot${botCount > 1 ? 's' : ''} 🤖)` : '';
+    const budgetInput = document.getElementById('localStartMoney');
+    const budget = budgetInput ? (budgetInput.value || 1500) : 1500;
+    el.innerHTML = `<b>${localPlayerCount} joueurs</b>${botText} · ${currentTheme.icon} ${currentTheme.label} · €${budget}`;
+  }
+
   function renderLocalPlayerRows(){
     const existing = Array.from(localPlayerRows.querySelectorAll('.player-row')).map(row => ({
       name: row.querySelector('input').value,
@@ -2108,10 +2137,14 @@
         localBotFlags[idx] = !localBotFlags[idx];
         btn.classList.toggle('active', localBotFlags[idx]);
         btn.closest('.player-row').classList.toggle('is-bot', localBotFlags[idx]);
+        updateLocalSummary();
       });
     });
+    updateLocalSummary();
   }
   renderLocalPlayerRows();
+
+  document.getElementById('localStartMoney').addEventListener('input', updateLocalSummary);
 
   document.getElementById('showLocalBtn').addEventListener('click', () => {
     document.getElementById('landing').style.display = 'none';
@@ -2521,6 +2554,12 @@
     const err = validateTradeOffer(cp, partner, giveArr, receiveArr, t.moneyGive, t.moneyReceive);
     if(err){ t.error = err; renderConsoleContent(); return; }
 
+    if(partner.isBot && !botShouldAcceptTrade(partner, giveArr, receiveArr, t.moneyGive, t.moneyReceive)){
+      t.error = `${partner.name} refuse cette offre — trop déséquilibrée pour lui/elle.`;
+      renderConsoleContent();
+      return;
+    }
+
     applyTradeTransfer(cp, partner, giveArr, receiveArr, t.moneyGive, t.moneyReceive);
     pushLog(describeTradeResult(cp, partner, giveArr, receiveArr, t.moneyGive, t.moneyReceive, '🤝', 'concluent un échange'));
 
@@ -2762,15 +2801,119 @@
   }
 
   /* ---------------- LOCAL BOT PLAYERS ----------------
-     Simple, predictable AI for local (pass-and-play) games: rolls dice on
-     its turn, buys a property if it can comfortably afford it, otherwise
-     passes, and ends its turn once done. Bots never build or trade — kept
-     deliberately simple so games stay quick and readable to follow. */
+     Local (pass-and-play) bot AI: rolls dice, buys when it comfortably can,
+     and now actively looks for beneficial trades — both evaluating offers
+     it receives (rejecting bad ones) and proposing its own when it's one
+     property short of completing a monopoly. */
   let botActionScheduled = false;
+
+  // Rough strategic value of a property to a given player: face price, with
+  // a large premium if ACQUIRING it would complete a full color group, or
+  // a large penalty if GIVING it away would break a group the player
+  // currently owns outright. This is what makes bots refuse lopsided trades
+  // and actively chase the properties that would complete their monopolies.
+  function estimatePropertyValueFor(playerId, idx, isAcquiring){
+    const sp = BOARD[idx];
+    if(!sp) return 0;
+    if(sp.type !== 'property') return sp.price || 150;
+    let val = sp.price;
+    const groupIdxs = groupPropertyIndices(sp.group);
+    if(isAcquiring){
+      const wouldOwnFull = groupIdxs.every(gi => gi === idx || state.ownership[gi] === playerId);
+      if(wouldOwnFull) val *= 2.2;
+    } else {
+      const currentlyFull = groupIdxs.every(gi => state.ownership[gi] === playerId);
+      if(currentlyFull) val *= 2.2;
+    }
+    return val;
+  }
+
+  // Net value of a trade to playerId: what they'd receive minus what they'd
+  // give up, in estimated strategic value. Positive means it's a good deal
+  // for them.
+  function netTradeValue(playerId, propsIn, propsOut, moneyIn, moneyOut){
+    let val = moneyIn - moneyOut;
+    propsIn.forEach(idx => { val += estimatePropertyValueFor(playerId, idx, true); });
+    propsOut.forEach(idx => { val -= estimatePropertyValueFor(playerId, idx, false); });
+    return val;
+  }
+
+  // Used when a HUMAN (or another bot) proposes a trade TO a bot — the bot
+  // only accepts deals that are roughly fair or better for itself, instead
+  // of blindly agreeing to anything.
+  function botShouldAcceptTrade(bot, give, receive, moneyGive, moneyReceive){
+    const val = netTradeValue(bot.id, give, receive, moneyGive, moneyReceive);
+    return val >= -15;
+  }
+
+  // Looks for a color group where this bot owns at least one property but
+  // not all of them, and every missing property in that group is owned by
+  // one single other player (not the bank, not split across several
+  // owners) — the simplest, clearest kind of trade opportunity.
+  function findBotTradeOpportunity(bot){
+    for(const g of Object.keys(G)){
+      const groupIdxs = groupPropertyIndices(g);
+      const ownedByBot = groupIdxs.filter(idx => state.ownership[idx] === bot.id);
+      if(ownedByBot.length === 0 || ownedByBot.length === groupIdxs.length) continue;
+      const missing = groupIdxs.filter(idx => state.ownership[idx] !== bot.id);
+      if(missing.some(idx => state.ownership[idx] === undefined)) continue;
+      if(missing.some(idx => (state.houses[idx]||0) > 0)) continue;
+      const owners = new Set(missing.map(idx => state.ownership[idx]));
+      if(owners.size !== 1) continue;
+      const targetId = [...owners][0];
+      if(targetId === bot.id) continue;
+      return { missing, targetId };
+    }
+    return null;
+  }
+
+  // Builds a money-for-properties offer: a modest premium over face value
+  // (bots are willing to slightly overpay for a monopoly), capped by what
+  // the bot can actually afford while keeping a small cash buffer.
+  function buildBotOffer(bot, opportunity){
+    const { missing, targetId } = opportunity;
+    const totalFaceValue = missing.reduce((s, idx) => s + BOARD[idx].price, 0);
+    const idealOffer = Math.round(totalFaceValue * 1.15 / 10) * 10;
+    const affordable = Math.max(0, bot.money - 150);
+    const offerMoney = Math.min(idealOffer, affordable);
+    if(offerMoney < Math.round(totalFaceValue * 0.75)) return null; // can't make a decent enough offer
+    return { proposerId: bot.id, partnerId: targetId, give: [], receive: missing.slice(), moneyGive: offerMoney, moneyReceive: 0 };
+  }
+
+  // Called once per bot turn, right before it would otherwise end its turn.
+  // Returns true if it's now waiting on something (a human's response),
+  // meaning the turn should NOT be ended yet.
+  function maybeBotProposeTrade(bot){
+    const opp = findBotTradeOpportunity(bot);
+    if(!opp) return false;
+    const offer = buildBotOffer(bot, opp);
+    if(!offer) return false;
+    const target = state.players[offer.partnerId];
+    if(!target || target.bankrupt) return false;
+
+    if(target.isBot){
+      // Silent bot-to-bot negotiation — no UI needed, just resolves.
+      const val = netTradeValue(target.id, offer.give, offer.receive, offer.moneyReceive, offer.moneyGive);
+      if(val >= -15){
+        applyTradeTransfer(bot, target, offer.give, offer.receive, offer.moneyGive, offer.moneyReceive);
+        pushLog(`🤝 ${bot.name} et ${target.name} concluent un échange automatique.`);
+        renderAll();
+        pushState();
+      }
+      return false; // either way, doesn't block the bot's own turn
+    }
+
+    // Human target: surface the offer and wait for a real response.
+    state.botOffer = offer;
+    renderAll();
+    pushState();
+    return true;
+  }
 
   function maybeRunBotTurn(){
     if(state.mode !== 'local') return;
     if(state.phase === 'gameover') return;
+    if(state.botOffer) return; // waiting on a human to respond to a bot's proposal
     const cp = currentPlayer();
     if(!cp || !cp.isBot || cp.bankrupt) return;
     if(state.buildOpen || state.trade || state.pendingTrade) return; // shouldn't happen for bots, but stay safe
@@ -2791,6 +2934,10 @@
     } else if(state.phase === 'awaiting-buy'){
       botDecideBuy();
     } else if(state.phase === 'must-end'){
+      if(!state.botTradeConsidered){
+        state.botTradeConsidered = true;
+        if(maybeBotProposeTrade(cp)) return; // now waiting on a human — don't end the turn yet
+      }
       endTurn();
     }
   }
@@ -2818,6 +2965,47 @@
     if(!container) return;
     const cp = currentPlayer();
     const myTurn = shouldShowControls();
+
+    if(state.botOffer){
+      const offer = state.botOffer;
+      const proposer = state.players[offer.proposerId];
+      const target = state.players[offer.partnerId];
+      const giveNames = offer.give.map(idx => BOARD[idx].name);
+      const receiveNames = offer.receive.map(idx => BOARD[idx].name);
+      container.innerHTML = `
+        <div class="trade-header"><span>🤖 Offre de ${proposer.name}</span></div>
+        <p class="bot-offer-intro">${proposer.name} propose cet échange à <b>${target.name}</b> :</p>
+        <div class="trade-summary">
+          <div class="trade-summary-side">
+            <span class="trade-summary-label">${proposer.name} donne</span>
+            <span class="trade-summary-value">${giveNames.length ? giveNames.join(', ') : '—'}${offer.moneyGive ? `${giveNames.length ? ' + ' : ''}${fmt(offer.moneyGive)}` : ''}</span>
+          </div>
+          <div class="trade-summary-arrow">⇄</div>
+          <div class="trade-summary-side">
+            <span class="trade-summary-label">${proposer.name} reçoit</span>
+            <span class="trade-summary-value">${receiveNames.length ? receiveNames.join(', ') : '—'}${offer.moneyReceive ? `${receiveNames.length ? ' + ' : ''}${fmt(offer.moneyReceive)}` : ''}</span>
+          </div>
+        </div>
+        <div class="trade-actions">
+          <button class="action-btn btn-buy" id="botOfferAcceptBtn">Accepter</button>
+          <button class="action-btn btn-pass" id="botOfferDeclineBtn">Refuser</button>
+        </div>
+      `;
+      document.getElementById('botOfferAcceptBtn').addEventListener('click', () => {
+        applyTradeTransfer(proposer, target, offer.give, offer.receive, offer.moneyGive, offer.moneyReceive);
+        pushLog(`🤝 ${target.name} accepte l'offre de ${proposer.name}.`);
+        state.botOffer = null;
+        renderAll();
+        pushState();
+      });
+      document.getElementById('botOfferDeclineBtn').addEventListener('click', () => {
+        pushLog(`${target.name} refuse l'offre de ${proposer.name}.`);
+        state.botOffer = null;
+        renderAll();
+        pushState();
+      });
+      return;
+    }
 
     if(state.trade && cp && myTurn){
       container.innerHTML = renderTradePanelHTML(cp);
@@ -3009,7 +3197,7 @@
     }
     const diceAreaEl = document.getElementById('diceArea');
     const sumEl = document.getElementById('diceSum');
-    const showDice = state.phase !== 'awaiting-buy' && !state.buildOpen && !state.trade;
+    const showDice = state.phase !== 'awaiting-buy' && !state.buildOpen && !state.trade && !state.botOffer;
     if(diceAreaEl) diceAreaEl.style.display = showDice ? 'flex' : 'none';
     if(sumEl){
       const showSum = showDice && (state.phase!=='ready' || state.dice[0]!==1 || state.dice[1]!==1);
@@ -3081,6 +3269,11 @@
       }));
       const closeBtn = document.getElementById('buildCloseBtn');
       if(closeBtn) closeBtn.addEventListener('click', () => { state.buildOpen = false; resumeTimer(); renderConsole(); pushState(); });
+      return;
+    }
+
+    if(state.botOffer){
+      zone.innerHTML = `<div class="waiting-note">🤖 Une offre attend une réponse dans le plateau ci-dessus ⬆️</div>`;
       return;
     }
 
@@ -3312,6 +3505,8 @@
     state.doublesStreak = 0;
     state.buildOpen = false;
     state.trade = null;
+    state.botOffer = null;
+    state.botTradeConsidered = false;
     state.turnStartedAt = Date.now();
     timerPauseStart = null;
     if(cp.skipTurn){
