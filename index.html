@@ -55,7 +55,7 @@
   }
 
   /* ================= LANDING & LOBBY SCREENS ================= */
-  #lobby, #profileScreen{
+  #lobby, #profileScreen, #newsScreen{
     height:100vh;
     height:100dvh;
     overflow-y:auto;
@@ -159,7 +159,7 @@
     from{opacity:0;transform:translateY(8px);}
     to{opacity:1;transform:translateY(0);}
   }
-  .landing-form, .mode-grid{animation:panelFadeIn .3s cubic-bezier(.34,1.2,.64,1);}
+  .landing-form, .mode-grid, .setup-card, .local-card{animation:panelFadeIn .3s cubic-bezier(.34,1.2,.64,1);}
 
   /* ---------------- STADIUM BACKDROP (behind every pre-game screen) ---------------- */
   .stadium-bg{
@@ -239,13 +239,17 @@
   }
   .mode-card:hover{transform:translateY(-2px);box-shadow:0 8px 16px rgba(0,0,0,.1);border-color:var(--pitch);}
   .mode-card:active{transform:translateY(0) scale(.99);}
+  .mode-card-tall{padding:16px 14px;}
+  .mode-card-tall .mode-icon{width:44px;height:44px;font-size:21px;}
+  .mode-card-tall .mode-title{font-size:16px;}
   .mode-icon{
     width:36px;height:36px;border-radius:11px;flex:none;font-size:17px;
     display:flex;align-items:center;justify-content:center;
     box-shadow:inset 0 -3px 4px rgba(0,0,0,.15), inset 0 2px 2px rgba(255,255,255,.35);
   }
-  .mode-icon-create{background:linear-gradient(160deg,#ff9d8a,var(--red) 75%);}
-  .mode-icon-join{background:linear-gradient(160deg,#8fb3ef,#3d6fc9 75%);}
+  .mode-icon-online{background:linear-gradient(160deg,#d4a94a,#a67c1f 75%);}
+  .mode-icon-create{background:linear-gradient(160deg,#f0cf7a,#caa23a 75%);}
+  .mode-icon-join{background:linear-gradient(160deg,#d4a94a,#a67c1f 75%);}
   .mode-icon-local{background:linear-gradient(160deg,#f0cf7a,#caa23a 75%);}
   .mode-text{flex:1;min-width:0;}
   .mode-title{font-weight:700;font-size:14.5px;color:var(--ink);letter-spacing:-.01em;}
@@ -422,9 +426,9 @@
 
   /* ---------------- PROFILE ---------------- */
   .profile-btn{
-    position:absolute;top:16px;left:16px;z-index:2;
-    display:flex;align-items:center;gap:8px;
-    padding:6px 14px 6px 6px;border-radius:999px;
+    position:absolute;top:14px;left:14px;z-index:2;
+    display:flex;align-items:center;gap:6px;
+    padding:4px 11px 4px 4px;border-radius:999px;
     background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);
     backdrop-filter:blur(6px);
     box-shadow:0 6px 16px rgba(0,0,0,.35);
@@ -433,13 +437,31 @@
   .profile-btn:hover{transform:scale(1.03);background:rgba(255,255,255,.2);}
   .profile-btn:active{transform:scale(.96);}
   .profile-btn-emblem{
-    width:32px;height:32px;border-radius:50%;flex:none;
+    width:24px;height:24px;border-radius:50%;flex:none;
     background:linear-gradient(160deg,#fff,#e6e6e6);
     display:flex;align-items:center;justify-content:center;
-    font-size:16px;line-height:1;
+    font-size:12px;line-height:1;
     box-shadow:0 2px 5px rgba(0,0,0,.3);
   }
-  .profile-btn-label{font-size:12.5px;font-weight:700;color:#fff;white-space:nowrap;}
+  .profile-btn-label{font-size:11px;font-weight:700;color:#fff;white-space:nowrap;}
+  .news-btn{
+    position:absolute;top:14px;right:14px;z-index:2;
+    display:flex;align-items:center;gap:6px;
+    padding:4px 4px 4px 11px;flex-direction:row-reverse;border-radius:999px;
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);
+    backdrop-filter:blur(6px);
+    box-shadow:0 6px 16px rgba(0,0,0,.35);
+    transition:transform .15s cubic-bezier(.34,1.4,.64,1), background .15s ease;
+  }
+  .news-btn:hover{transform:scale(1.03);background:rgba(255,255,255,.2);}
+  .news-btn:active{transform:scale(.96);}
+  .news-btn-icon{
+    width:24px;height:24px;border-radius:50%;flex:none;
+    background:linear-gradient(160deg,#fff,#e6e6e6);
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;line-height:1;
+    box-shadow:0 2px 5px rgba(0,0,0,.3);
+  }
   .profile-required-hint{
     background:rgba(241,196,15,.12);border:1px solid rgba(241,196,15,.4);color:#8a6a0d;
     font-size:12px;line-height:1.5;border-radius:10px;padding:10px 12px;margin-bottom:16px;
@@ -478,6 +500,23 @@
     font-size:8px;font-weight:800;border-radius:6px;padding:1px 4px;
     font-family:'JetBrains Mono',monospace;
   }
+
+  /* ---------------- NEWS / CHANGELOG ---------------- */
+  .news-list{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;max-height:min(50vh,420px);overflow-y:auto;padding-right:2px;}
+  .news-item{
+    background:#fff;border:1px solid var(--parchment-dark);border-radius:12px;
+    padding:12px 14px;display:flex;gap:12px;
+  }
+  .news-item-icon{
+    width:34px;height:34px;border-radius:10px;flex:none;
+    background:rgba(47,158,68,.1);display:flex;align-items:center;justify-content:center;
+    font-size:17px;
+  }
+  .news-item-body{flex:1;min-width:0;}
+  .news-item-date{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--ink-soft);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;}
+  .news-item-title{font-weight:700;font-size:13.5px;color:var(--ink);margin-bottom:3px;}
+  .news-item-desc{font-size:11.5px;color:var(--ink-soft);line-height:1.4;}
+
   .theme-pick{
     flex:0 0 80px;display:flex;flex-direction:column;align-items:center;gap:2px;
     background:#fff;border:2px solid var(--parchment-dark);border-radius:11px;
@@ -1104,6 +1143,8 @@
     .setup-banner{padding:22px 18px 20px;}
     .setup-body{padding:20px 18px 24px;}
     .code-display{font-size:clamp(28px,11vw,40px);letter-spacing:.1em;}
+    .profile-btn-label{display:none;}
+    .profile-btn,.news-btn{padding:6px;}
   }
 </style>
 </head>
@@ -1121,6 +1162,10 @@
   <button class="profile-btn" id="profileBtn" type="button" title="Votre profil">
     <span class="profile-btn-emblem" id="profileBtnEmblem">👤</span>
     <span class="profile-btn-label">Mon profil</span>
+  </button>
+  <button class="news-btn" id="newsBtn" type="button" title="Nouveautés">
+    <span class="news-btn-icon">📢</span>
+    <span class="profile-btn-label">Nouveautés</span>
   </button>
   <div class="hero">
     <div class="hero-badge">
@@ -1143,6 +1188,26 @@
     </div>
 
     <div class="mode-grid" id="modeGrid">
+      <button class="mode-card" id="showOnlineBtn" type="button">
+        <div class="mode-icon mode-icon-online">🌐</div>
+        <div class="mode-text">
+          <div class="mode-title">Jouer en ligne</div>
+          <div class="mode-desc">Créez ou rejoignez une partie avec un code</div>
+        </div>
+        <div class="mode-arrow">›</div>
+      </button>
+      <button class="mode-card" id="showLocalBtn" type="button">
+        <div class="mode-icon mode-icon-local">🏠</div>
+        <div class="mode-text">
+          <div class="mode-title">Jouer en local</div>
+          <div class="mode-desc">Même appareil · entre vous ou avec des bots</div>
+        </div>
+        <div class="mode-arrow">›</div>
+      </button>
+    </div>
+
+    <div class="mode-grid" id="onlineChoice" style="display:none">
+      <div class="form-title">Jouer en ligne</div>
       <button class="mode-card" id="showCreateBtn" type="button">
         <div class="mode-icon mode-icon-create">🎮</div>
         <div class="mode-text">
@@ -1159,14 +1224,7 @@
         </div>
         <div class="mode-arrow">›</div>
       </button>
-      <button class="mode-card" id="showLocalBtn" type="button">
-        <div class="mode-icon mode-icon-local">🏠</div>
-        <div class="mode-text">
-          <div class="mode-title">Jouer en local</div>
-          <div class="mode-desc">Même appareil · à faire tourner entre vous</div>
-        </div>
-        <div class="mode-arrow">›</div>
-      </button>
+      <button class="form-back form-back-bottom" type="button" id="onlineChoiceBackBtn">← Retour</button>
     </div>
 
     <div id="createForm" class="landing-form" style="display:none">
@@ -1196,7 +1254,7 @@
       <button class="form-back form-back-bottom" type="button" data-back-form>← Retour</button>
     </div>
 
-    <div class="setup-hint" id="landingHint">2 à 6 Présidents · en ligne chacun joue depuis son téléphone, en local vous passez l'appareil</div>
+    <div class="setup-hint" id="landingHint">2 à 6 Présidents · en ligne chacun joue depuis son téléphone, en local vous passez l'appareil ou ajoutez des bots</div>
     <button class="rules-link" id="rulesLinkSetup" type="button">📖 Comment jouer ?</button>
   </div>
 </div>
@@ -1229,6 +1287,20 @@
       <div class="emblem-grid" id="profileEmblemGrid"></div>
 
       <button class="rules-link" id="profileBackBtn" type="button">← Retour</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ NEWS SCREEN ============ -->
+<div id="newsScreen" style="display:none">
+  <div class="setup-card">
+    <div class="setup-banner">
+      <div class="eyebrow">Quoi de neuf</div>
+      <h1>📢 Nouveautés</h1>
+    </div>
+    <div class="setup-body">
+      <div id="newsList" class="news-list"></div>
+      <button class="rules-link" id="newsBackBtn" type="button">← Retour</button>
     </div>
   </div>
 </div>
@@ -2148,6 +2220,29 @@
     });
   }
 
+  /* ---------------- NEWS / CHANGELOG ----------------
+     Static list, most recent first — update this array when shipping
+     something worth telling players about. */
+  const NEWS_ITEMS = [
+    { date:'09/08/2026', icon:'🎲', title:'Trois nouveaux univers', desc:"Pirates, Cinéma et Jeux Vidéo rejoignent Football, Monde et France — chacun avec ses propres propriétés, pions et cartes." },
+    { date:'09/08/2026', icon:'🤖', title:'Des bots qui savent négocier', desc:"Les bots proposent des échanges quand ça les arrange, et refusent désormais les offres trop déséquilibrées." },
+    { date:'09/08/2026', icon:'👤', title:'Profils et progression', desc:"Pseudo, emblème et système de niveaux — gagnez de l'XP à chaque partie et débloquez de nouveaux emblèmes." },
+  ];
+  function renderNewsList(){
+    const list = document.getElementById('newsList');
+    if(!list) return;
+    list.innerHTML = NEWS_ITEMS.map(item => `
+      <div class="news-item">
+        <div class="news-item-icon">${item.icon}</div>
+        <div class="news-item-body">
+          <div class="news-item-date">${item.date}</div>
+          <div class="news-item-title">${item.title}</div>
+          <div class="news-item-desc">${item.desc}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
   // Applies a theme's tokens/board/colors everywhere — sets the CSS group
   // colors as custom properties (picked up by cell bars, owner dots, and
   // build-panel swatches) and swaps the data every render function reads.
@@ -2303,6 +2398,17 @@
     document.getElementById('profileScreen').style.display = 'none';
     document.getElementById('landing').style.display = 'flex';
   });
+
+  document.getElementById('newsBtn').addEventListener('click', () => {
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('newsScreen').style.display = 'flex';
+    renderNewsList();
+  });
+  document.getElementById('newsBackBtn').addEventListener('click', () => {
+    document.getElementById('newsScreen').style.display = 'none';
+    document.getElementById('landing').style.display = 'flex';
+  });
+
   document.getElementById('profileNameInput').addEventListener('input', renderProfileScreen);
   document.getElementById('profileNameInput').addEventListener('blur', () => {
     const nameInput = document.getElementById('profileNameInput');
@@ -2319,13 +2425,13 @@
   });
 
   function openCreateForm(){
-    document.getElementById('modeGrid').style.display = 'none';
+    document.getElementById('onlineChoice').style.display = 'none';
     document.getElementById('landingHint').style.display = 'none';
     document.getElementById('createForm').style.display = 'block';
     document.getElementById('joinForm').style.display = 'none';
   }
   function openJoinForm(){
-    document.getElementById('modeGrid').style.display = 'none';
+    document.getElementById('onlineChoice').style.display = 'none';
     document.getElementById('landingHint').style.display = 'none';
     document.getElementById('joinForm').style.display = 'block';
     document.getElementById('createForm').style.display = 'none';
@@ -2339,6 +2445,16 @@
     renderProfileScreen();
   }
 
+  document.getElementById('showOnlineBtn').addEventListener('click', () => {
+    document.getElementById('modeGrid').style.display = 'none';
+    document.getElementById('landingHint').style.display = 'none';
+    document.getElementById('onlineChoice').style.display = 'flex';
+  });
+  document.getElementById('onlineChoiceBackBtn').addEventListener('click', () => {
+    document.getElementById('onlineChoice').style.display = 'none';
+    document.getElementById('modeGrid').style.display = 'flex';
+    document.getElementById('landingHint').style.display = 'block';
+  });
   document.getElementById('showCreateBtn').addEventListener('click', () => {
     if(!hasProfile()){ goToProfileRequired(); return; }
     openCreateForm();
@@ -2350,8 +2466,7 @@
   document.querySelectorAll('[data-back-form]').forEach(btn => btn.addEventListener('click', () => {
     document.getElementById('createForm').style.display = 'none';
     document.getElementById('joinForm').style.display = 'none';
-    document.getElementById('modeGrid').style.display = 'flex';
-    document.getElementById('landingHint').style.display = 'block';
+    document.getElementById('onlineChoice').style.display = 'flex';
     document.getElementById('createError').textContent = '';
     document.getElementById('joinError').textContent = '';
   }));
