@@ -150,10 +150,9 @@
     justify-content:center;margin-top:7px;
   }
   .feature-pill{
-    font-size:10px;font-weight:700;color:rgba(255,255,255,.92);
-    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);
+    font-size:10px;font-weight:700;color:var(--pitch);
+    background:rgba(47,158,68,.08);border:1px solid rgba(47,158,68,.25);
     padding:4px 10px;border-radius:999px;white-space:nowrap;
-    backdrop-filter:blur(4px);
   }
   @keyframes panelFadeIn{
     from{opacity:0;transform:translateY(8px);}
@@ -184,9 +183,9 @@
   #landing{
     position:relative;z-index:1;height:100vh;height:100dvh;overflow-y:auto;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    padding:18px 20px 16px;gap:32px;
+    padding:20px 20px 16px;gap:14px;
   }
-  .hero{text-align:center;max-width:520px;}
+  .hero{text-align:center;max-width:520px;margin-bottom:14px;}
   .hero-badge{
     width:44px;height:44px;margin:0 auto 3px;border-radius:50%;
     background:conic-gradient(from 200deg, #f7d774, #f1c40f, #caa23a, #f1c40f, #f7d774);
@@ -210,32 +209,31 @@
   .hero-crest-star{color:var(--pitch);font-size:11px;text-shadow:0 1px 1px rgba(0,0,0,.15);line-height:1;}
   .hero-eyebrow{
     font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;
-    text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:0;
+    text-transform:uppercase;color:var(--pitch);font-weight:700;margin-bottom:0;
   }
   .hero-title{
     margin:0;font-family:'Baloo 2',sans-serif;font-weight:800;
-    font-size:clamp(26px,6vw,40px);color:#fff;letter-spacing:.01em;line-height:1;
-    text-shadow:0 4px 0 rgba(0,0,0,.3), 0 0 44px rgba(47,158,68,.5);
+    font-size:clamp(26px,6vw,40px);color:var(--ink);letter-spacing:.01em;line-height:1;
   }
-  .hero-tagline{margin:7px 0 0;color:rgba(242,244,234,.82);font-size:13px;line-height:1.35;}
+  .hero-tagline{margin:7px 0 0;color:var(--ink-soft);font-size:13px;line-height:1.35;}
 
   .menu-panel{
     position:relative;width:100%;max-width:440px;
-    background:var(--parchment);border-radius:18px;
+    background:var(--parchment);border-radius:20px;
     box-shadow:0 24px 60px rgba(0,0,0,.45), var(--shadow);
     border:1px solid var(--parchment-dark);
-    padding:14px 18px 16px;
+    padding:26px 22px 24px;
   }
   .menu-panel::before{
     content:'';position:absolute;top:0;left:22%;right:22%;height:3px;
     background:linear-gradient(90deg,transparent,var(--gold),transparent);
   }
 
-  .mode-grid{display:flex;flex-direction:column;gap:11px;}
+  .mode-grid{display:flex;flex-direction:column;gap:13px;}
   .mode-card{
     display:flex;align-items:center;gap:10px;width:100%;text-align:left;
     background:#fff;border:1px solid var(--parchment-dark);border-radius:13px;
-    padding:9px 12px;transition:transform .16s cubic-bezier(.34,1.4,.64,1), box-shadow .16s ease, border-color .16s ease;
+    padding:12px 14px;transition:transform .16s cubic-bezier(.34,1.4,.64,1), box-shadow .16s ease, border-color .16s ease;
   }
   .mode-card:hover{transform:translateY(-2px);box-shadow:0 8px 16px rgba(0,0,0,.1);border-color:var(--pitch);}
   .mode-card:active{transform:translateY(0) scale(.99);}
@@ -1143,8 +1141,6 @@
     .setup-banner{padding:22px 18px 20px;}
     .setup-body{padding:20px 18px 24px;}
     .code-display{font-size:clamp(28px,11vw,40px);letter-spacing:.1em;}
-    .profile-btn-label{display:none;}
-    .profile-btn,.news-btn{padding:6px;}
   }
 </style>
 </head>
@@ -1167,22 +1163,23 @@
     <span class="news-btn-icon">📢</span>
     <span class="profile-btn-label">Nouveautés</span>
   </button>
-  <div class="hero">
-    <div class="hero-badge">
-      <div class="hero-badge-ring">
-        <div class="hero-crest"><span class="hero-crest-star">★</span></div>
-      </div>
-    </div>
-    <div class="hero-eyebrow">Édition Champions</div>
-    <h1 class="hero-title">MULTIPOLY</h1>
-    <div class="feature-strip">
-      <span class="feature-pill">⏱️ 60s / tour</span>
-      <span class="feature-pill">🏗️ Construction</span>
-      <span class="feature-pill">🤝 Échanges</span>
-    </div>
-  </div>
 
   <div class="menu-panel">
+    <div class="hero">
+      <div class="hero-badge">
+        <div class="hero-badge-ring">
+          <div class="hero-crest"><span class="hero-crest-star">★</span></div>
+        </div>
+      </div>
+      <div class="hero-eyebrow">Édition Champions</div>
+      <h1 class="hero-title">MULTIPOLY</h1>
+      <div class="feature-strip">
+        <span class="feature-pill">⏱️ 60s / tour</span>
+        <span class="feature-pill">🏗️ Construction</span>
+        <span class="feature-pill">🤝 Échanges</span>
+      </div>
+    </div>
+
     <div id="connStatus" class="config-warning conn-connecting">
       Connexion au serveur…
     </div>
