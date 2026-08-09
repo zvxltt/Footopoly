@@ -55,7 +55,7 @@
   }
 
   /* ================= LANDING & LOBBY SCREENS ================= */
-  #lobby, #localSetup{
+  #lobby, #localSetup, #profileScreen{
     height:100vh;
     height:100dvh;
     overflow-y:auto;
@@ -75,27 +75,27 @@
       repeating-linear-gradient(45deg, rgba(0,0,0,0.045) 0 3px, transparent 3px 7px),
       repeating-linear-gradient(135deg, rgba(255,255,255,0.06) 0 12px, transparent 12px 24px),
       linear-gradient(120deg, var(--pitch), #227a35 55%, #1c6b2d);
-    padding:20px 24px 18px;
+    padding:14px 20px 12px;
     color:#fff;
     position:relative;
     text-align:center;
   }
   .setup-banner .eyebrow{
     font-family:'JetBrains Mono',monospace;
-    letter-spacing:.18em;
-    font-size:11px;
+    letter-spacing:.16em;
+    font-size:9.5px;
     text-transform:uppercase;
     opacity:.85;
-    margin-bottom:6px;
+    margin-bottom:3px;
   }
   .setup-banner h1{
-    margin:0;font-size:clamp(28px,6vw,40px);font-weight:800;
+    margin:0;font-size:clamp(20px,5vw,28px);font-weight:800;
     text-shadow:0 3px 0 rgba(0,0,0,0.18);letter-spacing:.01em;
   }
-  .setup-banner p{margin:8px 0 0;font-size:14px;opacity:.92;position:relative;z-index:1;}
+  .setup-banner p{margin:4px 0 0;font-size:12px;opacity:.92;position:relative;z-index:1;}
   .feature-strip{
-    position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:6px;
-    justify-content:center;margin-top:10px;
+    position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:5px;
+    justify-content:center;margin-top:7px;
   }
   .feature-pill{
     font-size:10px;font-weight:700;color:rgba(255,255,255,.92);
@@ -132,11 +132,11 @@
   #landing{
     position:relative;z-index:1;height:100vh;height:100dvh;overflow-y:auto;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    padding:24px 20px 20px;gap:16px;
+    padding:18px 20px 16px;gap:32px;
   }
   .hero{text-align:center;max-width:520px;}
   .hero-badge{
-    width:52px;height:52px;margin:0 auto 8px;border-radius:50%;
+    width:44px;height:44px;margin:0 auto 3px;border-radius:50%;
     background:conic-gradient(from 200deg, #f7d774, #f1c40f, #caa23a, #f1c40f, #f7d774);
     padding:3px;
     box-shadow:0 10px 24px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.08);
@@ -158,7 +158,7 @@
   .hero-crest-star{color:var(--pitch);font-size:11px;text-shadow:0 1px 1px rgba(0,0,0,.15);line-height:1;}
   .hero-eyebrow{
     font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;
-    text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:3px;
+    text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:0;
   }
   .hero-title{
     margin:0;font-family:'Baloo 2',sans-serif;font-weight:800;
@@ -169,10 +169,10 @@
 
   .menu-panel{
     position:relative;width:100%;max-width:440px;
-    background:var(--parchment);border-radius:20px;
+    background:var(--parchment);border-radius:18px;
     box-shadow:0 24px 60px rgba(0,0,0,.45), var(--shadow);
     border:1px solid var(--parchment-dark);
-    padding:18px 20px 20px;
+    padding:14px 18px 16px;
   }
   .menu-panel::before{
     content:'';position:absolute;top:0;left:22%;right:22%;height:3px;
@@ -223,22 +223,22 @@
     background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);
     border-radius:999px;padding:5px 14px;font-size:12px;font-weight:700;color:#fff;
   }
-  .setup-body{padding:18px 22px 20px;}
+  .setup-body{padding:14px 18px 16px;}
   .field-label{
-    font-size:12px;text-transform:uppercase;letter-spacing:.09em;
-    color:var(--ink-soft);font-weight:700;margin-bottom:8px;display:block;
+    font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+    color:var(--ink-soft);font-weight:700;margin-bottom:6px;display:block;
   }
   .field-label.section{
-    padding-top:16px;margin-top:4px;margin-bottom:10px;
+    padding-top:12px;margin-top:2px;margin-bottom:7px;
     border-top:1px solid var(--parchment-dark);
   }
   .field-label.section:first-child{border-top:none;padding-top:0;margin-top:0;}
   .stepper{
-    display:flex;align-items:center;gap:16px;margin-bottom:22px;
+    display:flex;align-items:center;gap:14px;margin-bottom:16px;
   }
   .stepper button{
-    width:38px;height:38px;border-radius:11px;border:none;
-    background:var(--ink);color:var(--parchment);font-size:18px;font-weight:700;
+    width:32px;height:32px;border-radius:10px;border:none;
+    background:var(--ink);color:var(--parchment);font-size:16px;font-weight:700;
     display:flex;align-items:center;justify-content:center;
     box-shadow:0 3px 6px rgba(0,0,0,.18);
     transition:transform .12s ease, background .12s ease, box-shadow .12s ease;
@@ -246,53 +246,53 @@
   .stepper button:hover{background:var(--pitch);box-shadow:0 4px 9px rgba(47,158,68,.35);}
   .stepper button:active{transform:scale(.92);}
   .stepper .count{
-    font-family:'Baloo 2',sans-serif;font-size:26px;font-weight:700;
-    min-width:34px;text-align:center;
+    font-family:'Baloo 2',sans-serif;font-size:21px;font-weight:700;
+    min-width:28px;text-align:center;
   }
-  #localPlayerRows{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+  #localPlayerRows{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
   .player-row{
-    display:flex;align-items:center;gap:10px;
+    display:flex;align-items:center;gap:8px;
     background:#fff;border:1px solid var(--parchment-dark);
-    border-radius:12px;padding:8px 10px;
+    border-radius:11px;padding:6px 9px;
     transition:border-color .15s ease, box-shadow .15s ease;
   }
   .player-row:focus-within{border-color:var(--pitch);box-shadow:0 0 0 3px rgba(47,158,68,.12);}
   .token-pick{
-    width:38px;height:38px;border-radius:10px;flex:none;
-    display:flex;align-items:center;justify-content:center;font-size:19px;
+    width:30px;height:30px;border-radius:9px;flex:none;
+    display:flex;align-items:center;justify-content:center;font-size:15px;
     border:2px solid var(--ink);
   }
   .player-row input[type=text]{
-    flex:1;border:none;outline:none;font-size:15px;font-weight:600;
+    flex:1;border:none;outline:none;font-size:13.5px;font-weight:600;
     color:var(--ink);background:transparent;min-width:0;
   }
   .bot-toggle{
-    width:36px;height:36px;border-radius:10px;flex:none;
-    display:flex;align-items:center;justify-content:center;font-size:16px;
+    width:28px;height:28px;border-radius:9px;flex:none;
+    display:flex;align-items:center;justify-content:center;font-size:13px;
     border:2px solid var(--parchment-dark);background:#fff;opacity:.4;
     transition:all .15s ease;
   }
   .bot-toggle:hover{opacity:.75;}
   .bot-toggle.active{opacity:1;border-color:#6c5ce7;background:rgba(108,92,231,.12);}
   .player-row.is-bot{background:rgba(108,92,231,.05);border-color:rgba(108,92,231,.3);}
-  .row-money{margin-bottom:22px;}
+  .row-money{margin-bottom:14px;}
   .money-input-wrap{
-    display:flex;align-items:center;gap:8px;background:#fff;
-    border:1.5px solid var(--parchment-dark);border-radius:12px;padding:10px 14px;
+    display:flex;align-items:center;gap:7px;background:#fff;
+    border:1.5px solid var(--parchment-dark);border-radius:11px;padding:8px 12px;
     transition:border-color .15s ease, box-shadow .15s ease;
   }
   .money-input-wrap:focus-within{border-color:var(--pitch);box-shadow:0 0 0 3px rgba(47,158,68,.16);}
-  .money-input-wrap span{font-weight:700;color:var(--gold);font-size:18px;}
+  .money-input-wrap span{font-weight:700;color:var(--gold);font-size:16px;}
   .money-input-wrap input{
-    border:none;outline:none;font-size:16px;font-weight:700;width:100%;
+    border:none;outline:none;font-size:14px;font-weight:700;width:100%;
     font-family:'JetBrains Mono',monospace;color:var(--ink);background:transparent;
   }
   .start-btn{
-    width:100%;padding:15px;border:none;border-radius:14px;
+    width:100%;padding:11px;border:none;border-radius:13px;
     background:
       repeating-linear-gradient(135deg, rgba(255,255,255,0.08) 0 6px, transparent 6px 12px),
       linear-gradient(135deg,var(--pitch),#1c6b2d);
-    color:#fff;font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:700;
+    color:#fff;font-family:'Baloo 2',sans-serif;font-size:15.5px;font-weight:700;
     letter-spacing:.02em;box-shadow:0 8px 18px rgba(35,110,45,.35);
     transition:transform .12s ease, box-shadow .12s ease;
   }
@@ -325,8 +325,8 @@
   .conn-error{background:rgba(192,57,43,.1);border-color:rgba(192,57,43,.35);color:#8f2a20;}
   .landing-form{margin-top:18px;padding-top:18px;border-top:1px solid var(--parchment-dark);}
   .text-input{
-    width:100%;border:1.5px solid var(--parchment-dark);border-radius:12px;padding:12px 14px;
-    font-size:15px;font-weight:600;color:var(--ink);background:#fff;margin-bottom:16px;
+    width:100%;border:1.5px solid var(--parchment-dark);border-radius:11px;padding:9px 12px;
+    font-size:14px;font-weight:600;color:var(--ink);background:#fff;margin-bottom:12px;
     font-family:'Inter',sans-serif;transition:border-color .15s ease, box-shadow .15s ease;
   }
   .text-input:focus{outline:none;border-color:var(--pitch);box-shadow:0 0 0 3px rgba(47,158,68,.16);}
@@ -340,16 +340,75 @@
   .token-row .token-pick.taken{opacity:.2;cursor:not-allowed;filter:grayscale(1);}
   .token-row .token-pick.taken:hover{opacity:.2;}
   .theme-row{display:flex;gap:11px;flex-wrap:wrap;margin-bottom:18px;}
+
+  /* ---------------- PROFILE ---------------- */
+  .profile-btn{
+    position:absolute;top:16px;left:16px;z-index:2;
+    display:flex;align-items:center;gap:8px;
+    padding:6px 14px 6px 6px;border-radius:999px;
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);
+    backdrop-filter:blur(6px);
+    box-shadow:0 6px 16px rgba(0,0,0,.35);
+    transition:transform .15s cubic-bezier(.34,1.4,.64,1), background .15s ease;
+  }
+  .profile-btn:hover{transform:scale(1.03);background:rgba(255,255,255,.2);}
+  .profile-btn:active{transform:scale(.96);}
+  .profile-btn-emblem{
+    width:32px;height:32px;border-radius:50%;flex:none;
+    background:linear-gradient(160deg,#fff,#e6e6e6);
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;line-height:1;
+    box-shadow:0 2px 5px rgba(0,0,0,.3);
+  }
+  .profile-btn-label{font-size:12.5px;font-weight:700;color:#fff;white-space:nowrap;}
+  .profile-required-hint{
+    background:rgba(241,196,15,.12);border:1px solid rgba(241,196,15,.4);color:#8a6a0d;
+    font-size:12px;line-height:1.5;border-radius:10px;padding:10px 12px;margin-bottom:16px;
+    text-align:center;font-weight:600;
+  }
+  .profile-level-block{
+    display:flex;align-items:center;gap:12px;
+    background:#fff;border:1px solid var(--parchment-dark);border-radius:12px;
+    padding:10px 14px;margin-bottom:16px;
+  }
+  .profile-level-badge{
+    width:40px;height:40px;border-radius:50%;flex:none;
+    background:conic-gradient(from 200deg, #f7d774, #f1c40f, #caa23a, #f1c40f, #f7d774);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:16px;color:#5a4a12;
+    box-shadow:0 3px 6px rgba(0,0,0,.25);
+  }
+  .profile-level-info{flex:1;min-width:0;}
+  .profile-level-label{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+  .profile-xp-bar{width:100%;height:7px;border-radius:4px;background:var(--parchment-dark);overflow:hidden;}
+  .profile-xp-fill{height:100%;background:linear-gradient(90deg,var(--pitch),#3fc463);border-radius:4px;transition:width .3s ease;}
+  .profile-xp-text{font-size:10px;color:var(--ink-soft);font-weight:600;margin-top:3px;font-family:'JetBrains Mono',monospace;}
+  .emblem-grid{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:16px;}
+  .emblem-pick{
+    width:48px;height:48px;border-radius:12px;flex:none;position:relative;
+    display:flex;align-items:center;justify-content:center;font-size:22px;
+    border:2px solid var(--parchment-dark);background:#fff;cursor:pointer;
+    transition:all .15s ease;
+  }
+  .emblem-pick:hover{border-color:var(--pitch);}
+  .emblem-pick.picked{border-color:var(--gold);background:rgba(241,196,15,.12);box-shadow:0 0 0 2px rgba(241,196,15,.35);transform:scale(1.05);}
+  .emblem-pick.locked{opacity:.35;cursor:not-allowed;filter:grayscale(.6);}
+  .emblem-pick.locked:hover{border-color:var(--parchment-dark);}
+  .emblem-lock-badge{
+    position:absolute;bottom:-4px;right:-4px;background:var(--ink);color:#fff;
+    font-size:8px;font-weight:800;border-radius:6px;padding:1px 4px;
+    font-family:'JetBrains Mono',monospace;
+  }
   .theme-pick{
-    flex:1 1 90px;display:flex;flex-direction:column;align-items:center;gap:3px;
-    background:#fff;border:2px solid var(--parchment-dark);border-radius:12px;
-    padding:10px 6px;cursor:pointer;transition:all .15s ease;
+    flex:1 1 90px;display:flex;flex-direction:column;align-items:center;gap:2px;
+    background:#fff;border:2px solid var(--parchment-dark);border-radius:11px;
+    padding:7px 5px;cursor:pointer;transition:all .15s ease;
   }
   .theme-pick:hover{border-color:var(--pitch);}
   .theme-pick.picked{border-color:var(--gold);background:rgba(241,196,15,.1);box-shadow:0 0 0 2px rgba(241,196,15,.35);}
-  .theme-pick-icon{font-size:22px;line-height:1;}
-  .theme-pick-label{font-size:11px;font-weight:700;color:var(--ink);text-align:center;}
-  .form-error{color:var(--red);font-size:12.5px;font-weight:600;text-align:center;margin-top:10px;min-height:16px;}
+  .theme-pick-icon{font-size:18px;line-height:1;}
+  .theme-pick-label{font-size:10px;font-weight:700;color:var(--ink);text-align:center;}
+  .form-error{color:var(--red);font-size:12px;font-weight:600;text-align:center;margin-top:8px;min-height:14px;}
   .copy-btn{margin-top:0;}
   .lobby-players{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;min-height:40px;}
   .lobby-player-row{
@@ -963,6 +1022,10 @@
 
 <!-- ============ LANDING SCREEN ============ -->
 <div id="landing">
+  <button class="profile-btn" id="profileBtn" type="button" title="Votre profil">
+    <span class="profile-btn-emblem" id="profileBtnEmblem">👤</span>
+    <span class="profile-btn-label">Mon profil</span>
+  </button>
   <div class="hero">
     <div class="hero-badge">
       <div class="hero-badge-ring">
@@ -971,7 +1034,6 @@
     </div>
     <div class="hero-eyebrow">Édition Champions</div>
     <h1 class="hero-title">MULTIPOLY</h1>
-    <p class="hero-tagline">Achetez, vendez, dominez le mercato — entre amis, où que vous soyez.</p>
     <div class="feature-strip">
       <span class="feature-pill">⏱️ 60s / tour</span>
       <span class="feature-pill">🏗️ Construction</span>
@@ -1014,8 +1076,6 @@
     <div id="createForm" class="landing-form" style="display:none">
       <span class="field-label section">Univers</span>
       <div class="theme-row" id="createThemeRow"></div>
-      <span class="field-label section">Votre nom</span>
-      <input type="text" id="createName" maxlength="16" placeholder="Président 1" class="text-input">
       <span class="field-label section">Budget de départ</span>
       <div class="money-input-wrap">
         <span>€</span>
@@ -1029,8 +1089,6 @@
     <div id="joinForm" class="landing-form" style="display:none">
       <span class="field-label section">Code de la partie</span>
       <input type="text" id="joinCode" maxlength="6" placeholder="EX: PL4Y2" class="text-input code-input">
-      <span class="field-label section">Votre nom</span>
-      <input type="text" id="joinName" maxlength="16" placeholder="Président 2" class="text-input">
       <button class="start-btn" id="joinConfirmBtn" type="button">Rejoindre ▶</button>
       <div id="joinError" class="form-error"></div>
       <button class="form-back form-back-bottom" type="button" data-back-form>← Retour</button>
@@ -1038,6 +1096,40 @@
 
     <div class="setup-hint" id="landingHint">2 à 6 Présidents · en ligne chacun joue depuis son téléphone, en local vous passez l'appareil</div>
     <button class="rules-link" id="rulesLinkSetup" type="button">📖 Comment jouer ?</button>
+  </div>
+</div>
+
+<!-- ============ PROFILE SCREEN ============ -->
+<div id="profileScreen" style="display:none">
+  <div class="setup-card">
+    <div class="setup-banner">
+      <div class="eyebrow">Votre profil</div>
+      <h1>MULTIPOLY</h1>
+    </div>
+    <div class="setup-body">
+      <div class="profile-required-hint" id="profileRequiredHint" style="display:none">
+        ⚠️ Personnalisez votre profil (pseudo + emblème) avant de créer ou rejoindre une partie en ligne.
+      </div>
+
+      <div class="profile-level-block">
+        <div class="profile-level-badge" id="profileLevelBadge">1</div>
+        <div class="profile-level-info">
+          <div class="profile-level-label">Niveau <span id="profileLevelNum">1</span></div>
+          <div class="profile-xp-bar"><div class="profile-xp-fill" id="profileXpFill"></div></div>
+          <div class="profile-xp-text" id="profileXpText">0 / 100 XP</div>
+        </div>
+      </div>
+
+      <span class="field-label section">Votre pseudo</span>
+      <input type="text" id="profileNameInput" maxlength="16" placeholder="Président 1" class="text-input">
+
+      <span class="field-label section">Votre emblème</span>
+      <div class="emblem-grid" id="profileEmblemGrid"></div>
+
+      <button class="start-btn" id="profileSaveBtn" type="button">Enregistrer ▶</button>
+
+      <button class="rules-link" id="profileBackBtn" type="button">← Retour</button>
+    </div>
   </div>
 </div>
 
@@ -1584,6 +1676,129 @@
   let GROUP_LABEL = currentTheme.groupLabels;
   let BOARD = currentTheme.board;
 
+  /* ---------------- PROFILE (pseudo, emblem, XP/level) ----------------
+     Persisted locally via localStorage — this is a plain downloadable HTML
+     file the user hosts/opens themselves (not a Claude.ai artifact), so
+     normal browser storage is appropriate here, unlike inside the chat's
+     live artifact preview. Purely a per-device identity, not synced. */
+  const PROFILE_KEY = 'multipoly_profile_v1';
+  const XP_PER_LEVEL = 100;
+  const XP_PER_GAME = 30;
+  const XP_BONUS_WIN = 20;
+
+  // 8 base emblems (unlocked from level 1) + 8 more, one unlocked per level up to 9.
+  const PROFILE_EMBLEMS = [
+    { e:'⭐', c:'#f1c40f', unlock:1 },
+    { e:'🔥', c:'#e74c3c', unlock:1 },
+    { e:'💎', c:'#3498db', unlock:1 },
+    { e:'🌟', c:'#9b59b6', unlock:1 },
+    { e:'🎯', c:'#2ecc71', unlock:1 },
+    { e:'🎖️', c:'#e67e22', unlock:1 },
+    { e:'🏅', c:'#1abc9c', unlock:1 },
+    { e:'⚡', c:'#f39c12', unlock:1 },
+    { e:'👑', c:'#f1c40f', unlock:2 },
+    { e:'🚀', c:'#34495e', unlock:3 },
+    { e:'🦁', c:'#d35400', unlock:4 },
+    { e:'🐉', c:'#27ae60', unlock:5 },
+    { e:'🛡️', c:'#2980b9', unlock:6 },
+    { e:'💫', c:'#8e44ad', unlock:7 },
+    { e:'🌈', c:'#c0392b', unlock:8 },
+    { e:'🎇', c:'#16a085', unlock:9 },
+    // Secret: completely invisible in the grid unless the pseudo matches —
+    // no "locked" placeholder either, since a hint would give it away.
+    { e:'🎮', c:'#5a4a8f', secretName:'zvxlt' },
+  ];
+
+  // Level-based emblems unlock permanently past a threshold; the secret one
+  // is gated on a pseudo match instead (checked live against whatever name
+  // is passed in, so it can reveal itself as you type, before saving).
+  function isEmblemUnlocked(em, lvl, pseudo){
+    if(em.secretName) return !!(pseudo && pseudo.trim().toLowerCase() === em.secretName.toLowerCase());
+    return em.unlock <= lvl;
+  }
+
+  function loadProfile(){
+    try{
+      const raw = localStorage.getItem(PROFILE_KEY);
+      if(raw){
+        const p = JSON.parse(raw);
+        return {
+          pseudo: typeof p.pseudo === 'string' ? p.pseudo : '',
+          emblemIdx: typeof p.emblemIdx === 'number' ? p.emblemIdx : 0,
+          xp: typeof p.xp === 'number' ? p.xp : 0,
+          saved: !!p.saved,
+        };
+      }
+    } catch(e){}
+    return { pseudo:'', emblemIdx:0, xp:0, saved:false };
+  }
+  function saveProfile(){
+    try{ localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); } catch(e){}
+  }
+  let profile = loadProfile();
+
+  function levelFromXP(xp){ return Math.floor(xp / XP_PER_LEVEL) + 1; }
+  function xpIntoLevel(xp){ return xp % XP_PER_LEVEL; }
+
+  // Guards against a stale/locked emblem index (e.g. profile data edited by
+  // hand) — always resolves to something currently unlocked.
+  function currentEmblem(){
+    const lvl = levelFromXP(profile.xp);
+    const em = PROFILE_EMBLEMS[profile.emblemIdx];
+    if(em && isEmblemUnlocked(em, lvl, profile.pseudo)) return em;
+    return PROFILE_EMBLEMS[0];
+  }
+
+  function awardXP(amount){
+    profile.xp += amount;
+    saveProfile();
+  }
+
+  // Shows a neutral placeholder until the player has actually saved a
+  // profile at least once — otherwise everyone would silently start with
+  // the star (index 0) looking like a deliberate pick.
+  function renderProfileButton(){
+    const el = document.getElementById('profileBtnEmblem');
+    if(el) el.textContent = profile.saved ? currentEmblem().e : '👤';
+  }
+
+  function renderProfileScreen(){
+    const lvl = levelFromXP(profile.xp);
+    const into = xpIntoLevel(profile.xp);
+    const badge = document.getElementById('profileLevelBadge');
+    const num = document.getElementById('profileLevelNum');
+    const fill = document.getElementById('profileXpFill');
+    const text = document.getElementById('profileXpText');
+    const nameInput = document.getElementById('profileNameInput');
+    if(badge) badge.textContent = lvl;
+    if(num) num.textContent = lvl;
+    if(fill) fill.style.width = (into / XP_PER_LEVEL * 100) + '%';
+    if(text) text.textContent = `${into} / ${XP_PER_LEVEL} XP`;
+    if(nameInput && document.activeElement !== nameInput) nameInput.value = profile.pseudo || '';
+
+    const grid = document.getElementById('profileEmblemGrid');
+    if(!grid) return;
+    const livePseudo = nameInput ? nameInput.value : profile.pseudo;
+    grid.innerHTML = '';
+    PROFILE_EMBLEMS.forEach((em, i) => {
+      const unlocked = isEmblemUnlocked(em, lvl, livePseudo);
+      if(em.secretName && !unlocked) return; // fully invisible until unlocked, no locked placeholder
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'emblem-pick' + (i === profile.emblemIdx && unlocked ? ' picked' : '') + (unlocked ? '' : ' locked');
+      if(unlocked) btn.style.background = em.c;
+      btn.innerHTML = em.e + (unlocked || em.secretName ? '' : `<span class="emblem-lock-badge">Nv.${em.unlock}</span>`);
+      btn.title = unlocked ? '' : `Débloqué au niveau ${em.unlock}`;
+      if(unlocked){
+        btn.addEventListener('click', () => {
+          profile.emblemIdx = i;
+          renderProfileScreen();
+        });
+      }
+      grid.appendChild(btn);
+    });
+  }
+
   // Applies a theme's tokens/board/colors everywhere — sets the CSS group
   // colors as custom properties (picked up by cell bars, owner dots, and
   // build-panel swatches) and swaps the data every render function reads.
@@ -1677,20 +1892,61 @@
   }
   renderThemeRow('createThemeRow');
   renderThemeRow('localThemeRow');
+  renderProfileButton();
 
-  document.getElementById('showCreateBtn').addEventListener('click', () => {
+  document.getElementById('profileBtn').addEventListener('click', () => {
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('profileScreen').style.display = 'flex';
+    const hint = document.getElementById('profileRequiredHint');
+    if(hint) hint.style.display = 'none';
+    renderProfileScreen();
+  });
+  document.getElementById('profileBackBtn').addEventListener('click', () => {
+    document.getElementById('profileScreen').style.display = 'none';
+    document.getElementById('landing').style.display = 'flex';
+  });
+  document.getElementById('profileNameInput').addEventListener('input', renderProfileScreen);
+
+  document.getElementById('profileSaveBtn').addEventListener('click', () => {
+    const nameInput = document.getElementById('profileNameInput');
+    profile.pseudo = nameInput.value.trim().slice(0, 16);
+    profile.saved = true;
+    saveProfile();
+    renderProfileButton();
+    const hint = document.getElementById('profileRequiredHint');
+    if(hint) hint.style.display = 'none';
+    document.getElementById('profileScreen').style.display = 'none';
+    document.getElementById('landing').style.display = 'flex';
+  });
+
+  function openCreateForm(){
     document.getElementById('modeGrid').style.display = 'none';
     document.getElementById('landingHint').style.display = 'none';
     document.getElementById('createForm').style.display = 'block';
     document.getElementById('joinForm').style.display = 'none';
-    setTimeout(() => document.getElementById('createName').focus(), 50);
-  });
-  document.getElementById('showJoinBtn').addEventListener('click', () => {
+  }
+  function openJoinForm(){
     document.getElementById('modeGrid').style.display = 'none';
     document.getElementById('landingHint').style.display = 'none';
     document.getElementById('joinForm').style.display = 'block';
     document.getElementById('createForm').style.display = 'none';
     setTimeout(() => document.getElementById('joinCode').focus(), 50);
+  }
+  function goToProfileRequired(){
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('profileScreen').style.display = 'flex';
+    const hint = document.getElementById('profileRequiredHint');
+    if(hint) hint.style.display = 'block';
+    renderProfileScreen();
+  }
+
+  document.getElementById('showCreateBtn').addEventListener('click', () => {
+    if(!profile.saved){ goToProfileRequired(); return; }
+    openCreateForm();
+  });
+  document.getElementById('showJoinBtn').addEventListener('click', () => {
+    if(!profile.saved){ goToProfileRequired(); return; }
+    openJoinForm();
   });
   document.querySelectorAll('[data-back-form]').forEach(btn => btn.addEventListener('click', () => {
     document.getElementById('createForm').style.display = 'none';
@@ -1707,8 +1963,9 @@
   document.getElementById('createConfirmBtn').addEventListener('click', () => {
     const errorEl = document.getElementById('createError');
     errorEl.textContent = '';
+    if(!profile.saved){ goToProfileRequired(); return; }
     if(!MQTT_READY){ errorEl.textContent = 'Connexion au serveur en cours, réessaie dans un instant.'; return; }
-    const name = (document.getElementById('createName').value.trim() || 'Président 1').slice(0,16);
+    const name = ((profile.pseudo && profile.pseudo.trim()) || 'Président 1').slice(0,16);
     const startMoney = Math.max(200, parseInt(document.getElementById('createStartMoney').value, 10) || 1500);
     const tok = TOKENS[0];
     const code = generateCode();
@@ -1743,10 +2000,11 @@
   document.getElementById('joinConfirmBtn').addEventListener('click', () => {
     const errorEl = document.getElementById('joinError');
     errorEl.textContent = '';
+    if(!profile.saved){ goToProfileRequired(); return; }
     if(!MQTT_READY){ errorEl.textContent = 'Connexion au serveur en cours, réessaie dans un instant.'; return; }
     const code = document.getElementById('joinCode').value.trim().toUpperCase();
-    const name = (document.getElementById('joinName').value.trim() || 'Président').slice(0,16);
     if(!code){ errorEl.textContent = 'Entrez un code de partie.'; return; }
+    const baseName = ((profile.pseudo && profile.pseudo.trim()) || 'Président').slice(0,16);
     latestKnownRoom = null;
     currentTopic = TOPIC_PREFIX + code;
     errorEl.textContent = 'Connexion au salon…';
@@ -1765,10 +2023,12 @@
         if((room.players || []).length >= 6){ errorEl.textContent = 'Le salon est complet (6 max).'; return; }
         applyTheme(room.themeId || 'football');
         const existingPlayers = room.players || [];
-        const nameLower = name.trim().toLowerCase();
-        if(existingPlayers.some(p => p.name.trim().toLowerCase() === nameLower)){
-          errorEl.textContent = 'Ce nom est déjà pris dans cette partie — choisissez-en un autre.';
-          return;
+        const usedNames = new Set(existingPlayers.map(p => p.name.trim().toLowerCase()));
+        let name = baseName;
+        let suffix = 2;
+        while(usedNames.has(name.trim().toLowerCase())){
+          name = `${baseName} (${suffix})`.slice(0,16);
+          suffix++;
         }
         const usedTokens = new Set(existingPlayers.map(p => p.token));
         const tok = TOKENS.find(t => !usedTokens.has(t.e)) || TOKENS[existingPlayers.length % TOKENS.length];
@@ -3293,6 +3553,16 @@
     `;
     consoleEl.appendChild(panel);
     document.getElementById('playAgainBtn').addEventListener('click', leaveRoom);
+
+    // Award this device's profile some XP for completing a game — once per
+    // game, guarded by the .gameover-panel check above. A bonus applies
+    // only when this specific device's player actually won an online game
+    // (local mode has no single "me" to credit a win to, since several
+    // people share the one device/profile).
+    let xpGain = XP_PER_GAME;
+    if(state.mode === 'online' && winner && state.myId === winner.id) xpGain += XP_BONUS_WIN;
+    awardXP(xpGain);
+    renderProfileButton();
   }
 
   function buyProperty(){
