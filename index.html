@@ -158,7 +158,7 @@
     from{opacity:0;transform:translateY(8px);}
     to{opacity:1;transform:translateY(0);}
   }
-  .landing-form, .mode-grid, .setup-card, .local-card{animation:panelFadeIn .3s cubic-bezier(.34,1.2,.64,1);}
+  .landing-form, .mode-grid, .setup-card, .local-card, .layout{animation:panelFadeIn .32s cubic-bezier(.34,1.2,.64,1);}
 
   /* ---------------- STADIUM BACKDROP (behind every pre-game screen) ---------------- */
   .stadium-bg{
@@ -566,8 +566,8 @@
     font-family:'Baloo 2',sans-serif;font-weight:700;font-size:16px;letter-spacing:.02em;
     flex:0 1 auto;min-width:0;overflow:hidden;
   }
-  .topbar-code{
-    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;
+  .topbar-timer{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.05em;
     background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
     color:var(--gold);padding:3px 9px;border-radius:999px;font-weight:700;
     display:inline-block;flex:none;
@@ -576,7 +576,7 @@
     display:flex;align-items:center;gap:8px;
     background:rgba(255,255,255,0.08);border-radius:999px;padding:6px 14px 6px 6px;
     color:#fff;font-weight:600;font-size:13px;
-    flex:1 1 auto;min-width:0;max-width:340px;justify-content:center;
+    flex:0 1 220px;width:220px;min-width:0;justify-content:center;
   }
   .turn-pill .tok{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none;}
   .turn-pill-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
@@ -1132,9 +1132,9 @@
   @media (max-width:600px){
     .topbar{padding:8px 10px;gap:6px;}
     .topbar-word{display:none;}
-    .turn-pill{font-size:11px;padding:5px 10px 5px 5px;max-width:60vw;}
+    .turn-pill{font-size:11px;padding:5px 10px 5px 5px;width:180px;}
     .reset-btn{padding:6px 10px;font-size:11px;}
-    .topbar-code{font-size:10px;padding:2px 7px;}
+    .topbar-timer{font-size:10px;padding:2px 7px;}
   }
   @media (max-width:400px){
     .setup-card{border-radius:16px;}
@@ -1384,7 +1384,7 @@
     <div class="stadium-glow stadium-glow-2"></div>
   </div>
   <div class="topbar">
-    <div class="topbar-title"><div class="footballicon"></div> <span class="topbar-word">MULTIPOLY</span> <span class="topbar-code" id="topbarCode"></span></div>
+    <div class="topbar-title"><div class="footballicon"></div> <span class="topbar-word">MULTIPOLY</span> <span class="topbar-timer" id="topbarTimer">⏱️ 0:00</span></div>
     <div class="turn-pill" id="turnPill"></div>
     <div class="topbar-right">
       <button class="reset-btn" id="rulesBtn" type="button">📖 Règles</button>
@@ -2284,6 +2284,7 @@
     botOffer: null,      // local-only (not synced): a bot's pending trade proposal to a human, awaiting accept/decline
     botTradeConsidered: false, // local-only: whether the current bot turn has already weighed proposing a trade
     gameStats: { biggestRent: { amount:0, payerName:'', ownerName:'', propertyName:'' }, propertyRentTotals: {} }, // synced — powers the end-of-game summary
+    gameStartedAt: null, // synced — when this game began, powers the topbar timer and the end-of-game duration
   };
   // In local (pass-and-play) mode everyone shares one device, so every
   // action is always "your turn" — only online mode gates by player identity.
@@ -2668,12 +2669,12 @@
     state.doublesStreak = 0;
     state.status = 'playing';
     state.turnStartedAt = null;
+    state.gameStartedAt = Date.now();
     timerPauseStart = null;
 
     document.getElementById('localSetup').style.display = 'none';
     document.getElementById('game').style.display = 'flex';
-    const codeEl = document.getElementById('topbarCode');
-    if(codeEl) codeEl.style.display = 'none';
+    startGameTimerLoop();
     lastMoneyById = {};
     lastHousesById = {};
     state.gameStats = { biggestRent:{amount:0,payerName:'',ownerName:'',propertyName:''}, propertyRentTotals:{} };
@@ -2709,6 +2710,7 @@
       dice: [1, 1],
       log: [`🏟️ La partie commence avec ${players.length} Présidents !`],
       turnStartedAt: Date.now(),
+      gameStartedAt: Date.now(),
       gameStats: { biggestRent:{amount:0,payerName:'',ownerName:'',propertyName:''}, propertyRentTotals:{} },
     });
   });
@@ -2732,8 +2734,7 @@
     state.pendingBuy = null;
     state.turnStartedAt = null;
     timerPauseStart = null;
-    const codeEl = document.getElementById('topbarCode');
-    if(codeEl) codeEl.style.display = '';
+    stopGameTimerLoop();
     document.getElementById('game').style.display = 'none';
     document.getElementById('lobby').style.display = 'none';
     document.getElementById('localSetup').style.display = 'none';
@@ -2764,6 +2765,7 @@
     state.startMoney = room.startMoney || 1500;
     state.turnStartedAt = room.turnStartedAt || null;
     state.timerPaused = room.timerPaused || false;
+    state.gameStartedAt = room.gameStartedAt || null;
     state.gameStats = room.gameStats || { biggestRent:{amount:0,payerName:'',ownerName:'',propertyName:''}, propertyRentTotals:{} };
     applyTheme(room.themeId || 'football');
 
@@ -2773,8 +2775,7 @@
       if(document.getElementById('game').style.display !== 'flex'){
         document.getElementById('lobby').style.display = 'none';
         document.getElementById('game').style.display = 'flex';
-        const codeEl = document.getElementById('topbarCode');
-        if(codeEl){ codeEl.style.display = 'inline-block'; codeEl.textContent = state.code || ''; }
+        startGameTimerLoop();
         lastMoneyById = {};
         lastHousesById = {};
         document.getElementById('sidebar').innerHTML = '';
@@ -2840,6 +2841,7 @@
       turnStartedAt: state.turnStartedAt,
       timerPaused: state.timerPaused,
       gameStats: state.gameStats,
+      gameStartedAt: state.gameStartedAt,
     }, () => { clearTimeout(safety); suppressIncoming = false; });
   }
 
@@ -4025,30 +4027,39 @@
 
   function rollDice(){
     if(state.phase !== 'ready' || !isMyTurn()) return;
-    state.phase = 'rolling';
-    pushState();
+    // The actual roll result and everything that follows (movement, rent,
+    // buy prompts, turn state) resolve immediately and synchronously — never
+    // gated behind the dice-spin animation below. That animation used to
+    // run on a setInterval, and browsers throttle/pause intervals in
+    // backgrounded tabs, which could leave state stuck on 'rolling'
+    // indefinitely with no button for anyone to click. The visual spin is
+    // now purely decorative and can never block or desync the game.
+    const d1 = 1 + Math.floor(Math.random()*6);
+    const d2 = 1 + Math.floor(Math.random()*6);
+    animateDiceSpin(d1, d2);
+    state.dice = [d1, d2];
+    handleRollResult(d1, d2);
+  }
+
+  function animateDiceSpin(finalD1, finalD2){
     const die1 = document.getElementById('die1');
     const die2 = document.getElementById('die2');
+    if(!die1 || !die2) return;
     die1.classList.add('rolling');
     die2.classList.add('rolling');
-    renderConsole();
-
     let ticks = 0;
     const spin = setInterval(() => {
-      state.dice = [1+Math.floor(Math.random()*6), 1+Math.floor(Math.random()*6)];
-      die1.className = 'die rolling face-' + state.dice[0];
-      die2.className = 'die rolling face-' + state.dice[1];
+      const rd1 = 1+Math.floor(Math.random()*6);
+      const rd2 = 1+Math.floor(Math.random()*6);
+      die1.className = 'die rolling face-' + rd1;
+      die2.className = 'die rolling face-' + rd2;
       ticks++;
       if(ticks > 8){
         clearInterval(spin);
-        die1.classList.remove('rolling');
-        die2.classList.remove('rolling');
-        const d1 = 1+Math.floor(Math.random()*6);
-        const d2 = 1+Math.floor(Math.random()*6);
-        state.dice = [d1,d2];
+        die1.className = 'die face-' + finalD1;
+        die2.className = 'die face-' + finalD2;
         bounceDie(die1);
         bounceDie(die2);
-        handleRollResult(d1,d2);
       }
     }, 80);
   }
@@ -4076,22 +4087,23 @@
   }
 
   function movePlayer(player, steps, isDouble){
-    let remaining = steps;
-    const step = () => {
-      if(remaining <= 0){
-        resolveSpace(player, isDouble);
-        return;
-      }
-      player.pos = (player.pos + 1) % BOARD.length;
-      remaining--;
-      if(player.pos === 0){
-        player.money += 200;
-        pushLog(`💰 ${player.name} passe par ${BOARD[0].name} et récupère €200.`);
-      }
-      renderAll();
-      setTimeout(step, 130);
-    };
-    step();
+    // Resolve the real move and any GO bonus immediately and synchronously —
+    // this must never be gated behind a timer chain. Browsers aggressively
+    // throttle/pause setTimeout in backgrounded tabs (e.g. switching apps on
+    // a phone mid-roll), which used to stall the whole turn — sometimes
+    // indefinitely — leaving every connected player stuck. The token still
+    // animates smoothly to its new spot via its own CSS transition (see
+    // .board-token{transition:transform...}), which is purely decorative
+    // and handled natively by the browser, so it can never desync anything.
+    const finalPos = (player.pos + steps) % BOARD.length;
+    const passedGo = player.pos + steps >= BOARD.length;
+    player.pos = finalPos;
+    if(passedGo){
+      player.money += 200;
+      pushLog(`💰 ${player.name} passe par ${BOARD[0].name} et récupère €200.`);
+    }
+    renderAll();
+    resolveSpace(player, isDouble);
   }
 
   function resolveSpace(player, isDouble){
@@ -4268,6 +4280,17 @@
         </div>
       `);
     }
+    if(state.gameStartedAt){
+      statRows.push(`
+        <div class="gameover-stat-row">
+          <span class="gameover-stat-icon">⏱️</span>
+          <div class="gameover-stat-text">
+            <span class="gameover-stat-label">Durée de la partie</span>
+            <span class="gameover-stat-value">${formatDuration(Date.now() - state.gameStartedAt)}</span>
+          </div>
+        </div>
+      `);
+    }
     const statsHtml = statRows.length ? `<div class="gameover-stats">${statRows.join('')}</div>` : '';
 
     const panel = document.createElement('div');
@@ -4392,6 +4415,7 @@
   }
 
   let turnTimerLoopId = null;
+  let stuckPhaseSince = null;
   function startTurnTimerLoop(){
     if(turnTimerLoopId) return;
     turnTimerLoopId = setInterval(() => {
@@ -4402,7 +4426,57 @@
          Date.now() - state.turnStartedAt >= TURN_TIME_LIMIT_MS){
         forceSkipTurn();
       }
+
+      // Self-healing watchdog: 'moving'/'rolling' now resolve synchronously
+      // in the same tick they start, so genuinely observing one of them for
+      // several seconds in a row means something went wrong (e.g. an
+      // unexpected error interrupted the resolution) rather than normal
+      // play. Recover to a safe, always-actionable phase instead of leaving
+      // every connected player stuck with no button to press.
+      const gameVisible = document.getElementById('game').style.display === 'flex';
+      if(gameVisible && (state.phase === 'moving' || state.phase === 'rolling')){
+        if(stuckPhaseSince === null) stuckPhaseSince = Date.now();
+        else if(Date.now() - stuckPhaseSince > 4000){
+          stuckPhaseSince = null;
+          const cp = currentPlayer();
+          if(cp){
+            pushLog(`⚠️ Un blocage a été détecté et corrigé automatiquement.`);
+            state.phase = 'must-end';
+            renderAll();
+            if(isMyTurn()) pushState();
+          }
+        }
+      } else {
+        stuckPhaseSince = null;
+      }
     }, 1000);
+  }
+
+  // Whole-game duration, shown in the topbar instead of the room code, and
+  // again in the end-of-game summary.
+  function formatDuration(ms){
+    const totalSec = Math.max(0, Math.floor(ms / 1000));
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    const mm = h > 0 ? String(m).padStart(2, '0') : String(m);
+    const ss = String(s).padStart(2, '0');
+    return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
+  }
+  function updateGameTimerDisplay(){
+    const el = document.getElementById('topbarTimer');
+    if(!el) return;
+    if(!state.gameStartedAt){ el.textContent = '⏱️ 0:00'; return; }
+    el.textContent = `⏱️ ${formatDuration(Date.now() - state.gameStartedAt)}`;
+  }
+  let gameTimerLoopId = null;
+  function startGameTimerLoop(){
+    updateGameTimerDisplay();
+    if(gameTimerLoopId) return;
+    gameTimerLoopId = setInterval(updateGameTimerDisplay, 1000);
+  }
+  function stopGameTimerLoop(){
+    if(gameTimerLoopId){ clearInterval(gameTimerLoopId); gameTimerLoopId = null; }
   }
   startTurnTimerLoop();
 
