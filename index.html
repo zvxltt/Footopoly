@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>MultiPoly — Édition Champions</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/mqtt@5/dist/mqtt.min.js"></script>
 <style>
   :root{
@@ -158,7 +158,7 @@
     from{opacity:0;transform:translateY(8px);}
     to{opacity:1;transform:translateY(0);}
   }
-  .landing-form, .mode-grid, .setup-card, .local-card, .layout{animation:panelFadeIn .32s cubic-bezier(.34,1.2,.64,1);}
+  .landing-form, .mode-grid, .setup-card, .local-card, .layout, #profileScreen, #newsScreen, #lobby, #careerScreen, .rules-overlay{animation:panelFadeIn .32s cubic-bezier(.34,1.2,.64,1);}
 
   /* ---------------- STADIUM BACKDROP (behind every pre-game screen) ---------------- */
   .stadium-bg{
@@ -253,6 +253,7 @@
   .mode-icon-create{background:linear-gradient(160deg,#f0cf7a,#caa23a 75%);}
   .mode-icon-join{background:linear-gradient(160deg,#d4a94a,#a67c1f 75%);}
   .mode-icon-local{background:linear-gradient(160deg,#f0cf7a,#caa23a 75%);}
+  .mode-icon-career{background:linear-gradient(160deg,#6bbf7a,var(--pitch) 75%);}
   .mode-text{flex:1;min-width:0;}
   .mode-title{font-weight:700;font-size:14.5px;color:var(--ink);letter-spacing:-.01em;}
   .mode-desc{font-size:11px;color:var(--ink-soft);margin-top:2px;line-height:1.3;}
@@ -314,6 +315,12 @@
   .local-bot-hint{
     font-size:10px;color:var(--ink-soft);line-height:1.3;margin:0 0 5px;
   }
+  .local-players-header{
+    display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;
+  }
+  .stepper-inline{gap:8px;}
+  .stepper-inline button{width:26px;height:26px;font-size:14px;border-radius:8px;}
+  .stepper-inline .count{font-size:16px;min-width:20px;}
   #localPlayerRows{
     display:flex;flex-direction:column;gap:4px;margin-bottom:8px;
   }
@@ -472,20 +479,29 @@
   .profile-level-block{
     display:flex;align-items:center;gap:12px;
     background:#fff;border:1px solid var(--parchment-dark);border-radius:12px;
-    padding:10px 14px;margin-bottom:16px;
+    padding:10px 14px;margin-bottom:10px;
   }
   .profile-level-badge{
-    width:40px;height:40px;border-radius:50%;flex:none;
+    width:44px;height:44px;border-radius:50%;flex:none;
     background:conic-gradient(from 200deg, #f7d774, #f1c40f, #caa23a, #f1c40f, #f7d774);
     display:flex;align-items:center;justify-content:center;
-    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:16px;color:#5a4a12;
-    box-shadow:0 3px 6px rgba(0,0,0,.25);
+    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:17px;color:#5a4a12;
+    box-shadow:0 3px 6px rgba(0,0,0,.25), inset 0 -3px 4px rgba(0,0,0,.12), inset 0 2px 2px rgba(255,255,255,.5);
+    border:2px solid #fff;
   }
   .profile-level-info{flex:1;min-width:0;}
   .profile-level-label{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:4px;}
   .profile-xp-bar{width:100%;height:7px;border-radius:4px;background:var(--parchment-dark);overflow:hidden;}
   .profile-xp-fill{height:100%;background:linear-gradient(90deg,var(--pitch),#3fc463);border-radius:4px;transition:width .3s ease;}
   .profile-xp-text{font-size:10px;color:var(--ink-soft);font-weight:600;margin-top:3px;font-family:'JetBrains Mono',monospace;}
+  .profile-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+  .profile-stat-cell{
+    background:#fff;border:1px solid var(--parchment-dark);border-radius:10px;
+    padding:9px 4px;text-align:center;
+  }
+  .profile-stat-cell b{display:block;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:17px;color:var(--ink);}
+  .profile-stat-cell small{font-size:8.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);font-weight:700;}
+  .profile-next-unlock{font-size:9.5px;color:var(--ink-soft);font-weight:600;}
   .emblem-grid{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:16px;}
   .emblem-pick{
     width:48px;height:48px;border-radius:12px;flex:none;position:relative;
@@ -566,12 +582,6 @@
     font-family:'Baloo 2',sans-serif;font-weight:700;font-size:16px;letter-spacing:.02em;
     flex:0 1 auto;min-width:0;overflow:hidden;
   }
-  .topbar-timer{
-    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.05em;
-    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
-    color:var(--gold);padding:3px 9px;border-radius:999px;font-weight:700;
-    display:inline-block;flex:none;
-  }
   .turn-pill{
     display:flex;align-items:center;gap:8px;
     background:rgba(255,255,255,0.08);border-radius:999px;padding:6px 14px 6px 6px;
@@ -604,6 +614,32 @@
     display:flex;align-items:center;justify-content:center;
   }
   .rules-close:hover{background:var(--red);color:#fff;}
+
+  /* -- main game rules slideshow -- */
+  .rules-tuto-skip{position:absolute;top:16px;right:56px;background:none;border:none;color:var(--ink-soft);font-size:11px;font-weight:700;z-index:2;}
+  .rules-tuto-slides{position:relative;height:260px;margin-top:8px;}
+  .rules-tuto-slide{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;text-align:center;
+    opacity:0;transform:translateX(24px);transition:opacity .28s ease,transform .28s ease;pointer-events:none;
+  }
+  .rules-tuto-slide.active{opacity:1;transform:translateX(0);pointer-events:auto;}
+  .rules-tuto-slide.prev{transform:translateX(-24px);}
+  .rules-tuto-visual{width:100%;display:flex;align-items:center;justify-content:center;margin-bottom:16px;height:88px;}
+  .rules-tuto-mock-card{background:var(--parchment-dark);border-radius:12px;padding:12px 16px;min-width:190px;}
+  .rules-tuto-title{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:17px;color:var(--ink);text-transform:uppercase;margin-bottom:8px;}
+  .rules-tuto-text{font-size:12.5px;color:var(--ink-soft);line-height:1.55;padding:0 8px;max-width:400px;}
+  .rules-tuto-dots{display:flex;justify-content:center;gap:6px;margin-top:10px;}
+  .rules-tuto-dot{width:6px;height:6px;border-radius:50%;background:rgba(32,40,31,.15);transition:background .2s ease,width .2s ease;}
+  .rules-tuto-dot.active{background:var(--gold);width:18px;border-radius:3px;}
+  .rules-tuto-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;}
+  .rules-tuto-nav .form-back{flex:none;padding:10px 14px;font-size:12px;margin:0;}
+  .rules-tuto-nav .start-btn{flex:none;width:auto;padding:10px 18px;margin:0;font-size:13px;}
+  .rules-mini-die{
+    width:46px;height:46px;background:var(--parchment);border-radius:10px;display:grid;
+    grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:7px;
+    box-shadow:0 3px 0 rgba(0,0,0,.2);
+  }
+  .rules-mini-pip{width:7px;height:7px;border-radius:50%;background:var(--ink);margin:auto;}
   .rules-card h2{margin:0 0 18px;font-size:clamp(20px,3.4vw,26px);color:var(--pitch);}
   .rules-section{margin-bottom:16px;}
   .rules-section h3{margin:0 0 4px;font-size:14.5px;color:var(--ink);}
@@ -933,6 +969,8 @@
     display:flex;align-items:center;justify-content:space-between;width:100%;max-width:380px;
     font-weight:700;font-size:13px;color:#fff;margin-bottom:8px;
   }
+  .trade-header span{display:flex;align-items:center;gap:6px;}
+  .trade-header svg{flex:none;}
   .trade-pick-title{font-size:12px;color:rgba(242,244,234,.75);margin-bottom:8px;}
   .bot-offer-intro{font-size:12.5px;color:rgba(242,244,234,.85);text-align:center;margin:0 0 10px;max-width:340px;}
   .trade-partners{display:flex;flex-direction:column;gap:6px;width:100%;max-width:340px;max-height:clamp(90px,calc(var(--board-px) * 0.26),200px);overflow-y:auto;}
@@ -1134,7 +1172,6 @@
     .topbar-word{display:none;}
     .turn-pill{font-size:11px;padding:5px 10px 5px 5px;width:180px;}
     .reset-btn{padding:6px 10px;font-size:11px;}
-    .topbar-timer{font-size:10px;padding:2px 7px;}
   }
   @media (max-width:400px){
     .setup-card{border-radius:16px;}
@@ -1142,6 +1179,347 @@
     .setup-body{padding:20px 18px 24px;}
     .code-display{font-size:clamp(28px,11vw,40px);letter-spacing:.1em;}
   }
+
+  /* ================= CAREER MODE =================
+     Pixel-faithful to the original file: exact colors, spacing, radii, and
+     font sizes carried over 1:1 from the source Tailwind classes. */
+  #careerScreen{
+    display:none;position:fixed;inset:0;z-index:5;width:100vw;height:100vh;height:100dvh;
+    background:#0b2b1d;flex-direction:column;overflow:hidden;font-family:'Inter',sans-serif;
+  }
+  .car-phase{display:flex;flex-direction:column;height:100%;overflow:hidden;position:relative;animation:panelFadeIn .32s cubic-bezier(.34,1.2,.64,1);}
+
+  /* -- layered pitch texture, setup screen only -- */
+  .car-pitch-texture{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0;}
+  .car-pitch-texture .stripes{
+    position:absolute;inset:0;opacity:.9;
+    background:repeating-linear-gradient(90deg,#123824 0px,#123824 34px,#0e2f1e 34px,#0e2f1e 68px);
+  }
+  .car-pitch-texture .grain{
+    position:absolute;inset:0;animation:carGrainDrift 9s ease-in-out infinite alternate;
+    background-image:
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 1px, transparent 1px, transparent 4px),
+      repeating-linear-gradient(65deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 1px, transparent 1px, transparent 5px);
+  }
+  @keyframes carGrainDrift{from{transform:translate(0,0);}to{transform:translate(2px,2px);}}
+  .car-pitch-texture .vignette{
+    position:absolute;inset:0;
+    background:radial-gradient(ellipse 70% 45% at 50% 22%, rgba(210,235,215,0.16) 0%, transparent 62%), radial-gradient(circle at 50% 40%, transparent 35%, rgba(4,16,10,0.75) 100%);
+  }
+  .car-pitch-texture .circle{
+    position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:420px;height:420px;
+    border-radius:50%;border:2px solid rgba(243,239,226,0.06);
+  }
+  .car-pitch-texture .halfway{position:absolute;left:0;right:0;top:46%;height:2px;background:rgba(243,239,226,0.05);}
+  .car-pitch-texture .glow{position:absolute;border-radius:50%;filter:blur(55px);}
+  .car-pitch-texture .glow.a{top:-50px;left:-40px;width:200px;height:200px;background:rgba(201,162,39,.16);}
+  .car-pitch-texture .glow.b{bottom:-70px;right:-30px;width:240px;height:240px;background:rgba(63,125,79,.26);}
+  .car-pitch-texture .corner{position:absolute;width:38px;height:38px;border:2px solid rgba(243,239,226,.1);}
+  .car-pitch-texture .corner.tl{top:10px;left:10px;border-right:none;border-bottom:none;border-radius:8px 0 0 0;}
+  .car-pitch-texture .corner.br{bottom:10px;right:10px;border-left:none;border-top:none;border-radius:0 0 8px 0;}
+
+  .car-scroll{
+    flex:1;min-height:0;overflow-y:auto;position:relative;z-index:1;
+    display:flex;flex-direction:column;align-items:center;padding:10px 16px;
+  }
+
+  .car-eyebrow{color:#c9a227;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.25em;text-transform:uppercase;margin-bottom:2px;}
+  .car-title{font-family:'Oswald',sans-serif;color:#f3efe2;font-size:20px;font-weight:700;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:8px;}
+
+  /* -- player card: outer wrapper IS the colored "border" via padding -- */
+  .car-card-wrap{border-radius:14px;padding:3px;width:100%;max-width:384px;box-shadow:0 20px 40px -12px rgba(0,0,0,.4);transition:opacity .3s;}
+  .car-card-wrap.car-shuffling{animation:carShuffleWobble .15s ease-in-out infinite;box-shadow:0 20px 40px -12px rgba(0,0,0,.4),0 0 0 3px rgba(201,162,39,.35);}
+  @keyframes carShuffleWobble{
+    0%,100%{transform:rotate(0deg) scale(1);}
+    25%{transform:rotate(-0.7deg) scale(1.006);}
+    75%{transform:rotate(0.7deg) scale(1.006);}
+  }
+  .car-card-wrap.car-settling{animation:carShuffleSettle .4s cubic-bezier(.34,1.4,.64,1);}
+  @keyframes carShuffleSettle{
+    0%{transform:scale(1.08) rotate(0deg);box-shadow:0 20px 40px -12px rgba(0,0,0,.4),0 0 0 8px rgba(201,162,39,.4);}
+    55%{transform:scale(.97) rotate(0deg);}
+    100%{transform:scale(1) rotate(0deg);box-shadow:0 20px 40px -12px rgba(0,0,0,.4),0 0 0 0 rgba(201,162,39,0);}
+  }
+  .car-card{background:#f3efe2;border-radius:11px;padding:10px 14px;}
+  .car-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;}
+  .car-rating-badge{border-radius:6px;padding:3px 8px;text-align:center;line-height:1;}
+  .car-rating-num{font-family:'Oswald',sans-serif;font-weight:700;font-size:16px;display:block;}
+  .car-rating-tier{font-size:6.5px;text-transform:uppercase;letter-spacing:.1em;margin-top:1px;display:block;}
+  .car-poste-badge{display:flex;flex-direction:column;align-items:center;}
+  .car-poste-icon{width:28px;height:28px;border-radius:50%;background:#0b2b1d;display:flex;align-items:center;justify-content:center;font-size:12px;color:#c9a227;}
+  .car-poste-label{font-size:7px;text-transform:uppercase;letter-spacing:.03em;color:#6b6552;margin-top:2px;}
+  .car-avatar-block{display:flex;flex-direction:column;align-items:center;margin-bottom:6px;}
+  .car-avatar{
+    width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#0b2b1d,#1c4a34);
+    border:2px solid #c9a227;display:flex;align-items:center;justify-content:center;
+    font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;color:#f3efe2;margin-bottom:3px;
+  }
+  .car-name-input{
+    width:100%;text-align:center;font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;
+    text-transform:uppercase;background:transparent;border:none;border-bottom:2px solid #0b2b1d33;
+    outline:none;padding-bottom:2px;color:#0b2b1d;
+  }
+  .car-name-input::placeholder{color:#0b2b1d55;}
+  .car-nation-line{font-size:9px;color:#9a9482;margin-top:2px;display:flex;align-items:center;justify-content:center;gap:4px;}
+  .car-club-box{background:#e7e2d3;border-radius:7px;padding:6px 8px;margin-bottom:5px;}
+  .car-club-label{font-size:7px;text-transform:uppercase;letter-spacing:.1em;color:#6b6552;margin-bottom:1px;}
+  .car-club-name{font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:#0b2b1d;text-transform:uppercase;}
+  .car-club-div{font-size:9px;color:#6b6552;}
+  .car-projection-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:5px;}
+  .car-projection-cell{background:#e7e2d3;border-radius:6px;padding:4px 2px;text-align:center;}
+  .car-projection-cell span{display:block;font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:#0b2b1d;}
+  .car-projection-cell small{font-size:7px;color:#6b6552;text-transform:uppercase;}
+  .car-selection-box{background:#0b2b1d;border-radius:7px;padding:6px 8px;display:flex;align-items:center;justify-content:space-between;}
+  .car-selection-label{font-size:7px;text-transform:uppercase;letter-spacing:.1em;color:#c9a227;}
+  .car-selection-nation{font-size:10px;font-weight:700;color:#f3efe2;margin-top:1px;}
+  .car-selection-right{text-align:right;}
+  .car-selection-threshold{font-family:'JetBrains Mono',monospace;font-size:9px;color:#9fb8a8;}
+  .car-selection-comp{font-size:7px;text-transform:uppercase;color:#6d8a79;margin-top:1px;}
+
+  /* -- redesigned player ID card -- */
+  .car-card-v2{padding:20px 16px 14px;text-align:center;}
+  .car-id-avatar-zone{position:relative;display:inline-block;margin-bottom:10px;}
+  .car-id-avatar{width:64px;height:64px;font-size:21px;margin:0;}
+  .car-id-rating-badge{position:absolute;top:-8px;right:-16px;padding:3px 8px;box-shadow:0 3px 6px rgba(0,0,0,.3);}
+  .car-id-name-input{font-size:16px;margin-bottom:8px;}
+  .car-id-tags{display:flex;justify-content:center;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+  .car-id-tag{display:inline-flex;align-items:center;gap:4px;background:#e7e2d3;border-radius:999px;padding:3.5px 9px;font-size:9px;font-weight:700;color:#4a4636;text-transform:uppercase;letter-spacing:.02em;}
+  .car-id-divider{height:1px;background:#0b2b1d1a;margin:0 -14px 10px;}
+  .car-id-club-row{display:flex;align-items:center;gap:9px;margin-bottom:8px;text-align:left;}
+  .car-id-club-crest{
+    width:32px;height:32px;flex:none;border-radius:8px;background:#0b2b1d;color:#c9a227;
+    display:flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;font-weight:700;font-size:10.5px;
+  }
+  .car-id-club-info{min-width:0;}
+  .car-id-stats-strip{display:flex;background:#e7e2d3;border-radius:8px;margin-bottom:8px;overflow:hidden;}
+  .car-id-stat{flex:1;padding:6px 2px;text-align:center;position:relative;}
+  .car-id-stat:not(:last-child)::after{content:'';position:absolute;right:0;top:22%;bottom:22%;width:1px;background:#0b2b1d22;}
+  .car-id-stat span{display:block;font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:#0b2b1d;}
+  .car-id-stat small{font-size:7px;color:#6b6552;text-transform:uppercase;}
+  .car-id-ticket{background:#0b2b1d;border-radius:8px;padding:7px 10px;display:flex;align-items:center;justify-content:space-between;}
+  .car-id-ticket-left{text-align:left;}
+  .car-id-ticket-right{text-align:right;}
+
+  .car-drafts{width:100%;max-width:384px;margin-top:8px;}
+  .car-drafts-title{color:#7a8f80;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;text-align:center;margin-bottom:4px;}
+  .car-drafts-row{display:flex;gap:6px;}
+  .car-draft-card{flex:1;border:2px solid rgba(243,239,226,.18);border-radius:7px;padding:5px 4px;text-align:center;background:rgba(243,239,226,.08);}
+  .car-draft-card.active{background:#c9a227;border-color:#c9a227;}
+  .car-draft-card.empty{border-style:dashed;border-color:rgba(243,239,226,.14);}
+  .car-draft-card .dn{font-family:'Oswald',sans-serif;font-weight:700;font-size:10px;color:#e6e2d3;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;}
+  .car-draft-card.active .dn{color:#0b2b1d;}
+  .car-draft-card .dm{font-size:8px;color:#7a8f80;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .car-draft-card.active .dm{color:#5c4a11;}
+  .car-draft-card .empty-label{font-size:9px;color:#4d6657;text-transform:uppercase;letter-spacing:.02em;}
+
+  .car-seasons-hint{font-size:9.5px;color:#7a8f80;margin-top:6px;text-align:center;}
+  .car-favs-btn{
+    display:flex;align-items:center;justify-content:center;gap:3px;font-size:8.5px;padding:6px 4px;border-radius:7px;
+    color:#c9a227;border:1px solid rgba(201,162,39,.4);background:none;font-family:'JetBrains Mono',monospace;
+    flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .car-setup-links-row{display:flex;gap:6px;margin-top:6px;}
+  .car-bottom-link{margin-top:6px;text-align:center;color:#7a8f80;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;text-decoration:underline;text-underline-offset:2px;background:none;border:none;}
+  .car-bottom-link:hover{color:#c9a227;}
+
+  .start-btn.car-btn-primary{
+    width:100%;max-width:384px;display:flex;align-items:center;justify-content:center;gap:6px;
+    background:#c9a227;color:#0b2b1d;font-weight:700;text-transform:uppercase;letter-spacing:.02em;
+    padding:11px;border-radius:10px;margin-top:8px;font-size:13px;box-shadow:0 4px 0 #96791b;
+    font-family:'Inter',sans-serif;border:none;
+  }
+  .start-btn.car-btn-shuffle-sub{
+    width:100%;max-width:384px;display:flex;align-items:center;justify-content:center;gap:6px;
+    background:transparent;color:#c9a227;border:2px solid #c9a227;font-weight:700;text-transform:uppercase;
+    letter-spacing:.02em;padding:8px;border-radius:10px;margin-top:8px;font-size:12px;font-family:'Inter',sans-serif;
+  }
+
+  /* -- playing phase -- */
+  .car-play-header{flex:none;padding:10px 12px;background:repeating-linear-gradient(90deg,#123824 0px,#123824 28px,#0e2f1e 28px,#0e2f1e 56px);border-bottom:2px solid #c9a227;position:relative;z-index:1;}
+  .car-play-header-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-bottom:8px;max-width:512px;margin-left:auto;margin-right:auto;}
+  .car-play-header-row .car-mini-back{justify-self:start;}
+  .car-play-header-row .car-retire-link{justify-self:end;}
+  .car-mini-link{background:none;border:none;color:#c9a227;font-size:10px;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:4px;}
+  .car-mini-icon{background:rgba(255,255,255,.08);border:none;border-radius:6px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#c9a227;flex:none;padding:0;}
+  .car-retire-link{color:#f3d9d9;background:#7c2c2c;padding:4px 8px;border-radius:4px;}
+  .car-play-season-label{font-size:10px;color:#c9a227;font-family:'JetBrains Mono',monospace;letter-spacing:.05em;text-transform:uppercase;}
+  .car-play-identity{display:flex;align-items:center;gap:10px;max-width:512px;margin:0 auto;}
+  .car-rating-badge-sm{flex:none;width:56px;height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;border-radius:8px;box-shadow:0 3px 0 rgba(0,0,0,.3);transition:box-shadow .2s ease;}
+  .car-rating-badge-sm.car-note-up{animation:carNoteUp .7s ease;}
+  .car-rating-badge-sm.car-note-down{animation:carNoteDown .7s ease;}
+  @keyframes carNoteUp{
+    0%{box-shadow:0 3px 0 rgba(0,0,0,.3);}
+    30%{transform:scale(1.18);box-shadow:0 3px 0 rgba(0,0,0,.3),0 0 0 6px rgba(63,125,79,.45);}
+    100%{transform:scale(1);box-shadow:0 3px 0 rgba(0,0,0,.3),0 0 0 0 rgba(63,125,79,0);}
+  }
+  @keyframes carNoteDown{
+    0%{box-shadow:0 3px 0 rgba(0,0,0,.3);}
+    20%,60%{transform:translateX(-3px);}
+    40%,80%{transform:translateX(3px);}
+    30%{box-shadow:0 3px 0 rgba(0,0,0,.3),0 0 0 6px rgba(168,62,62,.45);}
+    100%{transform:translateX(0);box-shadow:0 3px 0 rgba(0,0,0,.3),0 0 0 0 rgba(168,62,62,0);}
+  }
+  .car-rating-badge-sm .car-rating-num{font-size:24px;line-height:1;}
+  .car-rating-badge-sm .car-rating-tier{margin-top:2px;}
+  .car-play-identity-text{min-width:0;flex:1;}
+  .car-play-name{font-family:'Oswald',sans-serif;font-weight:700;font-size:18px;color:#f3efe2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase;line-height:1.2;}
+  .car-play-club{font-size:11px;color:#9fb8a8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .car-play-div{font-size:9px;color:#6d8a79;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  .car-stats-row{flex:none;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 12px 0;max-width:512px;margin:0 auto;width:100%;position:relative;z-index:1;}
+  .car-ministat{background:#f3efe2;border-radius:8px;padding:10px;display:flex;align-items:center;gap:8px;}
+  .car-ministat span{font-size:15px;}
+  .car-ministat b{display:block;font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;color:#0b2b1d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .car-ministat small{font-size:9px;color:#6b6552;}
+
+  .car-progress-block{flex:none;padding:10px 12px 0;max-width:512px;margin:0 auto;width:100%;position:relative;z-index:1;}
+  .car-progress-block .car-progress-inner{background:#f3efe2;border-radius:8px;padding:10px;}
+  .car-progress-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+  .car-progress-head span:first-child{color:#0b2b1d;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;}
+  .car-progress-head span:last-child{color:#6b6552;font-size:10px;}
+  .car-progress-bar{height:6px;background:#d8d2bd;border-radius:999px;overflow:hidden;margin-bottom:10px;}
+  .car-progress-fill{height:100%;background:#3f7d4f;border-radius:999px;transition:width .4s ease;}
+  .car-route{display:flex;align-items:center;justify-content:center;gap:6px;}
+  .car-route-cell{width:26px;height:26px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;transition:width .18s cubic-bezier(.34,1.2,.64,1),height .18s cubic-bezier(.34,1.2,.64,1),background .18s ease,border-width .18s ease;}
+  .car-route-cell.hidden-cell{background:#e2ddc9;color:#b9b09a;}
+  .car-route-cell.current{width:34px;height:34px;border:2px solid #0b2b1d;font-size:14px;animation:carRoutePop .22s cubic-bezier(.34,1.4,.64,1);}
+  @keyframes carRoutePop{from{transform:scale(.7);}to{transform:scale(1);}}
+  .car-route-empty{width:26px;height:26px;flex:none;}
+
+  .car-action-zone{flex:1;min-height:0;padding:10px 12px;overflow-y:auto;max-width:512px;margin:0 auto;width:100%;position:relative;z-index:1;}
+
+  .car-result-card{background:#f3efe2;border-radius:12px;padding:24px;text-align:center;animation:panelFadeIn .25s ease;}
+  .car-result-icon{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 12px;color:#fff;}
+  .car-result-title{font-family:'Oswald',sans-serif;font-weight:700;font-size:18px;color:#0b2b1d;margin-bottom:10px;text-transform:uppercase;}
+  .car-result-line{font-size:13px;color:#0b2b1d;margin-bottom:2px;}
+
+  .car-dice-panel{background:#c9a227;border-radius:12px;padding:24px;text-align:center;animation:panelFadeIn .25s ease;}
+  .car-dice-label{font-size:13px;font-weight:700;color:#0b2b1d;margin-bottom:16px;text-transform:uppercase;}
+  .car-die{width:80px;height:80px;background:#f3efe2;border-radius:14px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:12px;margin:0 auto 20px;box-shadow:0 5px 0 rgba(0,0,0,.25);}
+  .car-die.bob{animation:carDieBob .4s ease-in-out infinite;}
+  @keyframes carDieBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+  .car-die-pip{width:13px;height:13px;border-radius:50%;background:#0b2b1d;margin:auto;}
+
+  .car-mercato-card{padding:0;animation:panelFadeIn .25s ease;}
+  .car-mercato-title{display:flex;align-items:center;justify-content:center;gap:8px;color:#f3efe2;font-family:'Oswald',sans-serif;font-weight:700;font-size:20px;text-transform:uppercase;margin-bottom:16px;}
+  .car-mercato-sub{display:none;}
+  .car-offer-card{background:#f3efe2;border-radius:10px;padding:14px;margin-bottom:10px;text-align:left;width:100%;animation:panelFadeIn .3s ease backwards;}
+  .car-offer-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px;}
+  .car-offer-club{font-family:'Oswald',sans-serif;font-weight:700;font-size:16px;color:#0b2b1d;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .car-offer-div{font-size:11px;color:#6b6552;}
+  .car-offer-tag{font-size:9px;font-weight:700;text-transform:uppercase;padding:4px 8px;border-radius:4px;flex:none;}
+  .car-offer-tag.up{background:#c9a227;color:#0b2b1d;}
+  .car-offer-tag.loan{background:#9aa0a6;color:#0b2b1d;}
+  .car-offer-money{display:flex;gap:12px;font-size:14px;font-weight:700;margin-bottom:2px;}
+  .car-offer-note{font-size:11px;color:#6b6552;}
+  .car-decline-btn{width:100%;border:2px solid #f3efe2;color:#f3efe2;background:none;padding:12px;border-radius:8px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;font-size:14px;margin-top:6px;}
+
+  .car-recap-card{background:#f3efe2;border-radius:12px;overflow:hidden;border:3px solid #2c5aa0;animation:panelFadeIn .25s ease;}
+  .car-recap-header{background:#2c5aa0;padding:16px 20px;text-align:center;}
+  .car-recap-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#bcd2f0;margin-bottom:4px;}
+  .car-recap-title{font-family:'Oswald',sans-serif;font-weight:700;font-size:24px;color:#f3efe2;text-transform:uppercase;line-height:1.15;}
+  .car-recap-detail{font-size:12px;color:#dbe7f7;margin-top:4px;}
+  .car-recap-body{padding:16px 20px;}
+  .car-recap-box{background:#e7e2d3;border-radius:7px;padding:8px;margin-bottom:7px;}
+  .car-recap-box-label{font-size:9px;text-transform:uppercase;letter-spacing:.02em;color:#6b6552;margin-bottom:4px;}
+  .car-row{display:flex;justify-content:space-between;font-size:11px;color:#0b2b1d;padding:1.5px 0;}
+  .car-row b{font-weight:700;}
+  .car-row.green{color:#3f7d4f;}
+  .car-row.red{color:#a83e3e;}
+  .car-stat3-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:7px;}
+  .car-stat3-cell{background:#e7e2d3;border-radius:7px;padding:7px;text-align:center;animation:panelFadeIn .3s ease backwards;}
+  .car-stat3-cell span{display:block;font-size:12px;color:#2c5aa0;margin-bottom:2px;}
+  .car-stat3-cell b{display:block;font-family:'Oswald',sans-serif;font-weight:700;font-size:18px;color:#0b2b1d;line-height:1;}
+  .car-stat3-cell small{font-size:8px;text-transform:uppercase;letter-spacing:.02em;color:#6b6552;margin-top:1px;display:block;}
+  .car-intl-box{background:#0b2b1d;border-radius:7px;padding:8px;margin-bottom:7px;}
+  .car-intl-title{display:flex;align-items:center;gap:6px;color:#c9a227;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin-bottom:4px;}
+  .car-intl-nums{display:flex;gap:14px;margin-bottom:2px;}
+  .car-intl-nums span{color:#f3efe2;font-size:14px;}
+  .car-intl-tourney{background:#123824;border-radius:6px;padding:6px 10px;margin-top:8px;font-size:12px;color:#e6e2d3;font-weight:700;display:flex;align-items:center;gap:8px;}
+  .car-intl-tourney.won{background:#c9a227;color:#0b2b1d;}
+  .car-trophy-row{font-size:10px;color:#8a6d14;margin-bottom:1px;}
+  .car-trophy-row.intl{color:#2c5aa0;}
+  .car-trophy-row .yr{color:#9a9482;}
+
+  .car-finished-header{flex:none;text-align:center;padding:12px 16px 10px;position:relative;z-index:1;overflow:hidden;}
+  .car-finished-header::before{
+    content:'';position:absolute;inset:0;z-index:0;
+    background:repeating-linear-gradient(90deg,#123824 0,#123824 30px,#0e2f1e 30px,#0e2f1e 60px);
+  }
+  .car-finished-header.injured{border-bottom:2px solid #a83e3e;}
+  .car-finished-header.injured::before{background-image:radial-gradient(ellipse 80% 70% at 50% 0%, rgba(168,62,62,0.30) 0%, transparent 70%),repeating-linear-gradient(90deg,#123824 0,#123824 30px,#0e2f1e 30px,#0e2f1e 60px);}
+  .car-finished-header.notinjured{border-bottom:2px solid #c9a227;}
+  .car-finished-header.notinjured::before{background-image:radial-gradient(ellipse 80% 70% at 50% 0%, rgba(201,162,39,0.28) 0%, transparent 70%),repeating-linear-gradient(90deg,#123824 0,#123824 30px,#0e2f1e 30px,#0e2f1e 60px);}
+  .car-finished-header > *{position:relative;z-index:1;}
+  .car-finished-eyebrow{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.25em;text-transform:uppercase;margin-bottom:2px;}
+  .car-finished-header.injured .car-finished-eyebrow{color:#a83e3e;}
+  .car-finished-header.notinjured .car-finished-eyebrow{color:#c9a227;}
+  .car-finished-name{font-family:'Oswald',sans-serif;font-weight:700;font-size:19px;color:#f3efe2;text-transform:uppercase;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .car-finished-sub{font-size:10px;color:#9fb8a8;margin-top:2px;}
+  .car-finished-verdict{display:inline-block;margin-top:5px;padding:3px 10px;border-radius:999px;font-family:'Oswald',sans-serif;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.02em;}
+  .car-finished-header.injured .car-finished-verdict{background:#a83e3e;color:#f3efe2;}
+  .car-finished-header.notinjured .car-finished-verdict{background:#c9a227;color:#0b2b1d;}
+  .car-finished-scroll{flex:1;min-height:0;padding:8px;position:relative;z-index:1;}
+  .car-finished-card{max-width:512px;margin:0 auto;background:#f3efe2;border-radius:11px;padding:9px;height:100%;overflow-y:auto;}
+  .car-finished-footer{flex:none;padding:0 12px 10px calc(10px + env(safe-area-inset-bottom,0px));max-width:512px;margin:0 auto;width:100%;}
+  .car-finished-actions{display:flex;gap:8px;}
+  .car-star-btn{flex:none;border:2px solid #c9a227;background:rgba(201,162,39,.12);color:#8a6d14;border-radius:10px;padding:12px 14px;font-weight:700;font-size:11.5px;text-transform:uppercase;display:flex;align-items:center;gap:5px;}
+  .car-star-btn.active{background:#c9a227;color:#0b2b1d;}
+  .car-bottom-link.car-finished-back{margin-top:8px;}
+
+  .car-modal{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,20,13,.85);}
+  .car-modal-card{background:#f3efe2;border-radius:12px;padding:24px;max-width:384px;width:100%;text-align:center;animation:panelFadeIn .22s ease;}
+  .car-modal-icon{width:56px;height:56px;border-radius:50%;background:#a83e3e;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 12px;color:#f3efe2;}
+  .car-modal-card h3{font-family:'Oswald',sans-serif;font-weight:700;font-size:20px;color:#0b2b1d;text-transform:uppercase;margin-bottom:8px;}
+  .car-modal-text{font-size:14px;color:#4a4636;margin-bottom:4px;}
+  .car-modal-subtext{font-size:12px;color:#6b6552;margin-bottom:20px;}
+  .car-modal-actions{display:flex;gap:8px;}
+  .car-modal-actions .form-back{flex:1;border:2px solid #0b2b1d;border-radius:8px;padding:12px;font-weight:700;text-transform:uppercase;font-size:14px;color:#0b2b1d;background:none;margin:0;}
+  .car-modal-danger-btn{flex:1;background:#a83e3e;color:#fff;border:none;border-radius:8px;padding:12px;font-weight:700;text-transform:uppercase;font-size:14px;}
+
+  .car-favs-card{max-width:384px;max-height:80vh;display:flex;flex-direction:column;text-align:left;padding:0;overflow:hidden;border:3px solid #c9a227;}
+  .car-favs-header{background:#c9a227;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:#0b2b1d;text-transform:uppercase;}
+  .car-favs-list{flex:1;min-height:0;overflow-y:auto;padding:14px 16px;}
+  .car-fav-item{background:#e7e2d3;border-radius:8px;padding:11px 13px;margin-bottom:9px;}
+  .car-fav-item-top{display:flex;justify-content:space-between;gap:8px;margin-bottom:5px;}
+  .car-fav-name{font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:#0b2b1d;text-transform:uppercase;}
+  .car-fav-meta{font-size:10px;color:#6b6552;}
+  .car-fav-verdict{font-size:8px;font-weight:700;text-transform:uppercase;background:#c9a227;color:#0b2b1d;padding:3px 7px;border-radius:5px;flex:none;height:fit-content;}
+  .car-fav-chips{display:flex;gap:10px;font-size:11px;color:#0b2b1d;margin-bottom:4px;}
+  .car-fav-remove{font-size:10px;color:#a83e3e;font-weight:700;text-transform:uppercase;background:none;border:none;float:right;}
+  .car-favs-empty{font-size:12px;color:#6b6552;text-align:center;padding:22px 0;}
+
+  /* -- tactile press feedback -- */
+  #careerScreen button{transition:transform .1s ease,opacity .15s ease,background .15s ease;}
+  #careerScreen button:active:not(:disabled){transform:scale(.96);}
+  .car-draft-card{transition:background .15s ease,border-color .15s ease,transform .15s ease;}
+  .car-draft-card:active{transform:scale(.97);}
+  .car-offer-card{transition:transform .15s ease,box-shadow .15s ease;cursor:pointer;}
+  .car-offer-card:active{transform:scale(.98);}
+  .car-star-btn{transition:transform .1s ease,background .15s ease,color .15s ease;}
+  .car-die{transition:box-shadow .15s ease;}
+
+  /* -- tutorial slideshow -- */
+  .car-tuto-card{max-width:340px;padding:16px;position:relative;overflow:hidden;}
+  .car-tuto-skip{position:absolute;top:10px;right:10px;background:none;border:none;color:#0b2b1d80;font-size:10px;font-weight:700;z-index:2;}
+  .car-tuto-slides{position:relative;height:230px;margin-top:14px;}
+  .car-tuto-slide{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;text-align:center;
+    opacity:0;transform:translateX(24px);transition:opacity .28s ease,transform .28s ease;pointer-events:none;
+  }
+  .car-tuto-slide.active{opacity:1;transform:translateX(0);pointer-events:auto;}
+  .car-tuto-slide.prev{transform:translateX(-24px);}
+  .car-tuto-visual{width:100%;display:flex;align-items:center;justify-content:center;margin-bottom:14px;height:76px;}
+  .car-tuto-mock-card{background:#e7e2d3;border-radius:10px;padding:10px 14px;min-width:170px;}
+  .car-tuto-title{font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;color:#0b2b1d;text-transform:uppercase;margin-bottom:6px;}
+  .car-tuto-text{font-size:11.5px;color:#4a4636;line-height:1.5;padding:0 4px;}
+  .car-tuto-dots{display:flex;justify-content:center;gap:6px;margin-top:8px;}
+  .car-tuto-dot{width:6px;height:6px;border-radius:50%;background:#0b2b1d26;transition:background .2s ease,width .2s ease;}
+  .car-tuto-dot.active{background:#c9a227;width:16px;border-radius:3px;}
+  .car-tuto-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;}
+  .car-tuto-nav .form-back{flex:none;padding:9px 12px;font-size:11px;}
+  .car-tuto-nav .car-btn-primary{flex:none;width:auto;padding:9px 16px;}
+
 </style>
 </head>
 <body>
@@ -1173,11 +1551,6 @@
       </div>
       <div class="hero-eyebrow">Édition Champions</div>
       <h1 class="hero-title">MULTIPOLY</h1>
-      <div class="feature-strip">
-        <span class="feature-pill">⏱️ 60s / tour</span>
-        <span class="feature-pill">🏗️ Construction</span>
-        <span class="feature-pill">🤝 Échanges</span>
-      </div>
     </div>
 
     <div id="connStatus" class="config-warning conn-connecting">
@@ -1198,6 +1571,14 @@
         <div class="mode-text">
           <div class="mode-title">Jouer en local</div>
           <div class="mode-desc">Même appareil · entre vous ou avec des bots</div>
+        </div>
+        <div class="mode-arrow">›</div>
+      </button>
+      <button class="mode-card" id="showCareerBtn" type="button">
+        <div class="mode-icon mode-icon-career">🎯</div>
+        <div class="mode-text">
+          <div class="mode-title">Mode Carrière</div>
+          <div class="mode-desc">Solo · vivez la carrière d'un footballeur</div>
         </div>
         <div class="mode-arrow">›</div>
       </button>
@@ -1252,7 +1633,6 @@
     </div>
 
     <div class="setup-hint" id="landingHint">2 à 6 Présidents · en ligne chacun joue depuis son téléphone, en local vous passez l'appareil ou ajoutez des bots</div>
-    <button class="rules-link" id="rulesLinkSetup" type="button">📖 Comment jouer ?</button>
   </div>
 </div>
 
@@ -1268,6 +1648,9 @@
         ⚠️ Personnalisez votre profil (pseudo + emblème) avant de créer ou rejoindre une partie en ligne.
       </div>
 
+      <span class="field-label section" style="margin-top:0;">Votre pseudo</span>
+      <input type="text" id="profileNameInput" maxlength="16" placeholder="Président 1" class="text-input">
+
       <div class="profile-level-block">
         <div class="profile-level-badge" id="profileLevelBadge">1</div>
         <div class="profile-level-info">
@@ -1277,10 +1660,16 @@
         </div>
       </div>
 
-      <span class="field-label section">Votre pseudo</span>
-      <input type="text" id="profileNameInput" maxlength="16" placeholder="Président 1" class="text-input">
+      <div class="profile-stats-row" id="profileStatsRow">
+        <div class="profile-stat-cell"><b id="profileGamesPlayed">0</b><small>Parties</small></div>
+        <div class="profile-stat-cell"><b id="profileGamesWon">0</b><small>Victoires</small></div>
+        <div class="profile-stat-cell"><b id="profileWinRate">—</b><small>Réussite</small></div>
+      </div>
 
-      <span class="field-label section">Votre emblème</span>
+      <div class="field-label section" style="display:flex;justify-content:space-between;align-items:baseline;">
+        <span>Votre emblème</span>
+        <span class="profile-next-unlock" id="profileNextUnlock"></span>
+      </div>
       <div class="emblem-grid" id="profileEmblemGrid"></div>
 
       <button class="rules-link" id="profileBackBtn" type="button">← Retour</button>
@@ -1317,17 +1706,14 @@
         <button class="theme-scroll-arrow right" type="button" data-target="localThemeRow" aria-label="Défiler à droite">›</button>
       </div>
 
-      <span class="field-label section">Nombre de Présidents</span>
-      <div class="stepper-card">
-        <div class="stepper">
+      <div class="local-players-header">
+        <span class="field-label" style="margin:0;">Présidents</span>
+        <div class="stepper stepper-inline">
           <button id="localDecBtn" type="button" aria-label="Moins de joueurs">−</button>
           <div class="count" id="localCountLabel">4</div>
           <button id="localIncBtn" type="button" aria-label="Plus de joueurs">+</button>
         </div>
       </div>
-
-      <span class="field-label section">Présidents</span>
-      <p class="local-bot-hint">🤖 Activez le mode Bot</p>
       <div id="localPlayerRows"></div>
 
       <span class="field-label section">Budget de départ</span>
@@ -1384,7 +1770,7 @@
     <div class="stadium-glow stadium-glow-2"></div>
   </div>
   <div class="topbar">
-    <div class="topbar-title"><div class="footballicon"></div> <span class="topbar-word">MULTIPOLY</span> <span class="topbar-timer" id="topbarTimer">⏱️ 0:00</span></div>
+    <div class="topbar-title"><div class="footballicon"></div> <span class="topbar-word">MULTIPOLY</span></div>
     <div class="turn-pill" id="turnPill"></div>
     <div class="topbar-right">
       <button class="reset-btn" id="rulesBtn" type="button">📖 Règles</button>
@@ -1426,67 +1812,399 @@
 <div id="rulesOverlay" class="rules-overlay" style="display:none">
   <div class="rules-card">
     <button class="rules-close" id="rulesCloseBtn" type="button">✕</button>
+    <button class="rules-tuto-skip" id="rulesTutoSkip" type="button">Passer</button>
     <h2>📖 Comment jouer à MultiPoly</h2>
 
-    <div class="rules-section">
-      <h3>🎯 Objectif</h3>
-      <p>Devenez le dernier Président encore solvable. Achetez des propriétés, développez-les avec des maisons et un hôtel, et ruinez vos adversaires grâce aux loyers.</p>
+    <div class="rules-tuto-slides" id="rulesTutoSlides">
+      <div class="rules-tuto-slide">
+        <div class="rules-tuto-visual">
+          <div class="rules-tuto-mock-card" style="display:flex;align-items:center;gap:10px;">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M17 5h2a2 2 0 0 1 2 2 4 4 0 0 1-4 4M7 5H5a2 2 0 0 0-2 2 4 4 0 0 0 4 4"/></svg>
+            <span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:var(--ink);font-size:14px;">Dernier debout</span>
+          </div>
+        </div>
+        <h3 class="rules-tuto-title">Objectif</h3>
+        <p class="rules-tuto-text">Devenez le dernier Président encore solvable. Achetez des propriétés, développez-les avec des maisons et un hôtel, et ruinez vos adversaires grâce aux loyers.</p>
+      </div>
+
+      <div class="rules-tuto-slide">
+        <div class="rules-tuto-visual">
+          <div class="rules-mini-die" id="rulesMiniDie"></div>
+        </div>
+        <h3 class="rules-tuto-title">Votre tour</h3>
+        <p class="rules-tuto-text">Lancez les dés pour avancer, résolvez la case où vous arrivez, puis terminez votre tour — sauf si vous faites un double, vous rejouez ! (Trois doubles d'affilée envoient direct aux vestiaires.) En ligne, vous avez 60 secondes par tour.</p>
+      </div>
+
+      <div class="rules-tuto-slide">
+        <div class="rules-tuto-visual">
+          <div class="rules-tuto-mock-card">
+            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:var(--ink);font-size:12px;margin-bottom:4px;">RUE DE LA PAIX</div>
+            <div style="height:5px;background:var(--gold);border-radius:2px;margin-bottom:6px;"></div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft);">€350 · loyer €35</div>
+          </div>
+        </div>
+        <h3 class="rules-tuto-title">Acheter ou payer un loyer</h3>
+        <p class="rules-tuto-text">Case libre ? Achetez-la au prix affiché. Propriété d'un adversaire ? Le loyer se paie automatiquement — il double si l'adversaire possède tout le groupe, et grimpe encore avec des maisons ou un hôtel.</p>
+      </div>
+
+      <div class="rules-tuto-slide">
+        <div class="rules-tuto-visual">
+          <div class="rules-tuto-mock-card" style="display:flex;gap:6px;align-items:flex-end;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--pitch)" stroke="var(--pitch)" stroke-width="1"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--ink)" stroke-width="1"><path d="M3 21h18M4 21V10l8-6 8 6v11"/></svg>
+          </div>
+        </div>
+        <h3 class="rules-tuto-title">Construire</h3>
+        <p class="rules-tuto-text">Dès qu'un groupe de couleur vous appartient entièrement, construisez maisons (jusqu'à 4) puis un hôtel pour multiplier les loyers. Construction uniforme : impossible de poser une 2ᵉ maison sur une propriété avant que chaque propriété du groupe en ait une.</p>
+      </div>
+
+      <div class="rules-tuto-slide">
+        <div class="rules-tuto-visual">
+          <div class="rules-tuto-mock-card" style="display:flex;align-items:center;gap:10px;">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 3 4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16"/></svg>
+          </div>
+        </div>
+        <h3 class="rules-tuto-title">Échanger entre joueurs</h3>
+        <p class="rules-tuto-text">Proposez une propriété (ou de l'argent) contre une propriété d'un adversaire — pratique pour compléter un groupe. Une propriété avec des maisons ne peut pas être échangée : revendez d'abord ses constructions.</p>
+      </div>
+
+      <div class="rules-tuto-slide">
+        <div class="rules-tuto-visual">
+          <div class="rules-tuto-mock-card" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:9px;font-weight:800;text-align:center;color:var(--ink);">
+            <div style="background:var(--parchment);border-radius:6px;padding:6px;">DÉPART<br><span style="font-weight:400;color:var(--ink-soft);">+€200</span></div>
+            <div style="background:var(--parchment);border-radius:6px;padding:6px;">PRISON<br><span style="font-weight:400;color:var(--ink-soft);">visite/renvoi</span></div>
+            <div style="background:var(--parchment);border-radius:6px;padding:6px;">REPOS<br><span style="font-weight:400;color:var(--ink-soft);">rien</span></div>
+            <div style="background:var(--parchment);border-radius:6px;padding:6px;">RENVOI<br><span style="font-weight:400;color:var(--ink-soft);">→ prison</span></div>
+          </div>
+        </div>
+        <h3 class="rules-tuto-title">Cases spéciales</h3>
+        <p class="rules-tuto-text">DÉPART : touchez €200 en passant. PRISON : simple visite, sauf si vous y êtes envoyé — vous passez un tour. REPOS : rien ne se passe. RENVOI : direction la prison, vous manquez votre prochain tour.</p>
+      </div>
+
+      <div class="rules-tuto-slide">
+        <div class="rules-tuto-visual">
+          <div class="rules-tuto-mock-card" style="display:flex;align-items:center;gap:10px;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg>
+          </div>
+        </div>
+        <h3 class="rules-tuto-title">Faillite &amp; victoire</h3>
+        <p class="rules-tuto-text">Si vous ne pouvez plus payer une dette, vous faites faillite : vos biens repartent à la banque et vous quittez la partie. Le dernier Président encore debout remporte la partie !</p>
+      </div>
     </div>
 
-    <div class="rules-section">
-      <h3>🎲 Déroulement d'un tour</h3>
-      <p>1. Lancez les dés pour avancer votre jeton.<br>
-      2. Résolvez la case où vous arrivez (acheter, payer un loyer, tirer une carte...).<br>
-      3. Terminez votre tour — sauf si vous avez fait un double : vous rejouez ! (Trois doubles d'affilée vous envoient direct aux vestiaires.)</p>
-      <p>⏱️ <b>En ligne</b>, vous avez 60 secondes pour jouer votre tour — passé ce délai, il est automatiquement passé au joueur suivant.</p>
-    </div>
-
-    <div class="rules-section">
-      <h3>💶 Acheter une propriété</h3>
-      <p>Si la case est libre, vous pouvez l'acheter au prix affiché. Si vous refusez, elle reste disponible pour le prochain joueur qui s'y arrête.</p>
-    </div>
-
-    <div class="rules-section">
-      <h3>🏟️ Payer un loyer</h3>
-      <p>Si un adversaire possède la case, vous lui payez automatiquement un loyer. Il double si l'adversaire possède tout le groupe de couleur, et grimpe encore plus s'il y a des maisons ou un hôtel construits.</p>
-    </div>
-
-    <div class="rules-section">
-      <h3>🏗️ Monopole &amp; construction</h3>
-      <p>Dès que vous possédez tout un groupe de propriétés, un bouton <b>Construire</b> apparaît pendant votre tour : ajoutez des maisons (jusqu'à 4) puis un hôtel pour multiplier vos loyers. Vous pouvez aussi revendre une construction à moitié prix si vous manquez de liquidités.</p>
-      <p>🧱 <b>Construction uniforme</b> : impossible de poser une 2ᵉ maison sur une propriété tant que chaque propriété du groupe n'en a pas reçu une première. L'hôtel ne s'achète (au prix d'une maison) qu'une fois les 4 maisons posées sur <b>toutes</b> les propriétés du groupe.</p>
-      <p>Le coût de la première maison dépend du standing du groupe : de €50 (le moins cher) à €200 (le plus prestigieux). Chaque maison suivante sur la <b>même propriété</b> coûte 25% de plus que la précédente (arrondi), jusqu'à l'hôtel.</p>
-    </div>
-
-    <div class="rules-section">
-      <h3>🚉 Loyer des stations</h3>
-      <p>Le loyer d'une station dépend du nombre de stations que vous possédez : €25 pour 1, €50 pour 2, €100 pour 3, €200 pour les 4.</p>
-    </div>
-
-    <div class="rules-section">
-      <h3>🤝 Échanger entre joueurs</h3>
-      <p>Le bouton <b>Échanger</b> vous permet de proposer une propriété (ou de l'argent) contre une propriété d'un adversaire — utile pour compléter un groupe. Une propriété avec des maisons ne peut pas être échangée : revendez d'abord ses constructions.</p>
-    </div>
-
-    <div class="rules-section">
-      <h3>🃏 Cartes événements</h3>
-      <p>🟨 <b id="ruleMinorDeck">Carton Jaune</b> : petit imprévu, gain ou perte modérée.<br>
-      🔄 <b id="ruleMajorDeck">Transfert</b> : événement plus important, parfois un aller direct en prison.</p>
-    </div>
-
-    <div class="rules-section">
-      <h3>📍 Cases spéciales</h3>
-      <p><b id="ruleCornerGo">DÉPART</b> : passez ici pour toucher €200.<br>
-      <b id="ruleCornerJail">PRISON</b> : simple visite, sauf si vous y êtes envoyé — vous passez alors un tour.<br>
-      <b id="ruleCornerFree">REPOS</b> : pause, rien ne se passe.<br>
-      <b id="ruleCornerGoJail">RENVOI</b> : direction la case précédente, vous manquez votre prochain tour.</p>
-    </div>
-
-    <div class="rules-section">
-      <h3>💀 Faillite &amp; victoire</h3>
-      <p>Si vous ne pouvez plus payer une dette, vous faites faillite : vos biens repartent à la banque et vous quittez la partie. Le dernier Président encore debout remporte la partie !</p>
+    <div class="rules-tuto-dots" id="rulesTutoDots"></div>
+    <div class="rules-tuto-nav">
+      <button class="form-back" id="rulesTutoPrevBtn" type="button" style="visibility:hidden;">‹ Précédent</button>
+      <button class="start-btn" id="rulesTutoNextBtn" type="button">Suivant ›</button>
     </div>
   </div>
+</div>
+
+<!-- ============ CAREER MODE SCREEN ============ -->
+<div id="careerScreen" style="display:none">
+
+  <!-- SETUP -->
+  <div id="carSetup" class="car-phase">
+    <div class="car-pitch-texture">
+      <div class="stripes"></div>
+      <div class="grain"></div>
+      <div class="glow a"></div>
+      <div class="glow b"></div>
+      <div class="corner tl"></div>
+      <div class="corner br"></div>
+      <div class="vignette"></div>
+      <div class="circle"></div>
+      <div class="halfway"></div>
+    </div>
+    <div class="car-scroll">
+      <p class="car-eyebrow">Création de carrière</p>
+      <h1 class="car-title">Carrière</h1>
+
+      <div class="car-card-wrap" id="carCardWrap">
+        <div class="car-card car-card-v2" id="carPlayerCard">
+          <div class="car-id-avatar-zone">
+            <div class="car-avatar car-id-avatar" id="carAvatar">?</div>
+            <div class="car-rating-badge car-id-rating-badge" id="carRatingBadge">
+              <span class="car-rating-num" id="carRatingNum">60</span>
+              <span class="car-rating-tier" id="carRatingTier">Argent</span>
+            </div>
+          </div>
+
+          <input type="text" id="carNameInput" maxlength="20" placeholder="TON NOM" class="car-name-input car-id-name-input">
+
+          <div class="car-id-tags">
+            <span class="car-id-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22V3"/></svg><span id="carNationName">—</span></span>
+            <span class="car-id-tag"><span id="carStartAge">—</span> ans</span>
+            <span class="car-id-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>Attaquant</span>
+          </div>
+
+          <div class="car-id-divider"></div>
+
+          <div class="car-id-club-row">
+            <div class="car-id-club-crest" id="carClubCrest">—</div>
+            <div class="car-id-club-info">
+              <div class="car-club-name" id="carClubName">—</div>
+              <div class="car-club-div" id="carClubDiv">—</div>
+            </div>
+          </div>
+
+          <div class="car-id-stats-strip">
+            <div class="car-id-stat"><span id="carTotalSeasons">—</span><small>Saisons</small></div>
+            <div class="car-id-stat"><span id="carRetireAge">—</span><small>Fin</small></div>
+            <div class="car-id-stat"><span id="carTotalCases">—</span><small>Cases</small></div>
+          </div>
+
+          <div class="car-id-ticket">
+            <div class="car-id-ticket-left">
+              <div class="car-selection-label">Sélection</div>
+              <div class="car-selection-nation" id="carSelectionNation">—</div>
+            </div>
+            <div class="car-id-ticket-right">
+              <div class="car-selection-threshold" id="carSelectionThreshold">seuil —</div>
+              <div class="car-selection-comp" id="carSelectionComp">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="car-drafts" id="carDrafts" style="display:none">
+        <p class="car-drafts-title">Tirage <span id="carDraftCount">0</span>/3</p>
+        <div class="car-drafts-row" id="carDraftsRow"></div>
+      </div>
+
+      <button class="start-btn car-btn-shuffle-sub" id="carShuffleBtn" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" style="flex:none;"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.2" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.2" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.2" fill="currentColor" stroke="none"/></svg><span>Tirer au sort</span></button>
+      <button class="start-btn car-btn-primary" id="carKeepBtn" type="button" style="display:none;">Garder ce joueur ›</button>
+      <p class="car-seasons-hint" id="carSeasonsHint"></p>
+
+      <div class="car-setup-links-row">
+        <button class="car-favs-btn" id="carShowFavsBtn" type="button">⭐ Gardées (<span id="carFavCount">0</span>/10)</button>
+        <button class="car-favs-btn" id="carShowTutoBtn" type="button">❓ Comment jouer ?</button>
+      </div>
+      <button class="car-bottom-link" id="carSetupBackBtn" type="button">← Retour</button>
+    </div>
+  </div>
+
+  <!-- PLAYING -->
+  <div id="carPlaying" class="car-phase" style="display:none">
+    <div class="car-pitch-texture">
+      <div class="stripes"></div>
+      <div class="grain"></div>
+      <div class="glow a"></div>
+      <div class="glow b"></div>
+      <div class="corner tl"></div>
+      <div class="corner br"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="car-play-header">
+      <div class="car-play-header-row">
+        <button class="car-mini-link car-mini-back" id="carPlayingBackBtn" type="button">‹ Retour</button>
+        <p class="car-play-season-label" id="carPlaySeasonLabel">—</p>
+        <button class="car-mini-link car-retire-link" id="carRetireBtn" type="button"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22V3"/></svg> Retraite</button>
+      </div>
+      <div class="car-play-identity">
+        <div class="car-rating-badge car-rating-badge-sm" id="carPlayRatingBadge">
+          <span class="car-rating-num" id="carPlayRatingNum">60</span>
+          <span class="car-rating-tier" id="carPlayRatingTier">Argent</span>
+        </div>
+        <div class="car-play-identity-text">
+          <div class="car-play-name" id="carPlayName">—</div>
+          <div class="car-play-club" id="carPlayClub">—</div>
+          <div class="car-play-div" id="carPlayDiv">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="car-stats-row" id="carStatsRow">
+      <div class="car-ministat"><span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h15a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7"/><circle cx="17" cy="14" r="1"/></svg></span><div><b id="carArgent">€0</b><small>Fortune</small></div></div>
+      <div class="car-ministat"><span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18M7 6h1v4M16.71 13.88l.7.71-.71.71"/></svg></span><div><b id="carSalaire">€0</b><small>Salaire/saison</small></div></div>
+    </div>
+
+    <div class="car-progress-block" id="carProgressBlock">
+      <div class="car-progress-inner">
+        <div class="car-progress-head">
+          <span id="carSeasonProgressLabel">Saison 1/10</span>
+          <span id="carSeasonProgressPct">0/20 · 0%</span>
+        </div>
+        <div class="car-progress-bar"><div class="car-progress-fill" id="carProgressFill"></div></div>
+        <div class="car-route" id="carRoute"></div>
+      </div>
+    </div>
+
+    <div class="car-action-zone" id="carActionZone"></div>
+  </div>
+
+  <!-- FINISHED -->
+  <div id="carFinished" class="car-phase" style="display:none">
+    <div class="car-pitch-texture">
+      <div class="stripes"></div>
+      <div class="grain"></div>
+      <div class="glow a"></div>
+      <div class="glow b"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="car-finished-header" id="carFinishedHeader">
+      <p class="car-finished-eyebrow" id="carFinishedEyebrow">Fin de carrière</p>
+      <h1 class="car-finished-name" id="carFinishedName">—</h1>
+      <p class="car-finished-sub" id="carFinishedSub">—</p>
+      <div class="car-finished-verdict" id="carFinishedVerdict">—</div>
+    </div>
+    <div class="car-finished-scroll">
+      <div class="car-finished-card" id="carFinishedCard"></div>
+    </div>
+    <div class="car-finished-footer">
+      <div class="car-finished-actions">
+        <button class="car-star-btn" id="carStarBtn" type="button">⭐ <span id="carStarLabel">Garder</span></button>
+        <button class="start-btn car-btn-primary" id="carNewCareerBtn2" type="button" style="flex:1;margin:0;padding:12px;font-size:13.5px;">Nouvelle carrière</button>
+      </div>
+      <button class="car-bottom-link car-finished-back" id="carFinishedBackBtn" type="button">← Retour</button>
+    </div>
+  </div>
+
+  <!-- Retirement confirmation modal -->
+  <div id="carRetireModal" class="car-modal" style="display:none">
+    <div class="car-modal-card">
+      <div class="car-modal-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22V3"/></svg></div>
+      <h3>Raccrocher les crampons ?</h3>
+      <p id="carRetireText" class="car-modal-text">—</p>
+      <p class="car-modal-subtext">Cette décision est définitive.</p>
+      <div class="car-modal-actions">
+        <button class="form-back" id="carRetireCancelBtn" type="button">Continuer</button>
+        <button class="car-modal-danger-btn" id="carRetireConfirmBtn" type="button">Prendre ma retraite</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hall of fame modal -->
+  <div id="carFavsModal" class="car-modal" style="display:none">
+    <div class="car-modal-card car-favs-card">
+      <div class="car-favs-header">
+        <span>⭐ Carrières gardées</span>
+        <span id="carFavsCount">0/10</span>
+      </div>
+      <div class="car-favs-list" id="carFavsList"></div>
+      <button class="start-btn" id="carFavsCloseBtn" type="button" style="margin-top:10px;">Fermer</button>
+    </div>
+  </div>
+
+  <!-- Resume-choice modal — shown when re-entering career mode with a career already in progress -->
+  <div id="carResumeModal" class="car-modal" style="display:none">
+    <div class="car-modal-card">
+      <div class="car-modal-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div>
+      <h3>Reprendre ta carrière ?</h3>
+      <p id="carResumeText" class="car-modal-text">—</p>
+      <p class="car-modal-subtext">Recommencer effacera la progression en cours.</p>
+      <div class="car-modal-actions">
+        <button class="form-back" id="carResumeNewBtn" type="button">Nouvelle carrière</button>
+        <button class="car-modal-danger-btn" id="carResumeContinueBtn" type="button" style="background:#3f7d4f;">Continuer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tutorial modal -->
+  <div id="carTutoModal" class="car-modal" style="display:none">
+    <div class="car-modal-card car-tuto-card">
+      <button id="carTutoCloseX" type="button" class="car-tuto-skip">Passer ✕</button>
+
+      <div class="car-tuto-slides" id="carTutoSlides">
+        <div class="car-tuto-slide">
+          <div class="car-tuto-visual">
+            <div class="car-tuto-mock-card">
+              <div class="car-rating-badge" style="background:#8a5a2b;color:#f3efe2;margin:0 auto 6px;width:fit-content;"><span class="car-rating-num">60</span><span class="car-rating-tier">BRONZE</span></div>
+              <div class="car-avatar" style="width:36px;height:36px;font-size:12px;margin:0 auto 6px;">?</div>
+              <div style="height:2px;background:#0b2b1d33;width:60%;margin:0 auto;"></div>
+            </div>
+          </div>
+          <h3 class="car-tuto-title">Crée ton joueur</h3>
+          <p class="car-tuto-text">Tire au sort jusqu'à 3 profils — nom, nation, club formateur, âge — et garde celui que tu préfères.</p>
+        </div>
+
+        <div class="car-tuto-slide">
+          <div class="car-tuto-visual">
+            <div class="car-tuto-mock-card">
+              <div class="car-die" style="width:44px;height:44px;padding:6px;margin:0 auto 8px;box-shadow:0 3px 0 rgba(0,0,0,.25);">
+                <div class="car-die-pip" style="width:7px;height:7px;"></div><span></span><div class="car-die-pip" style="width:7px;height:7px;"></div>
+                <div class="car-die-pip" style="width:7px;height:7px;"></div><span></span><div class="car-die-pip" style="width:7px;height:7px;"></div>
+                <div class="car-die-pip" style="width:7px;height:7px;"></div><span></span><div class="car-die-pip" style="width:7px;height:7px;"></div>
+              </div>
+              <div style="display:flex;gap:4px;justify-content:center;">
+                <div class="car-route-cell" style="width:16px;height:16px;background:#9fb8a8;"></div>
+                <div class="car-route-cell current" style="width:20px;height:20px;background:#3f7d4f;border-color:#0b2b1d;"></div>
+                <div class="car-route-cell hidden-cell" style="width:16px;height:16px;">?</div>
+                <div class="car-route-cell hidden-cell" style="width:16px;height:16px;">?</div>
+              </div>
+            </div>
+          </div>
+          <h3 class="car-tuto-title">Lance le dé et avance</h3>
+          <p class="car-tuto-text">Chaque case déclenche un évènement : match tranquille, bonus, malus, ou revenu hors terrain.</p>
+        </div>
+
+        <div class="car-tuto-slide">
+          <div class="car-tuto-visual">
+            <div class="car-tuto-mock-card">
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
+                <div class="car-rating-badge" style="background:#8a5a2b;color:#f3efe2;"><span class="car-rating-num">64</span></div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3f7d4f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                <div class="car-rating-badge" style="background:#c9a227;color:#0b2b1d;"><span class="car-rating-num">78</span></div>
+              </div>
+            </div>
+          </div>
+          <h3 class="car-tuto-title">Progresse vers ton potentiel</h3>
+          <p class="car-tuto-text">Ta note grimpe avec les bons évènements et les bonnes saisons — mais jamais au-delà de ton potentiel, fixé au tirage au sort.</p>
+        </div>
+
+        <div class="car-tuto-slide">
+          <div class="car-tuto-visual">
+            <div class="car-tuto-mock-card">
+              <div class="car-offer-card" style="margin:0;padding:8px 10px;">
+                <div class="car-offer-top" style="margin-bottom:2px;">
+                  <div class="car-offer-club" style="font-size:12px;">AC MILAN</div>
+                  <span class="car-offer-tag up" style="font-size:7px;">Palier +</span>
+                </div>
+                <div class="car-offer-money" style="font-size:10px;">
+                  <span style="color:#3f7d4f;">2,4 M €</span><span style="color:#3f7d4f;">65 000 €/saison ↑</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <h3 class="car-tuto-title">Change de club au mercato</h3>
+          <p class="car-tuto-text">Tous les 3 saisons, des clubs te courtisent — parfois un palier au-dessus. Accepte, ou reste fidèle à ton club.</p>
+        </div>
+
+        <div class="car-tuto-slide">
+          <div class="car-tuto-visual">
+            <div class="car-tuto-mock-card">
+              <div class="car-intl-box" style="margin:0;">
+                <div class="car-intl-title" style="color:#c9a227;justify-content:center;">🚩 France — première sélection !</div>
+                <div class="car-intl-nums" style="justify-content:center;"><span><b>6</b> sélections</span><span><b>3</b> buts</span></div>
+              </div>
+            </div>
+          </div>
+          <h3 class="car-tuto-title">Rejoins la sélection nationale</h3>
+          <p class="car-tuto-text">Atteins le seuil de ta nation pour être appelé. Les grandes nations (France, Brésil...) ont plus de facilité à performer en Coupe du monde que les nations plus modestes.</p>
+        </div>
+
+        <div class="car-tuto-slide">
+          <div class="car-tuto-visual">
+            <div class="car-tuto-mock-card">
+              <div class="car-finished-verdict" style="position:static;background:#c9a227;color:#0b2b1d;margin-bottom:8px;">Grand joueur</div>
+              <div class="car-row green" style="background:#0b2b1d0f;border-radius:6px;padding:5px 10px;font-size:11px;justify-content:center;gap:6px;">
+                <span>⭐ XP profil</span><b>+150 XP</b>
+              </div>
+            </div>
+          </div>
+          <h3 class="car-tuto-title">Termine en beauté</h3>
+          <p class="car-tuto-text">Retraite entre 35 et 38 ans, par choix, ou parfois par blessure. Plus ta carrière est réussie, plus tu gagnes d'XP pour ton profil MultiPoly.</p>
+        </div>
+      </div>
+
+      <div class="car-tuto-dots" id="carTutoDots"></div>
+      <div class="car-tuto-nav">
+        <button class="form-back" id="carTutoPrevBtn" type="button" style="visibility:hidden;">‹ Précédent</button>
+        <button class="start-btn car-btn-primary" id="carTutoNextBtn" type="button" style="margin:0;">Suivant ›</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -2140,10 +2858,12 @@
           pseudo: typeof p.pseudo === 'string' ? p.pseudo : '',
           emblemIdx: typeof p.emblemIdx === 'number' ? p.emblemIdx : 0,
           xp: typeof p.xp === 'number' ? p.xp : 0,
+          gamesPlayed: typeof p.gamesPlayed === 'number' ? p.gamesPlayed : 0,
+          gamesWon: typeof p.gamesWon === 'number' ? p.gamesWon : 0,
         };
       }
     } catch(e){}
-    return { pseudo:'', emblemIdx:0, xp:0 };
+    return { pseudo:'', emblemIdx:0, xp:0, gamesPlayed:0, gamesWon:0 };
   }
   function saveProfile(){
     try{ localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); } catch(e){}
@@ -2166,6 +2886,11 @@
     profile.xp += amount;
     saveProfile();
   }
+  // Career mode lives in its own separate <script> block, so it can't reach
+  // this function through normal scoping — expose it globally so career
+  // mode's completion-XP reward can actually call it (previously this threw
+  // a ReferenceError, crashing whenever a career finished/retired).
+  window.awardXP = awardXP;
 
   // Now that the pseudo and emblem both auto-save as soon as they're set,
   // "has a profile" just means "has a real pseudo" — no separate explicit
@@ -2181,6 +2906,7 @@
     const el = document.getElementById('profileBtnEmblem');
     if(el) el.textContent = hasProfile() ? currentEmblem().e : '👤';
   }
+  window.renderProfileButton = renderProfileButton;
 
   function renderProfileScreen(){
     const lvl = levelFromXP(profile.xp);
@@ -2195,6 +2921,19 @@
     if(fill) fill.style.width = (into / XP_PER_LEVEL * 100) + '%';
     if(text) text.textContent = `${into} / ${XP_PER_LEVEL} XP`;
     if(nameInput && document.activeElement !== nameInput) nameInput.value = profile.pseudo || '';
+
+    const gp = document.getElementById('profileGamesPlayed');
+    const gw = document.getElementById('profileGamesWon');
+    const wr = document.getElementById('profileWinRate');
+    if(gp) gp.textContent = profile.gamesPlayed;
+    if(gw) gw.textContent = profile.gamesWon;
+    if(wr) wr.textContent = profile.gamesPlayed > 0 ? Math.round(profile.gamesWon / profile.gamesPlayed * 100) + '%' : '—';
+
+    const nextUnlockEl = document.getElementById('profileNextUnlock');
+    if(nextUnlockEl){
+      const nextEm = PROFILE_EMBLEMS.filter(em => !em.secretName && em.unlock > lvl).sort((a,b) => a.unlock - b.unlock)[0];
+      nextUnlockEl.textContent = nextEm ? `Prochain à débloquer : niveau ${nextEm.unlock}` : 'Tous débloqués !';
+    }
 
     const grid = document.getElementById('profileEmblemGrid');
     if(!grid) return;
@@ -2225,6 +2964,7 @@
      Static list, most recent first — update this array when shipping
      something worth telling players about. */
   const NEWS_ITEMS = [
+    { date:'11/08/2026', icon:'🎯', title:'Mode Carrière', desc:"Vivez la carrière complète d'un footballeur, du club formateur à la retraite : mercato, sélection nationale, blessures et palmarès. Solo, sans connexion nécessaire." },
     { date:'09/08/2026', icon:'🎲', title:'Trois nouveaux univers', desc:"Pirates, Cinéma et Jeux Vidéo rejoignent Football, Monde et France — chacun avec ses propres propriétés, pions et cartes." },
     { date:'09/08/2026', icon:'🤖', title:'Des bots qui savent négocier', desc:"Les bots proposent des échanges quand ça les arrange, et refusent désormais les offres trop déséquilibrées." },
     { date:'09/08/2026', icon:'👤', title:'Profils et progression', desc:"Pseudo, emblème et système de niveaux — gagnez de l'XP à chaque partie et débloquez de nouveaux emblèmes." },
@@ -2674,7 +3414,6 @@
 
     document.getElementById('localSetup').style.display = 'none';
     document.getElementById('game').style.display = 'flex';
-    startGameTimerLoop();
     lastMoneyById = {};
     lastHousesById = {};
     state.gameStats = { biggestRent:{amount:0,payerName:'',ownerName:'',propertyName:''}, propertyRentTotals:{} };
@@ -2734,7 +3473,6 @@
     state.pendingBuy = null;
     state.turnStartedAt = null;
     timerPauseStart = null;
-    stopGameTimerLoop();
     document.getElementById('game').style.display = 'none';
     document.getElementById('lobby').style.display = 'none';
     document.getElementById('localSetup').style.display = 'none';
@@ -2775,7 +3513,6 @@
       if(document.getElementById('game').style.display !== 'flex'){
         document.getElementById('lobby').style.display = 'none';
         document.getElementById('game').style.display = 'flex';
-        startGameTimerLoop();
         lastMoneyById = {};
         lastHousesById = {};
         document.getElementById('sidebar').innerHTML = '';
@@ -2860,9 +3597,10 @@
   function openRules(){
     refreshRuleCornerNames();
     document.getElementById('rulesOverlay').style.display = 'flex';
+    rulesTutoIndex = 0;
+    renderRulesTutoSlide();
   }
   function closeRules(){ document.getElementById('rulesOverlay').style.display = 'none'; }
-  document.getElementById('rulesLinkSetup').addEventListener('click', openRules);
   document.getElementById('rulesBtn').addEventListener('click', openRules);
   document.getElementById('rulesCloseBtn').addEventListener('click', closeRules);
   document.getElementById('rulesOverlay').addEventListener('click', (e) => {
@@ -2871,6 +3609,48 @@
   document.addEventListener('keydown', (e) => {
     if(e.key === 'Escape') closeRules();
   });
+
+  // ---- Rules slideshow navigation (same pattern as career mode's tutorial) ----
+  const rulesTutoSlideEls = () => Array.from(document.querySelectorAll('#rulesTutoSlides .rules-tuto-slide'));
+  let rulesTutoIndex = 0;
+  function renderRulesTutoSlide(){
+    const slides = rulesTutoSlideEls();
+    slides.forEach((el, i) => {
+      el.classList.toggle('active', i === rulesTutoIndex);
+      el.classList.toggle('prev', i < rulesTutoIndex);
+    });
+    const dots = document.getElementById('rulesTutoDots');
+    dots.innerHTML = slides.map((_, i) => `<span class="rules-tuto-dot${i===rulesTutoIndex?' active':''}"></span>`).join('');
+    document.getElementById('rulesTutoPrevBtn').style.visibility = rulesTutoIndex === 0 ? 'hidden' : 'visible';
+    document.getElementById('rulesTutoNextBtn').textContent = rulesTutoIndex === slides.length - 1 ? 'Compris !' : 'Suivant ›';
+    if(rulesTutoIndex === 1) renderRulesMiniDie();
+  }
+  document.getElementById('rulesTutoPrevBtn').addEventListener('click', () => {
+    if(rulesTutoIndex > 0){ rulesTutoIndex--; renderRulesTutoSlide(); }
+  });
+  document.getElementById('rulesTutoNextBtn').addEventListener('click', () => {
+    const total = rulesTutoSlideEls().length;
+    if(rulesTutoIndex < total - 1){ rulesTutoIndex++; renderRulesTutoSlide(); }
+    else closeRules();
+  });
+  document.getElementById('rulesTutoSkip').addEventListener('click', closeRules);
+  const RULES_DIE_PIPS = {
+    1: [[1,1]], 2: [[0,0],[2,2]], 3: [[0,0],[1,1],[2,2]],
+    4: [[0,0],[0,2],[2,0],[2,2]], 5: [[0,0],[0,2],[1,1],[2,0],[2,2]],
+    6: [[0,0],[0,2],[1,0],[1,2],[2,0],[2,2]],
+  };
+  function renderRulesMiniDie(){
+    const die = document.getElementById('rulesMiniDie');
+    if(!die) return;
+    const cells = RULES_DIE_PIPS[4];
+    let html = '';
+    for(let i=0;i<9;i++){
+      const r = Math.floor(i/3), c = i%3;
+      const on = cells.some(p => p[0]===r && p[1]===c);
+      html += `<div>${on ? '<span class="rules-mini-pip"></span>' : ''}</div>`;
+    }
+    die.innerHTML = html;
+  }
 
   /* ---------------- HELPERS ---------------- */
   function cellPos(i){
@@ -3220,7 +4000,7 @@
           <div class="turn-timer" id="turnTimer" style="display:none"></div>
         </div>
         <div class="console-content" id="consoleContent">
-          <div class="console-log-title" id="consoleLogTitle">⚡ Moments forts</div>
+          <div class="console-log-title" id="consoleLogTitle"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg> Moments forts</div>
           <div id="log"></div>
         </div>
       </div>
@@ -3444,7 +4224,7 @@
       const partner = state.players[t.partnerId];
       if(state.myId === t.partnerId){
         container.innerHTML = `
-          <div class="trade-header"><span>🤝 Proposition de ${proposer ? proposer.name : '...'}</span></div>
+          <div class="trade-header"><span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 3 4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16"/></svg> Proposition de ${proposer ? proposer.name : '...'}</span></div>
           ${tradeOfferSummaryHTML(t)}
           <div class="trade-actions">
             <button class="action-btn btn-buy" id="tradeAcceptBtn">✅ Accepter</button>
@@ -3455,7 +4235,7 @@
         document.getElementById('tradeDeclineBtn').addEventListener('click', declineTrade);
       } else if(state.myId === t.proposerId){
         container.innerHTML = `
-          <div class="trade-header"><span>🤝 Votre proposition</span></div>
+          <div class="trade-header"><span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 3 4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16"/></svg> Votre proposition</span></div>
           <div class="bot-offer-intro">En attente de la réponse de <b>${partner ? partner.name : '...'}</b>…</div>
           ${tradeOfferSummaryHTML(t)}
           <div class="trade-actions">
@@ -3465,7 +4245,7 @@
         document.getElementById('tradeCancelBtn').addEventListener('click', cancelTrade);
       } else {
         container.innerHTML = `
-          <div class="trade-header"><span>🤝 Échange en cours</span></div>
+          <div class="trade-header"><span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 3 4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16"/></svg> Échange en cours</span></div>
           <div class="bot-offer-intro">${proposer ? proposer.name : '...'} propose un échange à <b>${partner ? partner.name : '...'}</b>…</div>
           ${tradeOfferSummaryHTML(t)}
         `;
@@ -3475,7 +4255,7 @@
 
     if(state.buildOpen && cp && myTurn){
       container.innerHTML = `
-        <div class="trade-header"><span>🏗️ Constructions</span><button class="build-close" id="buildCloseBtn">Fermer ✕</button></div>
+        <div class="trade-header"><span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1M9 13h1M9 17h1M14 9h1M14 13h1M14 17h1"/></svg> Constructions</span><button class="build-close" id="buildCloseBtn">Fermer ✕</button></div>
         ${renderBuildPanelHTML(cp)}
       `;
       container.querySelectorAll('.br-plus').forEach(btn => btn.addEventListener('click', () => {
@@ -3500,7 +4280,7 @@
       const giveNames = offer.give.map(idx => BOARD[idx].name);
       const receiveNames = offer.receive.map(idx => BOARD[idx].name);
       container.innerHTML = `
-        <div class="trade-header"><span>🤖 Offre de ${proposer.name}</span></div>
+        <div class="trade-header"><span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="11" rx="2"/><path d="M12 9V5M9 5h6"/><circle cx="9" cy="14.5" r="1"/><circle cx="15" cy="14.5" r="1"/></svg> Offre de ${proposer.name}</span></div>
         <p class="bot-offer-intro">${proposer.name} propose cet échange à <b>${target.name}</b> :</p>
         <div class="trade-summary">
           <div class="trade-summary-side">
@@ -3570,7 +4350,7 @@
 
     // Not trading (or not this client's own turn to trade) — show the log.
     if(!document.getElementById('log')){
-      container.innerHTML = `<div class="console-log-title" id="consoleLogTitle">⚡ Moments forts</div><div id="log"></div>`;
+      container.innerHTML = `<div class="console-log-title" id="consoleLogTitle"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg> Moments forts</div><div id="log"></div>`;
     }
     const logEl = document.getElementById('log');
     if(logEl){
@@ -3758,7 +4538,7 @@
     }
 
     if(state.buildOpen && cp && myTurn){
-      zone.innerHTML = `<div class="waiting-note">🏗️ Constructions ouvertes dans le plateau ci-dessus ⬆️</div>`;
+      zone.innerHTML = `<div class="waiting-note"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1M9 13h1M9 17h1M14 9h1M14 13h1M14 17h1"/></svg> Constructions ouvertes dans le plateau ci-dessus ⬆️</div>`;
       return;
     }
 
@@ -4311,8 +5091,12 @@
     // (local mode has no single "me" to credit a win to, since several
     // people share the one device/profile).
     let xpGain = XP_PER_GAME;
-    if(state.mode === 'online' && winner && state.myId === winner.id) xpGain += XP_BONUS_WIN;
+    const iWon = state.mode === 'online' && winner && state.myId === winner.id;
+    if(iWon) xpGain += XP_BONUS_WIN;
     awardXP(xpGain);
+    profile.gamesPlayed += 1;
+    if(iWon || (state.mode === 'local' && winner)) profile.gamesWon += 1;
+    saveProfile();
     renderProfileButton();
   }
 
@@ -4452,8 +5236,7 @@
     }, 1000);
   }
 
-  // Whole-game duration, shown in the topbar instead of the room code, and
-  // again in the end-of-game summary.
+  // Whole-game duration — shown only in the end-of-game summary now.
   function formatDuration(ms){
     const totalSec = Math.max(0, Math.floor(ms / 1000));
     const h = Math.floor(totalSec / 3600);
@@ -4463,22 +5246,1659 @@
     const ss = String(s).padStart(2, '0');
     return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
   }
-  function updateGameTimerDisplay(){
-    const el = document.getElementById('topbarTimer');
-    if(!el) return;
-    if(!state.gameStartedAt){ el.textContent = '⏱️ 0:00'; return; }
-    el.textContent = `⏱️ ${formatDuration(Date.now() - state.gameStartedAt)}`;
-  }
-  let gameTimerLoopId = null;
-  function startGameTimerLoop(){
-    updateGameTimerDisplay();
-    if(gameTimerLoopId) return;
-    gameTimerLoopId = setInterval(updateGameTimerDisplay, 1000);
-  }
-  function stopGameTimerLoop(){
-    if(gameTimerLoopId){ clearInterval(gameTimerLoopId); gameTimerLoopId = null; }
-  }
   startTurnTimerLoop();
+
+})();
+</script>
+
+<script>
+(function(){
+
+  /* ================= CAREER MODE ================= */
+  /* Data ported from a career-simulator prototype, restyled to match
+     MultiPoly's look. Prefixed CAR_/car to avoid any collision with the
+     rest of the app. */
+  const CAR_SEASON_LEN = 20;
+  const CAR_RETIRE_AGE_MIN = 35;
+  const CAR_RETIRE_AGE_MAX = 38;
+  const CAR_MIN_START_AGE = 17;
+  const CAR_MAX_START_AGE = 21;
+  const CAR_START_YEAR = 2026;
+  const CAR_MERCATO_EVERY = 3;
+  const CAR_MAX_DRAFTS = 3;
+  const CAR_MAX_FAVORITES = 10;
+
+  const CAR_WEIGHTS = [["normale",0.34],["bonus",0.42],["malus",0.20],["horsfoot",0.04]];
+
+const CAR_NAME_POOLS = {
+  fr: {
+    first: ["Yanis", "Mattéo", "Lucas", "Enzo", "Rayan", "Nathan", "Théo", "Noah", "Malo", "Baptiste", "Hugo", "Ethan",
+      "Gabriel", "Raphaël", "Léo", "Jules", "Adam", "Louis", "Arthur", "Maël", "Tom", "Sacha", "Timéo", "Aaron",
+      "Clément", "Antoine", "Valentin", "Corentin", "Quentin", "Maxime", "Romain", "Axel", "Kylian", "Alix",
+      "Nolan", "Evan", "Ilan", "Milo", "Isaac", "Naël", "Robin", "Amaury", "Gaspard", "Titouan", "Erwan", "Loïc"],
+    last: ["Dubreuil", "Lefèvre", "Rousseau", "Girard", "Moreau", "Fontaine", "Lambert", "Renard", "Perrin", "Marchand",
+      "Chevalier", "Boucher", "Mercier", "Barbier", "Leroy", "Dumont", "Bertrand", "Colin", "Guillot", "Vasseur",
+      "Duval", "Charpentier", "Blanchard", "Delaunay", "Auger", "Poirier", "Lemoine", "Deschamps", "Berger", "Faure"],
+  },
+  westAfr: {
+    first: ["Amara", "Moussa", "Adama", "Ibrahim", "Souleymane", "Mamadou", "Cheikh", "Ousmane", "Sadio", "Boubacar",
+      "Lamine", "Seydou", "Aliou", "Idrissa", "Abdoulaye", "Modou", "Bakary", "Yaya", "Kalidou", "Pape",
+      "Serigne", "Alassane", "Demba", "Habib", "Malick", "Youssouf", "Salif", "Fodé", "Karamoko", "Sekou",
+      "Kwame", "Kofi", "Emmanuel", "Daniel", "Samuel", "Victor", "Chukwu", "Obinna", "Nana", "Yao"],
+    last: ["Camara", "Traoré", "Diallo", "Kanté", "Sissoko", "Coulibaly", "Konaté", "N'Guessan", "Cissé", "Bamba",
+      "Kouassi", "Diop", "Ndiaye", "Sarr", "Fall", "Gueye", "Touré", "Keïta", "Doumbia", "Sylla",
+      "Mendy", "Baldé", "Dembélé", "Sow", "Yeboah", "Mensah", "Okafor", "Adeyemi", "Boateng", "Osei"],
+  },
+  maghreb: {
+    first: ["Bilal", "Sofiane", "Younès", "Anas", "Karim", "Riyad", "Achraf", "Mehdi", "Hakim", "Ilyas",
+      "Ayoub", "Nabil", "Amine", "Yassine", "Zakaria", "Oussama", "Walid", "Hamza", "Adel", "Sami",
+      "Ismaël", "Bilel", "Reda", "Nordine", "Farid", "Tarek", "Rachid", "Nadir", "Selim", "Marwan",
+      "Youssef", "Omar", "Aymen", "Chakib", "Idriss", "Salim"],
+    last: ["Benali", "El Amrani", "Ziani", "Hakimi", "Boufal", "Mahrez", "Belhadj", "Chaoui", "Taleb", "Zerrouki",
+      "Bennacer", "Slimani", "Bensebaini", "El Khattabi", "Amrabat", "Ounahi", "Msakni", "Khazri", "Feghouli", "Brahimi",
+      "Bounedjah", "Attal", "Guedioura", "Saïss", "Ziyech", "Regragui", "Haddadi", "Bouazza", "Cherif", "Meziane"],
+  },
+  en: {
+    first: ["Jack", "Harry", "Callum", "Mason", "Declan", "Ollie", "Reece", "Kyle", "Tyler", "Jude",
+      "Marcus", "Connor", "Charlie", "George", "Alfie", "Archie", "Freddie", "Jacob", "Ethan", "Leo",
+      "Finley", "Riley", "Bailey", "Jamie", "Lewis", "Ben", "Josh", "Ryan", "Adam", "Sam",
+      "Dominic", "Nathan", "Cole", "Kai", "Rhys", "Aaron", "Elliot", "Toby", "Louie", "Morgan"],
+    last: ["Whitmore", "Hargreaves", "Ashworth", "Bramley", "Fletcher", "Rowntree", "Cavendish", "Ellington", "Hobbs", "Marlow",
+      "Redfern", "Sanderson", "Kirkland", "Harrington", "Thornton", "Blackwood", "Pemberton", "Waverly", "Stanton", "Lockwood",
+      "Bramhall", "Grimshaw", "Ashby", "Wilkinson", "Hollis", "Crawley", "Radcliffe", "Winstanley", "Bowden", "Merrick"],
+  },
+  es: {
+    first: ["Álvaro", "Iker", "Rodrigo", "Pablo", "Sergio", "Javier", "Nico", "Marco", "Adrián", "Dani",
+      "Unai", "Gonzalo", "Hugo", "Martín", "Diego", "Alejandro", "Mario", "Carlos", "Jorge", "Rubén",
+      "Íñigo", "Aitor", "Borja", "Xabi", "Gerard", "Marc", "Oriol", "Pau", "Aleix", "Bryan",
+      "Fermín", "Lamine", "Ansu", "Yeremy", "Samu", "Raúl"],
+    last: ["Serrano", "Vidal", "Molina", "Cabrera", "Alarcón", "Iglesias", "Peñaranda", "Bermúdez", "Ferrer", "Ocaña",
+      "Requena", "Villalba", "Navarro", "Domínguez", "Castillo", "Guerrero", "Cardona", "Espinosa", "Montoya", "Carrasco",
+      "Pedraza", "Olmedo", "Zamora", "Bautista", "Cuesta", "Aranda", "Salinas", "Rojas", "Miralles", "Escudero"],
+  },
+  latam: {
+    first: ["Mateo", "Thiago", "Santiago", "Lautaro", "Facundo", "Emiliano", "Gabriel", "Rafael", "Vinícius", "Joaquín",
+      "Bruno", "Nicolás", "Matías", "Franco", "Julián", "Valentín", "Benjamín", "Agustín", "Tomás", "Lucas",
+      "Rodrigo", "Enzo", "Gonzalo", "Alexis", "Cristian", "Éder", "Douglas", "Endrick", "Estêvão", "Wesley",
+      "Marcelo", "Ricardo", "Everton", "Igor", "Kaio", "Léo", "Danilo", "Renan", "Yuri", "Hernán"],
+    last: ["Ferreira", "Almeida", "Quintero", "Salazar", "Bustamante", "Ríos", "Cardoso", "Herrera", "Maldonado", "Vergara",
+      "Ibarra", "Nascimento", "Silva", "Oliveira", "Ramírez", "Cáceres", "Zambrano", "Peralta", "Villalobos", "Arce",
+      "Montero", "Guzmán", "Escobar", "Palacios", "Barreto", "Sepúlveda", "Núñez", "Aguirre", "Valdés", "Rocha"],
+  },
+  it: {
+    first: ["Lorenzo", "Matteo", "Federico", "Alessandro", "Riccardo", "Nicolò", "Davide", "Gianluca", "Tommaso", "Andrea",
+      "Simone", "Pietro", "Giacomo", "Francesco", "Luca", "Marco", "Stefano", "Filippo", "Emanuele", "Gabriele",
+      "Samuele", "Leonardo", "Cristian", "Mattia", "Alberto", "Daniele", "Fabio", "Giulio", "Enrico", "Michele",
+      "Antonio", "Salvatore", "Vincenzo", "Rosario", "Edoardo", "Manuel"],
+    last: ["Rinaldi", "Bellandi", "Moretti", "Costa", "Fabbri", "Gallo", "Sartori", "Vitale", "Barbieri", "Lombardi",
+      "Ricci", "Marchetti", "Ferrara", "Greco", "Rizzo", "Bruno", "Caputo", "Villa", "Serra", "Palmieri",
+      "Testa", "Ferretti", "Orlando", "Cattaneo", "Bernardi", "Mancuso", "Fiore", "Grassi", "Silvestri", "Pagano"],
+  },
+  de: {
+    first: ["Lukas", "Jonas", "Niklas", "Felix", "Maximilian", "Leon", "Jannik", "Tim", "Florian", "Moritz",
+      "Elias", "Paul", "Ben", "Noah", "Luis", "Emil", "Julian", "David", "Fabian", "Marvin",
+      "Nico", "Tobias", "Sebastian", "Philipp", "Kevin", "Dennis", "Robin", "Jannis", "Malte", "Erik",
+      "Karim", "Youssoufa", "Mattis", "Linus", "Til", "Bastian"],
+    last: ["Brandt", "Hofmann", "Kellner", "Wagner", "Reinhardt", "Sommer", "Kruger", "Baumann", "Vogel", "Eichel",
+      "Stark", "Neumann", "Schuster", "Zimmermann", "Fuchs", "Weber", "Lehmann", "Böhm", "Frank", "Kaiser",
+      "Bergmann", "Winkler", "Dietrich", "Hartmann", "Köhler", "Seidel", "Engel", "Wolff", "Ritter", "Lang"],
+  },
+  nl: {
+    first: ["Sven", "Daan", "Jurriën", "Bram", "Ruben", "Thijs", "Stijn", "Lars", "Kai", "Mees",
+      "Joost", "Wout", "Sem", "Finn", "Levi", "Luuk", "Milan", "Tijn", "Jesse", "Teun",
+      "Cody", "Xavi", "Quinten", "Ryan", "Justin", "Donyell", "Steven", "Frenkie", "Micky", "Noa",
+      "Brian", "Jorrel", "Sepp", "Ties"],
+    last: ["van Dijken", "de Groot", "Bakker", "Vermeulen", "Hendriks", "Jansen", "van Rijn", "Kuipers", "Willemsen", "Smit",
+      "Bosman", "Dekker", "de Vries", "van Leeuwen", "Meijer", "Visser", "Mulder", "de Boer", "van Beek", "Timmermans",
+      "Hoekstra", "Postma", "van Loon", "Verhoeven", "Peters", "Kramer", "van Wijk", "Brouwer", "Scholten", "Groenewegen"],
+  },
+  slav: {
+    first: ["Luka", "Marko", "Nikola", "Ivan", "Miloš", "Andrej", "Filip", "Stefan", "Dušan", "Petar",
+      "Bohdan", "Kacper", "Josip", "Mateo", "Ante", "Domagoj", "Borna", "Lovro", "Roko", "Toma",
+      "Jakub", "Tomáš", "Ondřej", "Vojtěch", "Bartosz", "Szymon", "Mateusz", "Piotr", "Wojciech", "Jan",
+      "Andrii", "Oleksandr", "Mykola", "Vlad", "Cristian", "Ionuț", "Dimitris", "Giorgos", "Emre", "Kerem"],
+    last: ["Kovačić", "Petrović", "Novák", "Marković", "Horvat", "Jovanović", "Nowak", "Kowalczyk", "Vasilenko", "Shevchuk",
+      "Popescu", "Ilić", "Modrić", "Perišić", "Vlašić", "Stanković", "Milinković", "Todorović", "Svoboda", "Dvořák",
+      "Wójcik", "Lewandowski", "Zieliński", "Kovalenko", "Bondarenko", "Constantinescu", "Papadopoulos", "Yılmaz", "Demir", "Çalhanoğlu"],
+  },
+  nordic: {
+    first: ["Erling", "Viktor", "Emil", "Mathias", "Oskar", "Anton", "Sander", "Kasper", "Elias", "Jonas",
+      "Rasmus", "Nils", "Alexander", "William", "Oliver", "Noah", "Lucas", "Filip", "Hugo", "Axel",
+      "Isak", "Dejan", "Martin", "Andreas", "Kristoffer", "Sondre", "Håkon", "Fredrik", "Magnus", "Jesper",
+      "Mikkel", "Christian", "Simon", "Joakim", "Gustav", "Alfons"],
+    last: ["Lindqvist", "Haugen", "Berg", "Nygaard", "Sørensen", "Ahlberg", "Dahl", "Kristiansen", "Nilsen", "Holm",
+      "Ek", "Bakken", "Johansson", "Andersson", "Karlsson", "Olsen", "Larsen", "Pedersen", "Hansen", "Møller",
+      "Lund", "Strand", "Solberg", "Vik", "Sandberg", "Forsberg", "Norling", "Ødegaard", "Bjørnstad", "Eriksen"],
+  },
+  jp: {
+    first: ["Takumi", "Sōta", "Ren", "Haruto", "Kaito", "Yuto", "Riku", "Daiki", "Sora", "Hayato",
+      "Kenta", "Ryōsuke", "Yuki", "Sōma", "Itsuki", "Hinata", "Asahi", "Yamato", "Aoto", "Minato",
+      "Kōki", "Shōta", "Takuma", "Naoki", "Kenji", "Junya", "Ritsu", "Ao", "Kaoru", "Daizen",
+      "Takefusa", "Wataru", "Ayase", "Reo", "Shunsuke", "Hidemasa"],
+    last: ["Nakamura", "Yoshida", "Tanaka", "Sasaki", "Fujimoto", "Ishikawa", "Morita", "Kobayashi", "Hasegawa", "Ueda",
+      "Kuroda", "Miyazaki", "Suzuki", "Takahashi", "Watanabe", "Itō", "Yamamoto", "Nakajima", "Saitō", "Matsumoto",
+      "Inoue", "Kimura", "Shimizu", "Hayashi", "Yamada", "Ogawa", "Endō", "Maeda", "Fujita", "Okazaki"],
+  },
+  kr: {
+    first: ["Min-jun", "Ji-ho", "Seo-jun", "Do-yun", "Hyun-woo", "Jae-min", "Eun-woo", "Tae-yang", "Si-woo", "Joon-ho",
+      "Ha-jun", "Yu-jin", "Heung-min", "Kang-in", "Min-jae", "Woo-young", "Seung-ho", "Ji-sung", "Chan-young", "Dong-jun",
+      "Sang-ho", "Young-jun", "Hyun-jun", "Jae-sung", "Gyu-sung", "In-beom", "Ui-jo", "Tae-hwan", "Seok-ho", "Jun-seo",
+      "Yeon-jun", "Ji-hoon", "Beom-seok", "Chang-hoon"],
+    last: ["Kim", "Lee", "Park", "Choi", "Jung", "Kang", "Cho", "Yoon", "Jang", "Lim",
+      "Han", "Oh", "Shin", "Seo", "Kwon", "Hwang", "Ahn", "Song", "Hong", "Yoo",
+      "Baek", "Nam", "Moon", "Bae", "Ryu", "Jeon", "Ko", "Son"],
+  },
+  arab: {
+    first: ["Salem", "Faisal", "Abdullah", "Omar", "Yousef", "Khalid", "Hamad", "Nasser", "Rashid", "Majed",
+      "Tariq", "Saud", "Ali", "Hassan", "Mohammed", "Ahmed", "Sultan", "Fahad", "Turki", "Bandar",
+      "Mansour", "Waleed", "Ziyad", "Ibrahim", "Nawaf", "Abdulrahman", "Mehdi", "Alireza", "Sardar", "Reza",
+      "Amir", "Saman", "Ehsan", "Vahid", "Karim", "Milad"],
+    last: ["Al-Harbi", "Al-Dosari", "Al-Mutairi", "Al-Ghamdi", "Al-Shammari", "Al-Qahtani", "Al-Sulaiti", "Al-Rashid", "Nazari", "Ghorbani",
+      "Rezaei", "Karimi", "Al-Owais", "Al-Buraikan", "Al-Faraj", "Al-Najei", "Al-Hassan", "Al-Marri", "Al-Haydos", "Al-Ahrak",
+      "Taremi", "Azmoun", "Jahanbakhsh", "Hosseini", "Ansarifard", "Beiranvand", "Mohammadi", "Noorollahi", "Torabi", "Gholizadeh"],
+  },
+  us: {
+    first: ["Tyler", "Brandon", "Cole", "Jordan", "Ethan", "Austin", "Trevor", "Weston", "Cameron", "Logan",
+      "Blake", "Dylan", "Christian", "Gio", "Ricardo", "Malik", "Josh", "Tanner", "Hunter", "Chase",
+      "Caleb", "Mason", "Bryce", "Jaden", "Devin", "Grayson", "Preston", "Colton", "Zach", "Nolan",
+      "Kellyn", "Timothy", "Folarin", "Haji", "Paxten", "Alejandro"],
+    last: ["Reyna", "Whitaker", "Sullivan", "Brennan", "Callaghan", "Mercer", "Donovan", "Hayes", "Kessler", "Bradshaw",
+      "Turner", "Vance", "Robinson", "Carter", "Mitchell", "Bennett", "Crawford", "Gallagher", "Sheridan", "Holloway",
+      "McKenzie", "Sinclair", "Palmer", "Weston", "Alvarado", "Delgado", "Fitzgerald", "Marshall", "Hendricks", "Boyd"],
+  },
+};
+
+const CAR_NATION_NAMES = {
+  "France": "fr", "Belgique": "fr", "Suisse": "fr",
+  "Sénégal": "westAfr", "Côte d'Ivoire": "westAfr", "Nigéria": "westAfr",
+  "Ghana": "westAfr", "Cameroun": "westAfr",
+  "Maroc": "maghreb", "Algérie": "maghreb", "Tunisie": "maghreb", "Égypte": "maghreb",
+  "Angleterre": "en", "Écosse": "en", "Irlande": "en",
+  "Espagne": "es",
+  "Brésil": "latam", "Argentine": "latam", "Uruguay": "latam", "Colombie": "latam",
+  "Chili": "latam", "Pérou": "latam", "Équateur": "latam", "Paraguay": "latam",
+  "Mexique": "latam", "Portugal": "latam",
+  "Italie": "it",
+  "Allemagne": "de", "Autriche": "de",
+  "Pays-Bas": "nl",
+  "Croatie": "slav", "Serbie": "slav", "Ukraine": "slav", "Pologne": "slav",
+  "Tchéquie": "slav", "Hongrie": "slav", "Roumanie": "slav", "Grèce": "slav",
+  "Turquie": "slav",
+  "Danemark": "nordic", "Suède": "nordic", "Norvège": "nordic",
+  "Japon": "jp", "Corée du Sud": "kr",
+  "Arabie saoudite": "arab", "Qatar": "arab", "Iran": "arab",
+  "États-Unis": "us", "Canada": "us", "Australie": "us",
+};
+
+const CAR_FORM_EVENTS = [
+  { key: "serie", label: "En feu sur plusieurs journées", weight: 0.30, form: 3 },
+  { key: "regulier", label: "Régulier sur la période", weight: 0.34, form: 2 },
+  { key: "utile", label: "Discret mais utile", weight: 0.36, form: 1 },
+];
+
+const CAR_TIERS = [
+  {
+    max: 58, label: "Deuxième division",
+    fee: [40000, 600000], salary: [15000, 45000], euro: null, cupRounds: [0, 2],
+    clubs: [
+      { n: "EA Guingamp", d: "Ligue 2 (D2 FR)", g: 34 },
+      { n: "SC Bastia", d: "Ligue 2 (D2 FR)", g: 34 },
+      { n: "Amiens SC", d: "Ligue 2 (D2 FR)", g: 34 },
+      { n: "Pau FC", d: "Ligue 2 (D2 FR)", g: 34 },
+      { n: "Annecy FC", d: "Ligue 2 (D2 FR)", g: 34 },
+      { n: "Stade Lavallois", d: "Ligue 2 (D2 FR)", g: 34 },
+      { n: "Rodez AF", d: "Ligue 2 (D2 FR)", g: 34 },
+      { n: "USL Dunkerque", d: "Ligue 2 (D2 FR)", g: 34 },
+      { n: "Red Star FC", d: "Ligue 2 (D2 FR)", g: 34 },
+      { n: "FC Martigues", d: "Ligue 2 (D2 FR)", g: 34 },
+      { n: "Grenoble Foot 38", d: "Ligue 2 (D2 FR)", g: 34 },
+      { n: "Rotherham United", d: "Championship (D2 ENG)", g: 46 },
+      { n: "Plymouth Argyle", d: "Championship (D2 ENG)", g: 46 },
+      { n: "Oxford United", d: "Championship (D2 ENG)", g: 46 },
+      { n: "Portsmouth", d: "Championship (D2 ENG)", g: 46 },
+      { n: "Luton Town", d: "Championship (D2 ENG)", g: 46 },
+      { n: "Blackburn Rovers", d: "Championship (D2 ENG)", g: 46 },
+      { n: "Albacete", d: "LaLiga 2 (D2 ESP)", g: 42 },
+      { n: "Racing Ferrol", d: "LaLiga 2 (D2 ESP)", g: 42 },
+      { n: "Eldense", d: "LaLiga 2 (D2 ESP)", g: 42 },
+      { n: "Cartagena", d: "LaLiga 2 (D2 ESP)", g: 42 },
+      { n: "Tenerife", d: "LaLiga 2 (D2 ESP)", g: 42 },
+      { n: "Cosenza", d: "Serie B (D2 ITA)", g: 38 },
+      { n: "Ternana", d: "Serie B (D2 ITA)", g: 38 },
+      { n: "Ascoli", d: "Serie B (D2 ITA)", g: 38 },
+      { n: "Reggiana", d: "Serie B (D2 ITA)", g: 38 },
+      { n: "Cittadella", d: "Serie B (D2 ITA)", g: 38 },
+      { n: "Eintracht Braunschweig", d: "2. Bundesliga (D2 GER)", g: 34 },
+      { n: "SV Wehen Wiesbaden", d: "2. Bundesliga (D2 GER)", g: 34 },
+      { n: "SSV Ulm", d: "2. Bundesliga (D2 GER)", g: 34 },
+      { n: "Preußen Münster", d: "2. Bundesliga (D2 GER)", g: 34 },
+      { n: "Jahn Ratisbonne", d: "2. Bundesliga (D2 GER)", g: 34 },
+      { n: "Académico Viseu", d: "Liga 2 (D2 POR)", g: 34 },
+      { n: "Leixões", d: "Liga 2 (D2 POR)", g: 34 },
+      { n: "Torreense", d: "Liga 2 (D2 POR)", g: 34 },
+      { n: "Feirense", d: "Liga 2 (D2 POR)", g: 34 },
+      { n: "Helmond Sport", d: "Eerste Divisie (D2 NED)", g: 38 },
+      { n: "TOP Oss", d: "Eerste Divisie (D2 NED)", g: 38 },
+      { n: "FC Den Bosch", d: "Eerste Divisie (D2 NED)", g: 38 },
+      { n: "MVV Maastricht", d: "Eerste Divisie (D2 NED)", g: 38 },
+      { n: "Paysandu", d: "Série B (D2 BRA)", g: 38 },
+      { n: "Ponte Preta", d: "Série B (D2 BRA)", g: 38 },
+      { n: "Guarani", d: "Série B (D2 BRA)", g: 38 },
+      { n: "Brusque", d: "Série B (D2 BRA)", g: 38 },
+      { n: "Nueva Chicago", d: "Primera Nacional (D2 ARG)", g: 38 },
+      { n: "Deportivo Morón", d: "Primera Nacional (D2 ARG)", g: 38 },
+      { n: "Almagro", d: "Primera Nacional (D2 ARG)", g: 38 },
+      { n: "Rampla Juniors", d: "Segunda División (D2 URU)", g: 30 },
+      { n: "Central Español", d: "Segunda División (D2 URU)", g: 30 },
+      { n: "Albion FC", d: "Segunda División (D2 URU)", g: 30 },
+    ],
+  },
+  {
+    max: 67, label: "Deuxième division — haut de tableau",
+    fee: [600000, 4000000], salary: [45000, 130000], euro: null, cupRounds: [0, 3],
+    clubs: [
+      { n: "SM Caen", d: "Ligue 2 (D2 FR)", g: 34 },
+      { n: "Clermont Foot", d: "Ligue 2 (D2 FR)", g: 34 },
+      { n: "Troyes AC", d: "Ligue 2 (D2 FR)", g: 34 },
+      { n: "AC Ajaccio", d: "Ligue 2 (D2 FR)", g: 34 },
+      { n: "Le Mans FC", d: "Ligue 2 (D2 FR)", g: 34 },
+      { n: "Norwich City", d: "Championship (D2 ENG)", g: 46 },
+      { n: "Hull City", d: "Championship (D2 ENG)", g: 46 },
+      { n: "Cardiff City", d: "Championship (D2 ENG)", g: 46 },
+      { n: "Stoke City", d: "Championship (D2 ENG)", g: 46 },
+      { n: "Middlesbrough", d: "Championship (D2 ENG)", g: 46 },
+      { n: "Coventry City", d: "Championship (D2 ENG)", g: 46 },
+      { n: "Preston North End", d: "Championship (D2 ENG)", g: 46 },
+      { n: "Bristol City", d: "Championship (D2 ENG)", g: 46 },
+      { n: "Millwall", d: "Championship (D2 ENG)", g: 46 },
+      { n: "Swansea City", d: "Championship (D2 ENG)", g: 46 },
+      { n: "Queens Park Rangers", d: "Championship (D2 ENG)", g: 46 },
+      { n: "Sheffield Wednesday", d: "Championship (D2 ENG)", g: 46 },
+      { n: "West Bromwich Albion", d: "Championship (D2 ENG)", g: 46 },
+      { n: "Real Zaragoza", d: "LaLiga 2 (D2 ESP)", g: 42 },
+      { n: "Sporting Gijón", d: "LaLiga 2 (D2 ESP)", g: 42 },
+      { n: "Racing Santander", d: "LaLiga 2 (D2 ESP)", g: 42 },
+      { n: "Elche CF", d: "LaLiga 2 (D2 ESP)", g: 42 },
+      { n: "Levante UD", d: "LaLiga 2 (D2 ESP)", g: 42 },
+      { n: "Real Oviedo", d: "LaLiga 2 (D2 ESP)", g: 42 },
+      { n: "Eibar", d: "LaLiga 2 (D2 ESP)", g: 42 },
+      { n: "Deportivo La Corogne", d: "LaLiga 2 (D2 ESP)", g: 42 },
+      { n: "Sampdoria", d: "Serie B (D2 ITA)", g: 38 },
+      { n: "Bari", d: "Serie B (D2 ITA)", g: 38 },
+      { n: "Palerme", d: "Serie B (D2 ITA)", g: 38 },
+      { n: "Brescia", d: "Serie B (D2 ITA)", g: 38 },
+      { n: "Spezia", d: "Serie B (D2 ITA)", g: 38 },
+      { n: "Cremonese", d: "Serie B (D2 ITA)", g: 38 },
+      { n: "Salernitana", d: "Serie B (D2 ITA)", g: 38 },
+      { n: "Pise", d: "Serie B (D2 ITA)", g: 38 },
+      { n: "Hertha Berlin", d: "2. Bundesliga (D2 GER)", g: 34 },
+      { n: "Hambourg SV", d: "2. Bundesliga (D2 GER)", g: 34 },
+      { n: "Schalke 04", d: "2. Bundesliga (D2 GER)", g: 34 },
+      { n: "Fortuna Düsseldorf", d: "2. Bundesliga (D2 GER)", g: 34 },
+      { n: "Hanovre 96", d: "2. Bundesliga (D2 GER)", g: 34 },
+      { n: "Karlsruher SC", d: "2. Bundesliga (D2 GER)", g: 34 },
+      { n: "Nuremberg", d: "2. Bundesliga (D2 GER)", g: 34 },
+      { n: "1. FC Kaiserslautern", d: "2. Bundesliga (D2 GER)", g: 34 },
+      { n: "Estoril Praia", d: "Liga 2 (D2 POR)", g: 34 },
+      { n: "Penafiel", d: "Liga 2 (D2 POR)", g: 34 },
+      { n: "Tondela", d: "Liga 2 (D2 POR)", g: 34 },
+      { n: "Roda JC", d: "Eerste Divisie (D2 NED)", g: 38 },
+      { n: "De Graafschap", d: "Eerste Divisie (D2 NED)", g: 38 },
+      { n: "VVV-Venlo", d: "Eerste Divisie (D2 NED)", g: 38 },
+      { n: "FC Eindhoven", d: "Eerste Divisie (D2 NED)", g: 38 },
+      { n: "Coritiba", d: "Série B (D2 BRA)", g: 38 },
+      { n: "Santos FC", d: "Série B (D2 BRA)", g: 38 },
+      { n: "Goiás", d: "Série B (D2 BRA)", g: 38 },
+      { n: "América Mineiro", d: "Série B (D2 BRA)", g: 38 },
+      { n: "San Martín", d: "Primera Nacional (D2 ARG)", g: 38 },
+      { n: "Ferro Carril Oeste", d: "Primera Nacional (D2 ARG)", g: 38 },
+      { n: "Colón", d: "Primera Nacional (D2 ARG)", g: 38 },
+    ],
+  },
+  {
+    max: 76, label: "Première division",
+    fee: [4000000, 20000000], salary: [150000, 650000], euro: null, cupRounds: [1, 4],
+    clubs: [
+      { n: "Stade Brestois", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "Toulouse FC", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "Montpellier HSC", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "FC Nantes", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "Angers SCO", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "Le Havre AC", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "AJ Auxerre", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "Stade de Reims", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "RC Strasbourg", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "FC Metz", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "FC Lorient", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "Brentford", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Everton", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Fulham", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Wolverhampton", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Burnley", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Crystal Palace", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Nottingham Forest", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Bournemouth", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Southampton", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Leeds United", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Leicester City", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Getafe", d: "LaLiga (D1 ESP)", g: 38 },
+      { n: "Rayo Vallecano", d: "LaLiga (D1 ESP)", g: 38 },
+      { n: "RCD Mallorca", d: "LaLiga (D1 ESP)", g: 38 },
+      { n: "Celta Vigo", d: "LaLiga (D1 ESP)", g: 38 },
+      { n: "CA Osasuna", d: "LaLiga (D1 ESP)", g: 38 },
+      { n: "Deportivo Alavés", d: "LaLiga (D1 ESP)", g: 38 },
+      { n: "UD Las Palmas", d: "LaLiga (D1 ESP)", g: 38 },
+      { n: "Valence CF", d: "LaLiga (D1 ESP)", g: 38 },
+      { n: "Espanyol", d: "LaLiga (D1 ESP)", g: 38 },
+      { n: "Cagliari", d: "Serie A (D1 ITA)", g: 38 },
+      { n: "Empoli", d: "Serie A (D1 ITA)", g: 38 },
+      { n: "Udinese", d: "Serie A (D1 ITA)", g: 38 },
+      { n: "Hellas Vérone", d: "Serie A (D1 ITA)", g: 38 },
+      { n: "Torino FC", d: "Serie A (D1 ITA)", g: 38 },
+      { n: "Genoa CFC", d: "Serie A (D1 ITA)", g: 38 },
+      { n: "US Lecce", d: "Serie A (D1 ITA)", g: 38 },
+      { n: "Parma Calcio", d: "Serie A (D1 ITA)", g: 38 },
+      { n: "Venezia FC", d: "Serie A (D1 ITA)", g: 38 },
+      { n: "Como 1907", d: "Serie A (D1 ITA)", g: 38 },
+      { n: "Werder Brême", d: "Bundesliga (D1 GER)", g: 34 },
+      { n: "FC Augsbourg", d: "Bundesliga (D1 GER)", g: 34 },
+      { n: "Mayence 05", d: "Bundesliga (D1 GER)", g: 34 },
+      { n: "VfL Bochum", d: "Bundesliga (D1 GER)", g: 34 },
+      { n: "Heidenheim", d: "Bundesliga (D1 GER)", g: 34 },
+      { n: "St. Pauli", d: "Bundesliga (D1 GER)", g: 34 },
+      { n: "Holstein Kiel", d: "Bundesliga (D1 GER)", g: 34 },
+      { n: "Union Berlin", d: "Bundesliga (D1 GER)", g: 34 },
+      { n: "SC Fribourg", d: "Bundesliga (D1 GER)", g: 34 },
+      { n: "Borussia M'gladbach", d: "Bundesliga (D1 GER)", g: 34 },
+      { n: "TSG Hoffenheim", d: "Bundesliga (D1 GER)", g: 34 },
+      { n: "VfL Wolfsbourg", d: "Bundesliga (D1 GER)", g: 34 },
+      { n: "Vitória Guimarães", d: "Primeira Liga (D1 POR)", g: 34 },
+      { n: "Boavista", d: "Primeira Liga (D1 POR)", g: 34 },
+      { n: "Rio Ave", d: "Primeira Liga (D1 POR)", g: 34 },
+      { n: "Famalicão", d: "Primeira Liga (D1 POR)", g: 34 },
+      { n: "Moreirense", d: "Primeira Liga (D1 POR)", g: 34 },
+      { n: "Casa Pia", d: "Primeira Liga (D1 POR)", g: 34 },
+      { n: "FC Twente", d: "Eredivisie (D1 NED)", g: 34 },
+      { n: "AZ Alkmaar", d: "Eredivisie (D1 NED)", g: 34 },
+      { n: "FC Utrecht", d: "Eredivisie (D1 NED)", g: 34 },
+      { n: "Go Ahead Eagles", d: "Eredivisie (D1 NED)", g: 34 },
+      { n: "Sparta Rotterdam", d: "Eredivisie (D1 NED)", g: 34 },
+      { n: "NEC Nimègue", d: "Eredivisie (D1 NED)", g: 34 },
+      { n: "Grêmio", d: "Série A (D1 BRA)", g: 38 },
+      { n: "Internacional", d: "Série A (D1 BRA)", g: 38 },
+      { n: "Fluminense", d: "Série A (D1 BRA)", g: 38 },
+      { n: "Vasco da Gama", d: "Série A (D1 BRA)", g: 38 },
+      { n: "Athletico Paranaense", d: "Série A (D1 BRA)", g: 38 },
+      { n: "Cruzeiro", d: "Série A (D1 BRA)", g: 38 },
+      { n: "Bahia", d: "Série A (D1 BRA)", g: 38 },
+      { n: "Fortaleza", d: "Série A (D1 BRA)", g: 38 },
+      { n: "Racing Club", d: "Primera División (D1 ARG)", g: 30 },
+      { n: "Independiente", d: "Primera División (D1 ARG)", g: 30 },
+      { n: "Estudiantes", d: "Primera División (D1 ARG)", g: 30 },
+      { n: "Vélez Sarsfield", d: "Primera División (D1 ARG)", g: 30 },
+      { n: "San Lorenzo", d: "Primera División (D1 ARG)", g: 30 },
+      { n: "Talleres", d: "Primera División (D1 ARG)", g: 30 },
+      { n: "Defensor Sporting", d: "Primera División (D1 URU)", g: 30 },
+      { n: "Danubio", d: "Primera División (D1 URU)", g: 30 },
+      { n: "Liverpool Montevideo", d: "Primera División (D1 URU)", g: 30 },
+      { n: "Montevideo City", d: "Primera División (D1 URU)", g: 30 },
+    ],
+  },
+  {
+    max: 84, label: "Coupe d'Europe",
+    fee: [18000000, 65000000], salary: [700000, 3000000], euro: "Ligue Europa", cupRounds: [2, 5],
+    clubs: [
+      { n: "OGC Nice", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "RC Lens", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "Olympique Lyonnais", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "Stade Rennais", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "LOSC Lille", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "Aston Villa", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Newcastle United", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Tottenham", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "West Ham United", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Brighton", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Villarreal CF", d: "LaLiga (D1 ESP)", g: 38 },
+      { n: "Real Betis", d: "LaLiga (D1 ESP)", g: 38 },
+      { n: "Athletic Bilbao", d: "LaLiga (D1 ESP)", g: 38 },
+      { n: "Real Sociedad", d: "LaLiga (D1 ESP)", g: 38 },
+      { n: "Séville FC", d: "LaLiga (D1 ESP)", g: 38 },
+      { n: "AS Roma", d: "Serie A (D1 ITA)", g: 38 },
+      { n: "SS Lazio", d: "Serie A (D1 ITA)", g: 38 },
+      { n: "Atalanta", d: "Serie A (D1 ITA)", g: 38 },
+      { n: "Fiorentina", d: "Serie A (D1 ITA)", g: 38 },
+      { n: "Bologne FC", d: "Serie A (D1 ITA)", g: 38 },
+      { n: "Bayer Leverkusen", d: "Bundesliga (D1 GER)", g: 34 },
+      { n: "RB Leipzig", d: "Bundesliga (D1 GER)", g: 34 },
+      { n: "Eintracht Francfort", d: "Bundesliga (D1 GER)", g: 34 },
+      { n: "VfB Stuttgart", d: "Bundesliga (D1 GER)", g: 34 },
+      { n: "SL Benfica", d: "Primeira Liga (D1 POR)", g: 34 },
+      { n: "FC Porto", d: "Primeira Liga (D1 POR)", g: 34 },
+      { n: "Sporting CP", d: "Primeira Liga (D1 POR)", g: 34 },
+      { n: "SC Braga", d: "Primeira Liga (D1 POR)", g: 34 },
+      { n: "Ajax Amsterdam", d: "Eredivisie (D1 NED)", g: 34 },
+      { n: "PSV Eindhoven", d: "Eredivisie (D1 NED)", g: 34 },
+      { n: "Feyenoord", d: "Eredivisie (D1 NED)", g: 34 },
+      { n: "Flamengo", d: "Série A (D1 BRA)", g: 38 },
+      { n: "Palmeiras", d: "Série A (D1 BRA)", g: 38 },
+      { n: "São Paulo FC", d: "Série A (D1 BRA)", g: 38 },
+      { n: "Corinthians", d: "Série A (D1 BRA)", g: 38 },
+      { n: "Botafogo", d: "Série A (D1 BRA)", g: 38 },
+      { n: "Boca Juniors", d: "Primera División (D1 ARG)", g: 30 },
+      { n: "River Plate", d: "Primera División (D1 ARG)", g: 30 },
+      { n: "Peñarol", d: "Primera División (D1 URU)", g: 30 },
+      { n: "Nacional Montevideo", d: "Primera División (D1 URU)", g: 30 },
+    ],
+  },
+  {
+    max: 999, label: "Élite mondiale",
+    fee: [70000000, 200000000], salary: [3500000, 14000000], euro: "Ligue des champions", cupRounds: [3, 6],
+    clubs: [
+      { n: "Real Madrid", d: "LaLiga (D1 ESP)", g: 38 },
+      { n: "FC Barcelone", d: "LaLiga (D1 ESP)", g: 38 },
+      { n: "Atlético Madrid", d: "LaLiga (D1 ESP)", g: 38 },
+      { n: "Manchester City", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Liverpool FC", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Arsenal FC", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Manchester United", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Chelsea FC", d: "Premier League (D1 ENG)", g: 38 },
+      { n: "Bayern Munich", d: "Bundesliga (D1 GER)", g: 34 },
+      { n: "Borussia Dortmund", d: "Bundesliga (D1 GER)", g: 34 },
+      { n: "Paris Saint-Germain", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "Olympique de Marseille", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "AS Monaco", d: "Ligue 1 (D1 FR)", g: 34 },
+      { n: "Inter Milan", d: "Serie A (D1 ITA)", g: 38 },
+      { n: "AC Milan", d: "Serie A (D1 ITA)", g: 38 },
+      { n: "Juventus", d: "Serie A (D1 ITA)", g: 38 },
+      { n: "SSC Naples", d: "Serie A (D1 ITA)", g: 38 },
+    ],
+  },
+];
+  const CAR_START_POOL = [...CAR_TIERS[0].clubs];
+
+const CAR_NATIONS = [
+  { name: "France", pot: 1, comp: "Euro" }, { name: "Brésil", pot: 1, comp: "Copa América" },
+  { name: "Argentine", pot: 1, comp: "Copa América" }, { name: "Angleterre", pot: 1, comp: "Euro" },
+  { name: "Espagne", pot: 1, comp: "Euro" }, { name: "Allemagne", pot: 1, comp: "Euro" },
+  { name: "Portugal", pot: 1, comp: "Euro" }, { name: "Pays-Bas", pot: 1, comp: "Euro" },
+  { name: "Italie", pot: 1, comp: "Euro" }, { name: "Belgique", pot: 1, comp: "Euro" },
+  { name: "Croatie", pot: 2, comp: "Euro" }, { name: "Uruguay", pot: 2, comp: "Copa América" },
+  { name: "Colombie", pot: 2, comp: "Copa América" }, { name: "Maroc", pot: 2, comp: "CAN" },
+  { name: "Sénégal", pot: 2, comp: "CAN" }, { name: "Japon", pot: 2, comp: "Coupe d'Asie" },
+  { name: "Danemark", pot: 2, comp: "Euro" }, { name: "Suisse", pot: 2, comp: "Euro" },
+  { name: "Mexique", pot: 2, comp: "Gold Cup" }, { name: "États-Unis", pot: 2, comp: "Gold Cup" },
+  { name: "Autriche", pot: 2, comp: "Euro" }, { name: "Corée du Sud", pot: 2, comp: "Coupe d'Asie" },
+  { name: "Suède", pot: 2, comp: "Euro" }, { name: "Pologne", pot: 2, comp: "Euro" },
+  { name: "Écosse", pot: 3, comp: "Euro" }, { name: "Norvège", pot: 3, comp: "Euro" },
+  { name: "Nigéria", pot: 3, comp: "CAN" }, { name: "Égypte", pot: 3, comp: "CAN" },
+  { name: "Algérie", pot: 3, comp: "CAN" }, { name: "Côte d'Ivoire", pot: 3, comp: "CAN" },
+  { name: "Ghana", pot: 3, comp: "CAN" }, { name: "Cameroun", pot: 3, comp: "CAN" },
+  { name: "Tunisie", pot: 3, comp: "CAN" }, { name: "Australie", pot: 3, comp: "Coupe d'Asie" },
+  { name: "Arabie saoudite", pot: 3, comp: "Coupe d'Asie" }, { name: "Qatar", pot: 3, comp: "Coupe d'Asie" },
+  { name: "Chili", pot: 3, comp: "Copa América" }, { name: "Pérou", pot: 3, comp: "Copa América" },
+  { name: "Équateur", pot: 3, comp: "Copa América" }, { name: "Paraguay", pot: 3, comp: "Copa América" },
+  { name: "Canada", pot: 3, comp: "Gold Cup" },
+];
+
+  const CAR_CALLUP_THRESHOLD = { 1: 76, 2: 71, 3: 66 };
+
+const CAR_BONUS_EVENTS = [
+  { label: "Mois de folie devant le but", note: [2, 3], money: [2000, 8000] },
+  { label: "Série de titularisations convaincantes", note: [1, 2], money: [0, 2500] },
+  { label: "Passage en pleine confiance", note: [2, 3], money: [1000, 5000] },
+  { label: "Le staff s'appuie sur toi", note: [1, 2], money: [0, 2000] },
+  { label: "Bonne dynamique collective", note: [1, 2], money: [500, 3000] },
+  { label: "Presse élogieuse sur ta période", note: [1, 2], money: [500, 4000] },
+  { label: "Sponsor séduit par ta forme", note: [1, 1], money: [5000, 20000] },
+  { label: "Physique au top pendant des semaines", note: [2, 3], money: [0, 1500] },
+  { label: "Rendement décisif sur le trimestre", note: [2, 3], money: [1000, 6000] },
+  { label: "Le public t'a adopté", note: [1, 2], money: [0, 2000] },
+];
+
+const CAR_MALUS_EVENTS = [
+  { label: "Longue disette devant le but", note: [-2, -1], money: [0, 0] },
+  { label: "Passage à vide de plusieurs semaines", note: [-2, -1], money: [0, 0] },
+  { label: "Relégué sur le banc", note: [-1, -1], money: [-1500, 0] },
+  { label: "Période de blessures à répétition", note: [-2, -2], money: [-6000, -2000] },
+  { label: "Méforme physique persistante", note: [-2, -1], money: [0, 0] },
+  { label: "Tension avec le staff technique", note: [-1, -1], money: [-2000, 0] },
+  { label: "Critiques de la presse sur ta période", note: [-1, -1], money: [0, 0] },
+  { label: "Mauvaise dynamique collective", note: [-1, -1], money: [0, 0] },
+  { label: "Coup de fatigue en fin de cycle", note: [-1, -1], money: [0, 0] },
+  { label: "Suspension après une période indisciplinée", note: [-1, -1], money: [-4000, -1000] },
+  { label: "Concurrence à ton poste", note: [-1, -1], money: [0, 0] },
+  { label: "Confiance en berne", note: [-2, -1], money: [0, 0] },
+];
+
+const CAR_HORSFOOT_EVENTS = [
+  "Contrat publicitaire",
+  "Investissement immobilier",
+  "Partenariat avec une marque",
+  "Ouverture d'un restaurant",
+  "Droits à l'image revalorisés",
+  "Ligne de vêtements personnelle",
+  "Apparition dans un jeu vidéo",
+];
+
+const CAR_SEASON_RESULTS = [
+  { label: "Saison catastrophique", detail: "Relégation. Le vestiaire est à reconstruire.", place: "18e", prime: [0, 2000] },
+  { label: "Saison difficile", detail: "Maintien arraché dans la douleur.", place: "15e", prime: [1000, 5000] },
+  { label: "Saison moyenne", detail: "Milieu de tableau, sans relief.", place: "10e", prime: [3000, 10000] },
+  { label: "Bonne saison", detail: "Qualification européenne décrochée.", place: "5e", prime: [10000, 30000] },
+  { label: "Très bonne saison", detail: "Podium et grande campagne.", place: "2e", prime: [25000, 60000] },
+  { label: "Champion", detail: "Titre remporté. Le stade a explosé.", place: "1er", prime: [60000, 150000] },
+];
+
+  // Small line-icon SVGs matching the original file's lucide-react icons —
+  // used instead of emoji so the visuals match the source design (thin
+  // monochrome icons, not colorful phone glyphs).
+  function carIcon(name, size){
+    const s = size || 14;
+    const paths = {
+      circle: '<circle cx="12" cy="12" r="9"/>',
+      trendingUp: '<path d="m23 6-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/>',
+      trendingDown: '<path d="m23 18-9.5-9.5-5 5L1 6"/><path d="M17 18h6v-6"/>',
+      coins: '<circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18M7 6h1v4M16.71 13.88l.7.71-.71.71"/>',
+      flag: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22V3"/>',
+      trophy: '<path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M17 5h2a2 2 0 0 1 2 2 4 4 0 0 1-4 4M7 5H5a2 2 0 0 0-2 2 4 4 0 0 0 4 4"/>',
+      shuffle: '<path d="m18 4 3 3-3 3M21 7H12.5a4 4 0 0 0-3.5 2M3 17h6.5a4 4 0 0 0 3.5-2M18 20l3-3-3-3M3 7h4M17 17h4"/>',
+      crosshair: '<circle cx="12" cy="12" r="9"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',
+      target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+      send: '<path d="m3 11 18-8-8 18-2.5-8L3 11Z"/>',
+      users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+      flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-1-2-1-3.5 0-1 .5-2 1.5-3 0 1 .5 2 1.5 2.5C14.5 9 16 10.5 16 13a6 6 0 1 1-12 0c0-1.5.5-3 2-4.5-.5 2 .5 4.5 2.5 6Z"/>',
+      globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>',
+      arrowRightLeft: '<path d="m16 3 4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16"/>',
+      wallet: '<path d="M20 12V8a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h15a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7"/><circle cx="17" cy="14" r="1"/>',
+      star: '<path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/>',
+      rotateCcw: '<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/>',
+      chevronRight: '<path d="m9 18 6-6-6-6"/>',
+      helpCircle: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5M12 17h.01"/>',
+    };
+    return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex:none;">${paths[name]||paths.circle}</svg>`;
+  }
+
+  const CAR_CELL_ICON = { normale:'circle', bonus:'trendingUp', malus:'trendingDown', horsfoot:'coins' };
+  const CAR_CELL_COLOR = { normale:'#9fb8a8', bonus:'#3f7d4f', malus:'#a83e3e', horsfoot:'#c9a227' };
+  const CAR_CELL_NAME = { normale:'Match', bonus:'Bonus', malus:'Malus', horsfoot:'Hors foot' };
+  const CAR_EMPTY_CAREER = { matchs:0, buts:0, passes:0, selections:0, butsInter:0 };
+  const CAR_EMPTY_FORM = { points:0, events:0 };
+
+  // ---- HELPERS ----
+  const crnd = (min,max) => Math.floor(Math.random()*(max-min+1))+min;
+  const cpick = (arr) => arr[Math.floor(Math.random()*arr.length)];
+  const cfmt = (n) => (n<0?'-':'') + Math.abs(Math.round(n)).toLocaleString('fr-FR') + ' €';
+
+  function carClubInfo(name){
+    for(const t of CAR_TIERS){
+      const c = t.clubs.find(x => x.n === name);
+      if(c) return Object.assign({}, c, { tier: t });
+    }
+    return { n:name, d:'?', g:34, tier: CAR_TIERS[0] };
+  }
+  function carLeagueFor(club){
+    const c = carClubInfo(club);
+    return { name: c.d, games: c.g };
+  }
+  function carWeightedCase(){
+    const r = Math.random();
+    let acc = 0;
+    for(const pair of CAR_WEIGHTS){ acc += pair[1]; if(r <= acc) return pair[0]; }
+    return 'normale';
+  }
+  function carWeightedPick(pool){
+    const r = Math.random();
+    let acc = 0;
+    for(const item of pool){ acc += item.weight; if(r <= acc) return item; }
+    return pool[pool.length-1];
+  }
+  function carRandomName(nation){
+    const key = nation && CAR_NATION_NAMES[nation.name];
+    const pool = CAR_NAME_POOLS[key] || CAR_NAME_POOLS.fr;
+    return cpick(pool.first) + ' ' + cpick(pool.last);
+  }
+  function carRandomPoste(){ return 'attaquant'; }
+  function carTierFor(note){
+    return CAR_TIERS.find(t => note <= t.max) || CAR_TIERS[CAR_TIERS.length-1];
+  }
+  function carTournamentForYear(year, nation){
+    if((year - 2026) % 4 === 0) return { name:'Coupe du monde', major:true };
+    if((year - 2024) % 4 === 0) return { name: nation.comp, major:false };
+    return null;
+  }
+  function carSimulateSeason(form, note, tier, club){
+    const league = carLeagueFor(club);
+    const cupGames = crnd(tier.cupRounds[0], tier.cupRounds[1]);
+    const euroGames = tier.euro ? (tier.euro === 'Ligue des champions' ? crnd(6,13) : crnd(6,11)) : 0;
+    const totalFixtures = league.games + cupGames + euroGames;
+    const formIdx = form.events > 0 ? Math.min(form.points/(form.events*2.2), 1) : 0.5;
+    const availability = Math.min(0.62 + (note-55)/130 + formIdx*0.12, 0.94);
+    const played = Math.max(8, Math.round(totalFixtures * availability * (0.92 + Math.random()*0.16)));
+    const base = 0.14 + Math.max(0, note-48)*0.0155;
+    const gpg = Math.min(1.05, Math.max(0.09, base*(0.75+formIdx*0.5)*(0.88+Math.random()*0.26)));
+    const buts = Math.max(0, Math.round(played*gpg));
+    const passes = Math.max(0, Math.round(played*gpg*(0.32+Math.random()*0.3)));
+    return {
+      league: league.name, leagueGames: league.games, cupGames, euroGames, euroName: tier.euro,
+      matchs: played, buts, passes, ratio: played ? (buts+passes)/played : 0,
+    };
+  }
+  function carClubTrophies(idx, tier, club, seasonStats){
+    const out = [];
+    const league = carLeagueFor(club);
+    if(idx === 5) out.push('Champion — ' + league.name);
+    if(idx >= 4 && Math.random() < 0.45) out.push('Coupe nationale');
+    if(tier.euro && idx >= 4 && Math.random() < (tier.euro === 'Ligue des champions' ? 0.28 : 0.35)) out.push(tier.euro);
+    if(seasonStats.buts >= 22 && idx >= 3 && Math.random() < 0.5) out.push('Meilleur buteur — ' + league.name);
+    return out;
+  }
+  function carBuildOffers(count, note, currentClub){
+    const baseIdx = CAR_TIERS.findIndex(t => note <= t.max);
+    const idx = baseIdx === -1 ? CAR_TIERS.length-1 : baseIdx;
+    const offers = [];
+    const used = new Set([currentClub]);
+    const kinds = ['lateral','up','loan'];
+    for(let i=0;i<count;i++){
+      const kind = i===0 ? 'lateral' : kinds[i % kinds.length];
+      const tIdx = kind === 'up' ? Math.min(idx+1, CAR_TIERS.length-1) : idx;
+      const t = CAR_TIERS[tIdx];
+      const pool = t.clubs.filter(c => !used.has(c.n));
+      const c = pool.length ? cpick(pool) : cpick(t.clubs);
+      used.add(c.n);
+      if(kind === 'loan'){
+        offers.push({ id:'o'+i, kind:'loan', club:c.n, div:c.d, tier:t.label, fee:0,
+          salary: Math.round(crnd(t.salary[0], t.salary[1]) * 0.75), note:"Prêt d'une saison — temps de jeu garanti" });
+      } else {
+        offers.push({ id:'o'+i, kind, club:c.n, div:c.d, tier:t.label,
+          fee: crnd(t.fee[0], t.fee[1]), salary: crnd(t.salary[0], t.salary[1]),
+          note: kind==='up' ? 'Palier supérieur — plus de pression' : 'Projet stable' });
+      }
+    }
+    return offers;
+  }
+  function carRatingStyle(note){
+    if(note >= 85) return {
+      bg:'linear-gradient(135deg, rgba(255,255,255,.32) 0%, transparent 26%), linear-gradient(145deg, #f0cf6a 0%, #c9a227 35%, #3f7d4f 72%, #245332 100%)',
+      text:'#f3efe2', tier:'Élite',
+    };
+    if(note >= 75) return {
+      bg:'linear-gradient(135deg, rgba(255,255,255,.35) 0%, transparent 28%), linear-gradient(145deg, #f0cf6a 0%, #c9a227 55%, #93741a 100%)',
+      text:'#1a1a1a', tier:'Or',
+    };
+    if(note >= 65) return {
+      bg:'linear-gradient(135deg, rgba(255,255,255,.32) 0%, transparent 28%), linear-gradient(145deg, #c9ced2 0%, #9aa0a6 55%, #6e7378 100%)',
+      text:'#1a1a1a', tier:'Argent',
+    };
+    return {
+      bg:'linear-gradient(135deg, rgba(255,255,255,.24) 0%, transparent 28%), linear-gradient(145deg, #c9905a 0%, #8a5a2b 55%, #5c3a18 100%)',
+      text:'#f3efe2', tier:'Bronze',
+    };
+  }
+  function carInitials(name){
+    const parts = (name||'').trim().split(/\s+/).filter(Boolean);
+    if(!parts.length) return '?';
+    return parts.slice(0,2).map(p => p[0].toUpperCase()).join('');
+  }
+  function carVerdict(peak, trophies, goals, caps){
+    if(peak >= 90 && trophies >= 8) return 'Légende du football';
+    if(peak >= 87 && trophies >= 4) return 'Star mondiale';
+    if(peak >= 82 && (trophies >= 2 || caps >= 40)) return 'Grand joueur';
+    if(peak >= 78) return 'Très bonne carrière';
+    if(peak >= 73 || goals >= 120) return 'Solide professionnel';
+    if(peak >= 67) return 'Carrière honnête';
+    if(goals >= 40) return 'Journeyman';
+    return 'Carrière difficile';
+  }
+
+  // Career-completion XP for the player's MultiPoly profile — scales with
+  // how good the career turned out (same tiers shown by carVerdict), so a
+  // legendary career is worth meaningfully more than a difficult one.
+  const CAR_XP_BY_VERDICT = {
+    'Carrière difficile': 40,
+    'Journeyman': 55,
+    'Carrière honnête': 70,
+    'Solide professionnel': 90,
+    'Très bonne carrière': 115,
+    'Grand joueur': 150,
+    'Star mondiale': 200,
+    'Légende du football': 280,
+  };
+  function carAwardCompletionXP(){
+    if(CR.xpAwarded) return; // guard: only award once per finished career, even if the finished screen re-renders
+    CR.xpAwarded = true;
+    const verdict = carVerdict(CR.careerPeak, CR.careerTrophies.length, CR.careerStats.buts, CR.careerStats.selections);
+    const xp = CAR_XP_BY_VERDICT[verdict] || 50;
+    awardXP(xp);
+    if(typeof renderProfileButton === 'function') renderProfileButton();
+    CR.xpEarned = xp;
+  }
+
+  // ---- FAVORITES PERSISTENCE ----
+  const CAR_FAV_KEY = 'multipoly_career_favorites_v1';
+  function carLoadFavorites(){
+    try{ const raw = localStorage.getItem(CAR_FAV_KEY); return raw ? JSON.parse(raw) : []; }
+    catch(e){ return []; }
+  }
+  function carSaveFavorites(){
+    try{ localStorage.setItem(CAR_FAV_KEY, JSON.stringify(carFavorites)); } catch(e){}
+  }
+  let carFavorites = carLoadFavorites();
+
+  // ---- STATE ----
+  let CR = null;
+
+  function carMakeDraft(){
+    const n = cpick(CAR_NATIONS);
+    const startAge = crnd(CAR_MIN_START_AGE, CAR_MAX_START_AGE);
+    const retireAge = crnd(CAR_RETIRE_AGE_MIN, CAR_RETIRE_AGE_MAX);
+    const base = 52 + (startAge - CAR_MIN_START_AGE) * 1.5 + crnd(0, 9);
+    const note = Math.round(base);
+    const r = Math.random();
+    const potential = r < 0.30 ? crnd(64,71) : r < 0.62 ? crnd(72,78) : r < 0.85 ? crnd(79,85) : r < 0.97 ? crnd(86,91) : crnd(92,97);
+    return {
+      nation: n, name: carRandomName(n), poste: carRandomPoste(),
+      club: cpick(CAR_START_POOL).n, startAge, retireAge, note, potential,
+    };
+  }
+
+  function carDefaultState(){
+    const nation = cpick(CAR_NATIONS);
+    const startAge = crnd(CAR_MIN_START_AGE, CAR_MAX_START_AGE);
+    return {
+      phase: 'setup', hasRandomized:false, name:'', poste:'attaquant',
+      club: cpick(CAR_START_POOL).n, board:[], position:0, seasonNum:1,
+      note:60, potential:80, argent:0, salaire:18000,
+      seasonForm: Object.assign({}, CAR_EMPTY_FORM),
+      careerStats: Object.assign({}, CAR_EMPTY_CAREER),
+      careerTrophies:[], careerPeak:60, nation, capped:false,
+      startAge, retireAge: crnd(CAR_RETIRE_AGE_MIN, CAR_RETIRE_AGE_MAX), endReason:null,
+      shuffling:false, drafts:[], selectedDraft:-1,
+      clubSpells:[], log:[], pendingSeasonEnd:false, pendingTransfer:false,
+      transferOffers:null, seasonRecap:null, resultCard:null,
+      rolling:false, diceFace:1, moving:false,
+      xpAwarded:false, xpEarned:0,
+    };
+  }
+
+  function carAge(){ return CR.startAge + CR.seasonNum - 1; }
+  function carTotalSeasons(){ return Math.max(1, CR.retireAge - CR.startAge + 1); }
+  function carTotalCases(){ return CAR_SEASON_LEN * carTotalSeasons(); }
+  function carPosInSeason(){ return CR.position - (CR.seasonNum - 1) * CAR_SEASON_LEN; }
+  function carPushLog(text){ CR.log.push(text); }
+
+  function carApplyDraft(d){
+    CR.nation = d.nation; CR.name = d.name; CR.poste = d.poste;
+    CR.club = d.club; CR.startAge = d.startAge; CR.retireAge = d.retireAge;
+    CR.note = d.note; CR.potential = d.potential;
+  }
+
+  let carShuffleTimer = null;
+  function carRegenerateAll(){
+    if(CR.shuffling || CR.drafts.length >= CAR_MAX_DRAFTS) return;
+    CR.shuffling = true;
+    renderCareerSetup();
+    const wrap = document.getElementById('carCardWrap');
+    wrap.classList.add('car-shuffling');
+    let ticks = 0;
+    carShuffleTimer = setInterval(() => {
+      carApplyDraft(carMakeDraft());
+      renderCareerIdentityOnly();
+      ticks++;
+      if(ticks >= 12){
+        clearInterval(carShuffleTimer);
+        const final = carMakeDraft();
+        carApplyDraft(final);
+        CR.drafts.push(final);
+        CR.selectedDraft = CR.drafts.length - 1;
+        CR.shuffling = false;
+        CR.hasRandomized = true;
+        renderCareerSetup();
+        wrap.classList.remove('car-shuffling');
+        wrap.classList.add('car-settling');
+        setTimeout(() => wrap.classList.remove('car-settling'), 400);
+      }
+    }, 80);
+  }
+  function carChooseDraft(i){
+    if(CR.shuffling || !CR.drafts[i]) return;
+    CR.selectedDraft = i;
+    carApplyDraft(CR.drafts[i]);
+    renderCareerSetup();
+  }
+
+  function carStartGame(){
+    if(!CR.name.trim()) CR.name = carRandomName(CR.nation);
+    const seasons = carTotalSeasons();
+    const board = [];
+    for(let i=0;i<CAR_SEASON_LEN*seasons;i++) board.push(carWeightedCase());
+    CR.board = board;
+    CR.position = 0;
+    CR.seasonNum = 1;
+    // note/potential were already fixed at draft time (see carMakeDraft) —
+    // this is exactly what the setup screen showed, so it never mismatches.
+    CR.careerPeak = CR.note;
+    CR.argent = 0;
+    CR.salaire = 18000;
+    CR.seasonForm = Object.assign({}, CAR_EMPTY_FORM);
+    CR.careerStats = Object.assign({}, CAR_EMPTY_CAREER);
+    CR.careerTrophies = [];
+    CR.clubSpells = [];
+    CR.capped = false;
+    CR.endReason = null;
+    CR.log = [];
+    CR.pendingSeasonEnd = false;
+    CR.pendingTransfer = false;
+    CR.resultCard = null;
+    CR.transferOffers = null;
+    CR.seasonRecap = null;
+    CR.diceFace = 1;
+    carPushLog(`Début de carrière chez ${CR.club}, ${CR.startAge} ans.`);
+    CR.phase = 'playing';
+    renderCareerPhase();
+  }
+
+  function carNewCareer(){
+    CR = carDefaultState();
+    renderCareerPhase();
+  }
+
+  function carRetireNow(){
+    document.getElementById('carRetireModal').style.display = 'none';
+    CR.endReason = 'choice';
+    CR.phase = 'finished';
+    carAwardCompletionXP();
+    renderCareerPhase();
+  }
+
+  let carRollTimer = null;
+  function carThrowDice(resolve){
+    if(CR.rolling) return;
+    CR.rolling = true;
+    renderCareerAction();
+    let ticks = 0;
+    carRollTimer = setInterval(() => {
+      CR.diceFace = crnd(1,6);
+      renderCareerDie();
+      ticks++;
+      if(ticks >= 10){
+        clearInterval(carRollTimer);
+        const final = crnd(1,6);
+        CR.diceFace = final;
+        CR.rolling = false;
+        renderCareerAction();
+        resolve(final);
+      }
+    }, 70);
+  }
+
+  let carWalkTimer = null;
+  function carWalkTo(steps, cb){
+    CR.moving = true;
+    let s = 0;
+    renderCareerAction();
+    renderCareerRoute();
+    carWalkTimer = setInterval(() => {
+      s += 1;
+      CR._moveOffset = s;
+      renderCareerRoute();
+      if(s >= steps){
+        clearInterval(carWalkTimer);
+        CR.moving = false;
+        CR._moveOffset = 0;
+        cb();
+      }
+    }, 180);
+  }
+
+  function carRollMove(){
+    if(CR.phase !== 'playing' || CR.pendingSeasonEnd || CR.pendingTransfer || CR.resultCard || CR.transferOffers || CR.seasonRecap || CR.moving) return;
+    carThrowDice((dice) => {
+      const seasonEndIndex = CR.seasonNum * CAR_SEASON_LEN;
+      const target = Math.min(CR.position + dice, seasonEndIndex);
+      const steps = target - CR.position;
+      if(steps <= 0) return;
+      carWalkTo(steps, () => carLandOn(target));
+    });
+  }
+
+  function carLandOn(target){
+    const type = CR.board[target-1];
+    const weeklyPay = Math.round(CR.salaire / CAR_SEASON_LEN);
+    let dn = 0, dm = weeklyPay, title = '', lines = [];
+    const L = (text, tone) => ({ text, tone: tone || 'neutral' });
+
+    if(type === 'normale'){
+      title = 'Match tranquille';
+      lines = [L(`Salaire perçu : ${cfmt(weeklyPay)}`)];
+    } else if(type === 'bonus'){
+      const e = cpick(CAR_BONUS_EVENTS);
+      dn = crnd(e.note[0], e.note[1]);
+      dm += crnd(e.money[0], e.money[1]);
+      title = e.label;
+    } else if(type === 'malus'){
+      const acl = Math.random() < 0.006 + Math.max(0, carAge() - 28) * 0.0012;
+      if(acl){
+        CR.argent += weeklyPay;
+        CR.position = target;
+        CR.endReason = 'injury';
+        carPushLog(`RUPTURE DES LIGAMENTS CROISÉS — carrière terminée à ${carAge()} ans.`);
+        CR.resultCard = {
+          kind: 'malus', title: 'Rupture des ligaments croisés', career_ending: true,
+          lines: [L('Genou détruit sur un appui anodin.','negative'), L(`${carAge()} ans. Le genou ne suivra plus.`,'negative'), L('Fin de carrière forcée.','negative')],
+        };
+        renderCareerAction();
+        return;
+      }
+      const e = cpick(CAR_MALUS_EVENTS);
+      dn = crnd(e.note[0], e.note[1]);
+      dm += crnd(e.money[0], e.money[1]);
+      title = e.label;
+    } else if(type === 'horsfoot'){
+      const gain = Math.round((500 + CR.note*80) * (0.7 + Math.random()*0.8));
+      dm += gain;
+      title = cpick(CAR_HORSFOOT_EVENTS);
+      lines = [L(`Revenu : ${cfmt(gain)}`,'positive')];
+    }
+
+    // Cap the note change against the potential ceiling BEFORE building the
+    // display lines — showing the raw uncapped roll (e.g. "+2") while the
+    // ceiling silently zeroed the real change out made bonuses look broken.
+    let delta = dn;
+    if(delta > 0){
+      const room = CR.potential - CR.note;
+      if(room <= 0) delta = 0;
+      else if(room < 6) delta = Math.random() < room/6 ? 1 : 0;
+    }
+
+    if(type === 'bonus'){
+      const extra = dm - weeklyPay;
+      lines = [delta ? L(`Note générale +${delta}`,'positive') : null, extra ? L(`Prime : ${cfmt(extra)}`,'positive') : null].filter(Boolean);
+    } else if(type === 'malus'){
+      const extra = dm - weeklyPay;
+      lines = [delta ? L(`Note générale ${delta}`,'negative') : null, extra ? L(`Frais : ${cfmt(extra)}`,'negative') : null].filter(Boolean);
+    }
+
+    if(type === 'normale' || type === 'bonus' || type === 'malus'){
+      CR.seasonForm.events += 1;
+    }
+    if(type === 'bonus'){
+      const ev = carWeightedPick(CAR_FORM_EVENTS);
+      CR.seasonForm.points += ev.form;
+      lines.push(L(`${ev.label} ⚡`,'positive'));
+    }
+    if(type === 'malus'){
+      CR.seasonForm.points = Math.max(0, CR.seasonForm.points - 1);
+    }
+
+    CR.note = Math.max(35, Math.min(99, CR.note + delta));
+    CR.argent += dm;
+    CR.position = target;
+    carPushLog(`Case ${target} — ${title}${delta ? ` (note ${delta>0?'+':''}${delta})` : ''}${dm ? `, ${cfmt(dm)}` : ''}.`);
+    CR.resultCard = { kind: type, title, lines, deltaNote: delta, deltaMoney: dm };
+
+    if(target % CAR_SEASON_LEN === 0) CR.pendingSeasonEnd = true;
+    renderCareerPhase();
+  }
+
+  function carResolveSeasonEnd(){
+    const tier = carTierFor(CR.note);
+    const year = CAR_START_YEAR + CR.seasonNum - 1;
+    const stats = carSimulateSeason(CR.seasonForm, CR.note, tier, CR.club);
+
+    let idx;
+    if(stats.ratio >= 1.32) idx = 5;
+    else if(stats.ratio >= 1.06) idx = 4;
+    else if(stats.ratio >= 0.82) idx = 3;
+    else if(stats.ratio >= 0.58) idx = 2;
+    else if(stats.ratio >= 0.36) idx = 1;
+    else idx = 0;
+
+    const r = CAR_SEASON_RESULTS[idx];
+    const prime = crnd(r.prime[0], r.prime[1]);
+    const honours = carClubTrophies(idx, tier, CR.club, stats);
+
+    const threshold = CAR_CALLUP_THRESHOLD[CR.nation.pot];
+    const eligible = CR.note >= threshold;
+    const tourney = carTournamentForYear(year, CR.nation);
+    let intl = null;
+
+    if(eligible){
+      const firstCall = !CR.capped;
+      if(firstCall) CR.capped = true;
+      const caps = tourney ? crnd(5,8) : crnd(4,9);
+      const gpg = 0.12 + Math.max(0, CR.note - 70) * 0.022;
+      const goals = Math.max(0, Math.round(caps * gpg * (0.7 + Math.random()*0.7)));
+      let run = null, won = false;
+      if(tourney){
+        // Nation strength matters as much as personal quality: elite
+        // footballing nations (pot 1) get a much bigger boost than
+        // weaker ones (pot 3) — winning with Scotland should feel
+        // genuinely harder than winning with France or Brazil.
+        const strength = (CR.note - threshold)/25 + (4 - CR.nation.pot) * 0.30;
+        const roll = Math.random() + strength;
+        if(roll > 1.15){ run = 'Vainqueur'; won = true; }
+        else if(roll > 0.95) run = 'Finaliste';
+        else if(roll > 0.72) run = 'Demi-finale';
+        else if(roll > 0.48) run = 'Quart de finale';
+        else run = 'Éliminé en poules';
+        if(won) CR.careerTrophies.push({ season: CR.seasonNum, label: `${tourney.name} ${year}`, intl:true });
+      }
+      CR.careerStats.selections += caps;
+      CR.careerStats.butsInter += goals;
+      intl = { firstCall, caps, goals, tourney: tourney ? tourney.name : null, run, won, year };
+    }
+
+    const raw = (idx >= 4 ? 2 : idx === 3 ? 1 : 0) + (intl && intl.won ? 1 : 0);
+    const decline = carAge() >= 33 ? -crnd(2,4) : carAge() >= 31 ? -crnd(1,2) : 0;
+    const room = CR.potential - CR.note;
+    const growth = raw > 0 && room > 0 ? Math.min(raw, Math.max(1, Math.round(room/2))) : 0;
+    const noteGain = growth + decline;
+    if(noteGain) CR.note = Math.max(35, Math.min(99, CR.note + noteGain));
+    CR.careerPeak = Math.max(CR.careerPeak, CR.note);
+
+    CR.argent += prime;
+    CR.careerStats.matchs += stats.matchs;
+    CR.careerStats.buts += stats.buts;
+    CR.careerStats.passes += stats.passes;
+
+    const sp = CR.clubSpells;
+    const last = sp[sp.length-1];
+    if(last && last.club === CR.club && last.endYear === year - 1){
+      last.endYear = year; last.saisons += 1;
+      last.matchs += stats.matchs; last.buts += stats.buts; last.passes += stats.passes;
+      last.trophees += honours.length;
+    } else {
+      sp.push({ club: CR.club, startYear: year, endYear: year, saisons:1,
+        matchs: stats.matchs, buts: stats.buts, passes: stats.passes, trophees: honours.length });
+    }
+    if(honours.length) CR.careerTrophies.push(...honours.map(h => ({ season: CR.seasonNum, label: h })));
+
+    carPushLog(`SAISON ${year} — ${CR.club} ${r.place}. ${stats.matchs} matchs, ${stats.buts} buts, ${stats.passes} passes.`);
+
+    CR.seasonRecap = { season: CR.seasonNum, year, result:r, prime, honours, noteGain, club: CR.club, stats, intl, nation: CR.nation, eligible, threshold };
+    CR.pendingSeasonEnd = false;
+    renderCareerPhase();
+  }
+
+  function carCloseSeasonRecap(){
+    CR.seasonRecap = null;
+    CR.seasonForm = Object.assign({}, CAR_EMPTY_FORM);
+    if(CR.position >= carTotalCases()){ CR.phase = 'finished'; carAwardCompletionXP(); renderCareerPhase(); return; }
+    const finished = CR.seasonNum;
+    CR.seasonNum += 1;
+    if(finished % CAR_MERCATO_EVERY === 0) carOpenMercato();
+    else renderCareerPhase();
+  }
+
+  function carOpenMercato(){
+    CR.pendingTransfer = false;
+    const count = crnd(2,3);
+    CR.transferOffers = { label: count >= 3 ? 'Enchères ouvertes' : 'Des clubs te veulent', offers: carBuildOffers(count, CR.note, CR.club) };
+    renderCareerPhase();
+  }
+
+  function carAcceptOffer(offer){
+    CR.club = offer.club;
+    CR.salaire = offer.salary;
+    CR.transferOffers = null;
+    const isLoan = offer.kind === 'loan';
+    carPushLog(`TRANSFERT — ${isLoan?'Prêt à':'Signature à'} ${offer.club} (${offer.tier})${offer.fee?` pour ${cfmt(offer.fee)}`:''}.`);
+    CR.resultCard = {
+      kind:'transfert', title: isLoan ? `Prêt à ${offer.club}` : `Direction ${offer.club}`,
+      lines: [{text:offer.tier,tone:'neutral'}].concat(offer.fee ? [{text:`Indemnité : ${cfmt(offer.fee)}`,tone:'positive'}] : []).concat([{text:`Salaire : ${cfmt(offer.salary)}/saison`,tone:'positive'}]),
+    };
+    renderCareerPhase();
+  }
+  function carDeclineOffers(){
+    const bump = Math.round(CR.salaire * (0.03 + Math.random()*0.07));
+    CR.salaire += bump;
+    CR.transferOffers = null;
+    carPushLog(`TRANSFERT — Offres refusées. ${CR.club} prolonge : +${cfmt(bump)}.`);
+    CR.resultCard = { kind:'transfert', title:`Tu restes à ${CR.club}`, lines:[{text:'Fidélité récompensée',tone:'neutral'},{text:`Salaire revalorisé de +${cfmt(bump)}`,tone:'positive'}] };
+    renderCareerPhase();
+  }
+
+  function carDismissCard(){
+    const wasCareerEnding = CR.resultCard && CR.resultCard.career_ending;
+    CR.resultCard = null;
+    if(wasCareerEnding){ CR.phase = 'finished'; carAwardCompletionXP(); renderCareerPhase(); return; }
+    if(CR.pendingTransfer){ carOpenMercato(); return; }
+    if(CR.pendingSeasonEnd){ carResolveSeasonEnd(); return; }
+    if(CR.position >= carTotalCases()){ CR.phase = 'finished'; carAwardCompletionXP(); }
+    renderCareerPhase();
+  }
+
+  function carCareerKey(){ return `${CR.name || 'Joueur'}|${CAR_START_YEAR}|${CR.startAge}`; }
+
+  function carToggleFavorite(){
+    const key = carCareerKey();
+    const i = carFavorites.findIndex(f => f.key === key);
+    if(i >= 0){ carFavorites.splice(i,1); carSaveFavorites(); renderCareerPhase(); return; }
+    if(carFavorites.length >= CAR_MAX_FAVORITES) return;
+    const best = CR.clubSpells.slice().sort((a,b) => b.buts - a.buts)[0];
+    carFavorites.push({
+      key, player: CR.name || 'Joueur', nation: CR.nation.name, startAge: CR.startAge, endAge: carAge(),
+      peak: CR.careerPeak, verdict: carVerdict(CR.careerPeak, CR.careerTrophies.length, CR.careerStats.buts, CR.careerStats.selections),
+      matchs: CR.careerStats.matchs, buts: CR.careerStats.buts, passes: CR.careerStats.passes,
+      selections: CR.careerStats.selections, butsInter: CR.careerStats.butsInter, trophies: CR.careerTrophies.length,
+      topTrophies: CR.careerTrophies.slice(0,4).map(t => t.label), clubs: CR.clubSpells.length,
+      bestClub: best ? { club: best.club, buts: best.buts, matchs: best.matchs } : null,
+      argent: CR.argent, ended: CR.endReason === 'injury' ? 'Blessure' : CR.endReason === 'choice' ? 'Retraite' : 'Terme',
+    });
+    carSaveFavorites();
+    renderCareerPhase();
+  }
+
+  // ---- RENDER ----
+  function renderCareerPhase(){
+    document.getElementById('carSetup').style.display = CR.phase === 'setup' ? 'flex' : 'none';
+    document.getElementById('carPlaying').style.display = CR.phase === 'playing' ? 'flex' : 'none';
+    document.getElementById('carFinished').style.display = CR.phase === 'finished' ? 'flex' : 'none';
+    if(CR.phase === 'setup') renderCareerSetup();
+    else if(CR.phase === 'playing') renderCareerPlaying();
+    else if(CR.phase === 'finished') renderCareerFinished();
+  }
+
+  function renderCareerIdentityOnly(){
+    const rating = carRatingStyle(CR.note);
+    document.getElementById('carRatingNum').textContent = CR.note;
+    document.getElementById('carRatingTier').textContent = rating.tier;
+    const badge = document.getElementById('carRatingBadge');
+    badge.style.background = rating.bg;
+    badge.style.color = rating.text;
+    const cardWrap = document.getElementById('carCardWrap');
+    cardWrap.style.background = rating.bg;
+    document.getElementById('carAvatar').style.borderColor = (typeof rating.bg === 'string' && rating.bg.startsWith('#')) ? rating.bg : '#c9a227';
+    document.getElementById('carAvatar').textContent = carInitials(CR.name);
+    const nameInput = document.getElementById('carNameInput');
+    if(document.activeElement !== nameInput) nameInput.value = CR.name;
+    document.getElementById('carNationName').textContent = CR.nation.name;
+    document.getElementById('carStartAge').textContent = CR.startAge;
+    const info = carClubInfo(CR.club);
+    document.getElementById('carClubName').textContent = CR.club;
+    document.getElementById('carClubDiv').textContent = info.d;
+    const crestEl = document.getElementById('carClubCrest');
+    if(crestEl) crestEl.textContent = CR.club.replace(/^(FC|AC|AS|SC|CD|CF|RC|OGC|EA)\s+/i, '').slice(0, 3).toUpperCase();
+  }
+
+  function renderCareerSetup(){
+    const rating = carRatingStyle(CR.note);
+    document.getElementById('carRatingNum').textContent = CR.note;
+    document.getElementById('carRatingTier').textContent = rating.tier;
+    const badge = document.getElementById('carRatingBadge');
+    badge.style.background = rating.bg;
+    badge.style.color = rating.text;
+    renderCareerIdentityOnly();
+    const info = carClubInfo(CR.club);
+    document.getElementById('carTotalSeasons').textContent = carTotalSeasons();
+    document.getElementById('carRetireAge').textContent = CR.retireAge + ' ans';
+    document.getElementById('carTotalCases').textContent = carTotalCases();
+    document.getElementById('carSelectionNation').textContent = CR.nation.name;
+    document.getElementById('carSelectionThreshold').textContent = 'seuil ' + CAR_CALLUP_THRESHOLD[CR.nation.pot];
+    document.getElementById('carSelectionComp').textContent = CR.nation.comp;
+    const cardWrap = document.getElementById('carCardWrap');
+    cardWrap.style.background = rating.bg;
+    cardWrap.style.opacity = (CR.drafts.length || CR.shuffling) ? 1 : 0.28;
+    document.getElementById('carAvatar').style.borderColor = (typeof rating.bg === 'string' && rating.bg.startsWith('#')) ? rating.bg : '#c9a227';
+
+    const draftsBox = document.getElementById('carDrafts');
+    if(CR.drafts.length > 0){
+      draftsBox.style.display = 'block';
+      document.getElementById('carDraftCount').textContent = CR.drafts.length;
+      const row = document.getElementById('carDraftsRow');
+      row.innerHTML = '';
+      for(let i=0;i<CAR_MAX_DRAFTS;i++){
+        const d = CR.drafts[i];
+        const cell = document.createElement('div');
+        if(!d){
+          cell.className = 'car-draft-card empty';
+          cell.innerHTML = '<span class="empty-label">Vide</span>';
+        } else {
+          const active = i === CR.selectedDraft;
+          cell.className = 'car-draft-card' + (active ? ' active' : '');
+          const shortName = d.name.split(' ')[1] || d.name;
+          cell.innerHTML = `<div class="dn">${shortName}</div><div class="dm">${d.nation.name} · ${d.startAge} ans</div>`;
+          cell.addEventListener('click', () => carChooseDraft(i));
+        }
+        row.appendChild(cell);
+      }
+    } else {
+      draftsBox.style.display = 'none';
+    }
+
+    const shuffleBtn = document.getElementById('carShuffleBtn');
+    if(CR.drafts.length < CAR_MAX_DRAFTS){
+      shuffleBtn.style.display = 'flex';
+      shuffleBtn.disabled = CR.shuffling;
+      shuffleBtn.className = 'start-btn ' + (CR.drafts.length === 0 ? 'car-btn-primary' : 'car-btn-shuffle-sub');
+      const remaining = CAR_MAX_DRAFTS - CR.drafts.length;
+      const shuffleIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" style="flex:none;"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.2" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.2" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.2" fill="currentColor" stroke="none"/></svg>';
+      shuffleBtn.innerHTML = shuffleIcon + '<span>' + (CR.shuffling ? 'Tirage en cours…' : CR.drafts.length === 0 ? 'Tirer au sort' : `Relancer (${remaining} restant${remaining>1?'s':''})`) + '</span>';
+    } else {
+      shuffleBtn.style.display = 'none';
+    }
+
+    const keepBtn = document.getElementById('carKeepBtn');
+    keepBtn.style.display = (CR.hasRandomized && !CR.shuffling) ? 'flex' : 'none';
+
+    document.getElementById('carSeasonsHint').textContent = `${carTotalSeasons()} saisons — ${CR.startAge} à ${CR.retireAge} ans`;
+    document.getElementById('carFavCount').textContent = carFavorites.length;
+  }
+
+  function renderCareerPlaying(){
+    const rating = carRatingStyle(CR.note);
+    document.getElementById('carPlaySeasonLabel').textContent = `${CAR_START_YEAR + CR.seasonNum - 1}–${String(CAR_START_YEAR + CR.seasonNum).slice(2)} · ${carAge()} ans`;
+    const badge = document.getElementById('carPlayRatingBadge');
+    badge.style.background = rating.bg; badge.style.color = rating.text;
+    document.getElementById('carPlayRatingNum').textContent = CR.note;
+    document.getElementById('carPlayRatingTier').textContent = rating.tier;
+    if(CR._lastShownNote !== undefined && CR._lastShownNote !== CR.note){
+      const diff = CR.note - CR._lastShownNote;
+      badge.classList.remove('car-note-up', 'car-note-down');
+      void badge.offsetWidth; // restart the animation even if the same class was already applied
+      badge.classList.add(diff > 0 ? 'car-note-up' : 'car-note-down');
+      setTimeout(() => badge.classList.remove('car-note-up', 'car-note-down'), 700);
+    }
+    CR._lastShownNote = CR.note;
+    document.getElementById('carPlayName').textContent = CR.name || 'Joueur';
+    document.getElementById('carPlayClub').textContent = CR.club;
+    document.getElementById('carPlayDiv').innerHTML = carClubInfo(CR.club).d + ' · ' + carIcon('flag',8) + ' ' + CR.nation.name;
+
+    const hideTop = !!(CR.seasonRecap || CR.transferOffers);
+    document.getElementById('carStatsRow').style.display = hideTop ? 'none' : 'grid';
+    document.getElementById('carProgressBlock').style.display = hideTop ? 'none' : 'block';
+    document.getElementById('carArgent').textContent = cfmt(CR.argent);
+    document.getElementById('carSalaire').textContent = cfmt(CR.salaire);
+
+    document.getElementById('carSeasonProgressLabel').textContent = `Saison ${CR.seasonNum}/${carTotalSeasons()}`;
+    const pct = Math.round((carPosInSeason()/CAR_SEASON_LEN)*100);
+    document.getElementById('carSeasonProgressPct').textContent = `${carPosInSeason()}/${CAR_SEASON_LEN} · ${pct}%`;
+    document.getElementById('carProgressFill').style.width = pct + '%';
+    renderCareerRoute();
+    renderCareerAction();
+  }
+
+  function renderCareerRoute(){
+    const routeEl = document.getElementById('carRoute');
+    if(!routeEl) return;
+    const center = CR.moving ? CR.position + (CR._moveOffset||0) : CR.position;
+    const total = carTotalCases();
+    let html = '';
+    for(let off=-3; off<=3; off++){
+      const g = center + off;
+      if(g < 0 || g > total){ html += '<div class="car-route-empty"></div>'; continue; }
+      if(!(g > 0 && g <= Math.max(CR.position, center))){
+        html += '<div class="car-route-cell hidden-cell">?</div>';
+        continue;
+      }
+      const t = CR.board[g-1];
+      const isCurrent = g === center && g > 0;
+      html += `<div class="car-route-cell${isCurrent?' current':''}" style="background:${CAR_CELL_COLOR[t]}" title="${CAR_CELL_NAME[t]}">${carIcon(CAR_CELL_ICON[t], isCurrent?16:13)}</div>`;
+    }
+    routeEl.innerHTML = html;
+  }
+
+  function renderCareerAction(){
+    const zone = document.getElementById('carActionZone');
+    if(!zone) return;
+    if(CR.seasonRecap){
+      zone.innerHTML = careerRecapHTML(CR.seasonRecap);
+      document.getElementById('carRecapContinueBtn').addEventListener('click', carCloseSeasonRecap);
+      return;
+    }
+    if(CR.transferOffers){
+      zone.innerHTML = careerMercatoHTML(CR.transferOffers, CR.club, CR.salaire);
+      zone.querySelectorAll('.car-offer-card').forEach((el, i) => {
+        el.addEventListener('click', () => carAcceptOffer(CR.transferOffers.offers[i]));
+      });
+      document.getElementById('carDeclineBtn').addEventListener('click', carDeclineOffers);
+      return;
+    }
+    if(CR.resultCard){
+      zone.innerHTML = careerResultCardHTML(CR.resultCard);
+      document.getElementById('carResultContinueBtn').addEventListener('click', carDismissCard);
+      return;
+    }
+    const busy = CR.rolling || CR.moving;
+    zone.innerHTML = `
+      <div class="car-dice-panel">
+        <div class="car-dice-label">${CR.moving ? 'Déplacement en cours…' : 'Lance le dé pour avancer'}</div>
+        <div class="car-die${CR.rolling ? ' bob' : ''}" id="carDieEl"></div>
+        <button class="start-btn" id="carRollBtn" type="button" style="margin:0;" ${busy?'disabled':''}>
+          ${CR.rolling ? 'Lancer…' : CR.moving ? 'Ça avance…' : 'Lancer le dé'}
+        </button>
+      </div>
+    `;
+    renderCareerDie();
+    document.getElementById('carRollBtn').addEventListener('click', carRollMove);
+  }
+
+  const CAR_PIPS = {
+    1: [[1,1]], 2: [[0,0],[2,2]], 3: [[0,0],[1,1],[2,2]],
+    4: [[0,0],[0,2],[2,0],[2,2]], 5: [[0,0],[0,2],[1,1],[2,0],[2,2]],
+    6: [[0,0],[0,2],[1,0],[1,2],[2,0],[2,2]],
+  };
+  function renderCareerDie(){
+    const die = document.getElementById('carDieEl');
+    if(!die) return;
+    const cells = CAR_PIPS[CR.diceFace] || CAR_PIPS[1];
+    let html = '';
+    for(let i=0;i<9;i++){
+      const r = Math.floor(i/3), c = i%3;
+      const on = cells.some(p => p[0]===r && p[1]===c);
+      html += `<div style="display:flex;align-items:center;justify-content:center;">${on ? '<span class="car-die-pip"></span>' : ''}</div>`;
+    }
+    die.innerHTML = html;
+  }
+
+  function careerResultCardHTML(card){
+    const iconName = card.kind === 'saison' ? 'trophy' : card.kind === 'transfert' ? 'arrowRightLeft' : (CAR_CELL_ICON[card.kind] || 'circle');
+    const icon = carIcon(iconName, 26);
+    const color = card.kind === 'saison' ? '#2c5aa0' : card.kind === 'transfert' ? '#a83e3e' : (CAR_CELL_COLOR[card.kind] || '#9fb8a8');
+    const lines = card.lines.map(l => {
+      const toneColor = l.tone === 'positive' ? '#3f7d4f' : l.tone === 'negative' ? '#a83e3e' : '#0b2b1d';
+      return `<p class="car-result-line" style="color:${toneColor};font-weight:${l.tone==='neutral'?400:600}">${l.text}</p>`;
+    }).join('');
+    return `
+      <div class="car-result-card">
+        <div class="car-result-icon" style="background:${color}">${icon}</div>
+        <h3 class="car-result-title">${card.title}</h3>
+        <div>${lines}</div>
+        <button class="start-btn car-btn-primary" id="carResultContinueBtn" type="button" style="margin-top:14px;">Continuer</button>
+      </div>
+    `;
+  }
+
+  function careerMercatoHTML(market, currentClub, currentSalary){
+    const offers = market.offers.map(o => {
+      const better = o.salary > currentSalary;
+      const tag = o.kind === 'up' ? '<span class="car-offer-tag up">Palier +</span>' : o.kind === 'loan' ? '<span class="car-offer-tag loan">Prêt</span>' : '';
+      return `
+        <div class="car-offer-card" role="button">
+          <div class="car-offer-top">
+            <div style="min-width:0;">
+              <div class="car-offer-club">${o.club}</div>
+              <div class="car-offer-div">${o.div}</div>
+            </div>
+            ${tag}
+          </div>
+          <div class="car-offer-money">
+            <span style="color:${o.fee ? 'var(--pitch)' : 'var(--ink-soft)'}">${o.fee ? cfmt(o.fee) : 'Libre'}</span>
+            <span style="color:${better ? 'var(--pitch)' : 'var(--red)'}">${cfmt(o.salary)}/saison ${better ? '↑' : '↓'}</span>
+          </div>
+          <div class="car-offer-note">${o.note}</div>
+        </div>
+      `;
+    }).join('');
+    return `
+      <div class="car-mercato-card">
+        <div class="car-mercato-title">${carIcon('arrowRightLeft',20)} ${market.label}</div>
+        <div class="car-mercato-sub">Actuellement à ${currentClub} — ${cfmt(currentSalary)}/saison</div>
+        ${offers}
+        <button class="car-decline-btn" id="carDeclineBtn" type="button">Refuser et rester à ${currentClub}</button>
+      </div>
+    `;
+  }
+
+  function careerRecapHTML(recap){
+    const s = recap.stats;
+    const cells = [
+      { icon: carIcon('users',15), label:'Matchs joués', value: s.matchs },
+      { icon: carIcon('target',15), label:'Buts', value: s.buts },
+      { icon: carIcon('send',15), label:'Passes décisives', value: s.passes },
+    ];
+    const cellsHtml = cells.map((c,i) => `
+      <div class="car-stat3-cell" style="animation:panelFadeIn .3s ease ${i*80}ms backwards;">
+        <span>${c.icon}</span><b>${c.value}</b><small>${c.label}</small>
+      </div>
+    `).join('');
+    let intlHtml;
+    if(recap.intl){
+      const intl = recap.intl;
+      intlHtml = `
+        <div class="car-intl-box">
+          <div class="car-intl-title">${carIcon('flag',14)} ${recap.nation.name}${intl.firstCall ? ' — première sélection !' : ''}</div>
+          <div class="car-intl-nums"><span><b>${intl.caps}</b> sélections</span><span><b>${intl.goals}</b> buts</span></div>
+          ${intl.tourney ? `<div class="car-intl-tourney${intl.won?' won':''}">${carIcon('globe',13)} ${intl.tourney} ${intl.year} — ${intl.run}</div>` : ''}
+        </div>
+      `;
+    } else {
+      intlHtml = `<div class="car-recap-box"><span style="font-size:11px;color:var(--ink-soft);">${carIcon('flag',10)} ${recap.nation.name} — pas encore appelé. Atteins <b>${recap.threshold}</b> de note générale.</span></div>`;
+    }
+    const honoursHtml = recap.honours.length ? recap.honours.map((h,i) => `<div class="car-trophy-row" style="animation:panelFadeIn .3s ease ${i*100}ms backwards;">${carIcon('trophy',12)} ${h}</div>`).join('') : '';
+    return `
+      <div class="car-recap-card">
+        <div class="car-recap-header">
+          <div class="car-recap-eyebrow">Saison ${recap.year}–${String(recap.year+1).slice(2)} · ${recap.club}</div>
+          <div class="car-recap-title">${recap.result.label}</div>
+          <div class="car-recap-detail">${recap.result.detail}</div>
+        </div>
+        <div class="car-recap-body">
+          <div class="car-recap-box">
+            <div class="car-recap-box-label">Calendrier</div>
+            <div class="car-row"><span>${s.league}</span><b>${s.leagueGames} j.</b></div>
+            ${s.cupGames > 0 ? `<div class="car-row"><span>Coupe nationale</span><b>${s.cupGames} m.</b></div>` : ''}
+            ${s.euroGames > 0 ? `<div class="car-row"><span>${s.euroName}</span><b>${s.euroGames} m.</b></div>` : ''}
+            <div class="car-row" style="border-top:1px solid var(--parchment);margin-top:4px;padding-top:6px;"><span>Classement final</span><b>${recap.result.place}</b></div>
+            <div class="car-row"><span>Temps de jeu</span><b>${Math.round((s.matchs/(s.leagueGames+s.cupGames+s.euroGames))*100)}%</b></div>
+          </div>
+          <div class="car-stat3-grid">${cellsHtml}</div>
+          <div class="car-recap-box">
+            <div class="car-recap-box-label">Rendement</div>
+            <div class="car-row"><span>Buts par match</span><b>${s.matchs ? (s.buts/s.matchs).toFixed(2) : '—'}</b></div>
+            <div class="car-row"><span>Implication (B+PD)</span><b>${s.buts + s.passes}</b></div>
+          </div>
+          ${intlHtml}
+          ${honoursHtml}
+          <div class="car-recap-box">
+            <div class="car-row green"><span>Prime collective</span><b>+${cfmt(recap.prime)}</b></div>
+            ${recap.noteGain !== 0 ? `<div class="car-row ${recap.noteGain>0?'green':'red'}"><span>Note générale</span><b>${recap.noteGain>0?'+':''}${recap.noteGain}</b></div>` : ''}
+          </div>
+          <button class="start-btn" id="carRecapContinueBtn" type="button" style="margin:6px 0 0;background:#2c5aa0;">Saison suivante</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderCareerFinished(){
+    const injured = CR.endReason === 'injury';
+    const bestClub = CR.clubSpells.slice().sort((a,b) => b.buts - a.buts)[0];
+    const verdict = carVerdict(CR.careerPeak, CR.careerTrophies.length, CR.careerStats.buts, CR.careerStats.selections);
+    const starred = carFavorites.some(f => f.key === carCareerKey());
+    const favFull = carFavorites.length >= CAR_MAX_FAVORITES;
+
+    document.getElementById('carFinishedEyebrow').textContent = injured ? 'Carrière brisée' : CR.endReason === 'choice' ? 'Retraite anticipée' : 'Fin de carrière';
+    document.getElementById('carFinishedName').textContent = CR.name || 'Le joueur';
+    document.getElementById('carFinishedSub').innerHTML = `${carIcon('flag',10)} ${CR.nation.name} · ${CR.startAge}–${carAge()} ans · pic ${CR.careerPeak}`;
+    document.getElementById('carFinishedVerdict').textContent = verdict;
+    const headerEl = document.getElementById('carFinishedHeader');
+    headerEl.classList.toggle('injured', injured);
+    headerEl.classList.toggle('notinjured', !injured);
+
+    let trophiesHtml;
+    if(CR.careerTrophies.length > 0){
+      const intlTrophies = CR.careerTrophies.filter(t => t.intl);
+      const clubTrophies = CR.careerTrophies.filter(t => !t.intl);
+      trophiesHtml = `<div class="car-recap-box"><div class="car-recap-box-label">🏆 Palmarès (${CR.careerTrophies.length})</div>` +
+        intlTrophies.map(t => `<div class="car-trophy-row intl"><span>🌍</span> ${t.label} — ${CAR_START_YEAR + t.season - 1}</div>`).join('') +
+        clubTrophies.slice(0,8).map(t => `<div class="car-trophy-row"><span>🏆</span> ${t.label} — ${CAR_START_YEAR + t.season - 1}</div>`).join('') +
+        (clubTrophies.length > 8 ? `<p style="font-size:10px;color:#6b6552;margin-top:4px;">+${clubTrophies.length-8} autre${clubTrophies.length-8>1?'s':''} titre${clubTrophies.length-8>1?'s':''}</p>` : '') +
+        `</div>`;
+    } else {
+      trophiesHtml = `<div class="car-recap-box"><div class="car-recap-box-label">🏆 Palmarès</div><p style="font-size:11px;color:#6b6552;">Aucun titre remporté cette carrière.</p></div>`;
+    }
+
+    document.getElementById('carFinishedCard').innerHTML = `
+      <div class="car-row green" style="background:#0b2b1d0f;border-radius:8px;padding:8px 12px;margin-bottom:11px;font-size:13px;">
+        <span>⭐ XP gagnée pour ton profil</span><b>+${CR.xpEarned || 0} XP</b>
+      </div>
+      <div class="car-stat3-grid">
+        <div class="car-stat3-cell"><b>${CR.careerStats.buts}</b><small>Buts</small></div>
+        <div class="car-stat3-cell"><b>${CR.careerStats.passes}</b><small>Passes D.</small></div>
+        <div class="car-stat3-cell"><b>${CR.careerStats.matchs}</b><small>Matchs</small></div>
+      </div>
+      <div class="car-stat3-grid">
+        <div class="car-stat3-cell"><b>${CR.careerTrophies.length}</b><small>Trophées</small></div>
+        <div class="car-stat3-cell"><b>${CR.careerStats.selections}</b><small>Sélections</small></div>
+        <div class="car-stat3-cell"><b>${CR.careerStats.butsInter}</b><small>Buts int.</small></div>
+      </div>
+      ${trophiesHtml}
+      <div class="car-recap-box">
+        <div class="car-row"><span>Ratio buts/match</span><b>${CR.careerStats.matchs ? (CR.careerStats.buts/CR.careerStats.matchs).toFixed(2) : '—'}</b></div>
+        <div class="car-row"><span>Implication (B+PD)</span><b>${CR.careerStats.buts + CR.careerStats.passes}</b></div>
+        <div class="car-row"><span>Saisons jouées</span><b>${CR.clubSpells.reduce((a,x)=>a+x.saisons,0)} · ${CR.startAge}–${carAge()} ans</b></div>
+        <div class="car-row"><span>Clubs traversés</span><b>${CR.clubSpells.length}</b></div>
+        <div class="car-row"><span>Fortune accumulée</span><b style="color:#3f7d4f;">${cfmt(CR.argent)}</b></div>
+      </div>
+      ${bestClub ? `
+        <div class="car-intl-box">
+          <div class="car-intl-title" style="color:#c9a227;">Club de sa vie</div>
+          <div style="font-family:'Oswald',sans-serif;font-weight:700;color:#f3efe2;font-size:14px;">${bestClub.club}</div>
+          <div style="font-size:11px;color:rgba(243,239,226,.75);">${bestClub.buts} buts en ${bestClub.matchs} matchs · ${bestClub.startYear}${bestClub.endYear!==bestClub.startYear?`–${bestClub.endYear}`:''}</div>
+        </div>
+      ` : ''}
+    `;
+
+    const starBtn = document.getElementById('carStarBtn');
+    starBtn.classList.toggle('active', starred);
+    starBtn.disabled = !starred && favFull;
+    document.getElementById('carStarLabel').textContent = starred ? 'Gardée' : 'Garder';
+  }
+
+  function renderCareerFavsModal(){
+    document.getElementById('carFavsCount').textContent = `${carFavorites.length}/${CAR_MAX_FAVORITES}`;
+    const list = document.getElementById('carFavsList');
+    if(!carFavorites.length){
+      list.innerHTML = `<div class="car-favs-empty">Aucune carrière gardée. À la fin d'une carrière, touche « Garder » pour l'enregistrer ici.</div>`;
+      return;
+    }
+    list.innerHTML = carFavorites.map((f, i) => `
+      <div class="car-fav-item">
+        <div class="car-fav-item-top">
+          <div style="min-width:0;">
+            <div class="car-fav-name">${f.player}</div>
+            <div class="car-fav-meta">${f.nation} · ${f.startAge}–${f.endAge} ans · pic ${f.peak}</div>
+          </div>
+          <span class="car-fav-verdict">${f.verdict}</span>
+        </div>
+        <div class="car-fav-chips"><span>${carIcon('target',11)} ${f.buts}</span><span>${carIcon('send',11)} ${f.passes}</span><span>${carIcon('users',11)} ${f.matchs}</span><span>${carIcon('trophy',11)} ${f.trophies}</span></div>
+        ${f.bestClub ? `<p style="font-size:10px;color:var(--ink-soft);">${f.bestClub.club} — ${f.bestClub.buts} buts</p>` : ''}
+        ${f.selections > 0 ? `<p style="font-size:10px;color:#2c5aa0;">${f.selections} sélections · ${f.butsInter} buts en sélection</p>` : ''}
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+          <span style="font-size:9px;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;">${cfmt(f.argent)} · fin : ${f.ended}</span>
+          <button class="car-fav-remove" data-idx="${i}" type="button">Retirer</button>
+        </div>
+      </div>
+    `).join('');
+    list.querySelectorAll('.car-fav-remove').forEach(btn => {
+      btn.addEventListener('click', () => {
+        carFavorites.splice(parseInt(btn.dataset.idx,10), 1);
+        carSaveFavorites();
+        renderCareerFavsModal();
+        renderCareerPhase();
+      });
+    });
+  }
+
+  // ---- WIRING ----
+  const CAR_TUTO_KEY = 'multipoly_career_tuto_seen_v1';
+  document.getElementById('showCareerBtn').addEventListener('click', () => {
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('careerScreen').style.display = 'flex';
+    if(!CR){
+      CR = carDefaultState();
+      renderCareerPhase();
+      let seen = false;
+      try{ seen = localStorage.getItem(CAR_TUTO_KEY) === '1'; } catch(e){}
+      if(!seen) carOpenTutorial();
+    } else if(CR.phase === 'playing'){
+      document.getElementById('carResumeText').textContent =
+        `${CR.name || 'Ton joueur'} en est à la saison ${CR.seasonNum}/${carTotalSeasons()}, ${carAge()} ans.`;
+      document.getElementById('carResumeModal').style.display = 'flex';
+    } else {
+      renderCareerPhase();
+    }
+  });
+
+  // ---- Tutorial slideshow ----
+  const carTutoSlideEls = () => Array.from(document.querySelectorAll('#carTutoSlides .car-tuto-slide'));
+  let carTutoIndex = 0;
+  function carRenderTutoSlide(){
+    const slides = carTutoSlideEls();
+    slides.forEach((el, i) => {
+      el.classList.toggle('active', i === carTutoIndex);
+      el.classList.toggle('prev', i < carTutoIndex);
+    });
+    const dots = document.getElementById('carTutoDots');
+    dots.innerHTML = slides.map((_, i) => `<span class="car-tuto-dot${i===carTutoIndex?' active':''}"></span>`).join('');
+    document.getElementById('carTutoPrevBtn').style.visibility = carTutoIndex === 0 ? 'hidden' : 'visible';
+    document.getElementById('carTutoNextBtn').textContent = carTutoIndex === slides.length - 1 ? 'Terminé' : 'Suivant ›';
+  }
+  function carOpenTutorial(){
+    carTutoIndex = 0;
+    document.getElementById('carTutoModal').style.display = 'flex';
+    carRenderTutoSlide();
+  }
+  function carCloseTutorial(){
+    document.getElementById('carTutoModal').style.display = 'none';
+    try{ localStorage.setItem(CAR_TUTO_KEY, '1'); } catch(e){}
+  }
+  document.getElementById('carShowTutoBtn').addEventListener('click', carOpenTutorial);
+  document.getElementById('carTutoCloseX').addEventListener('click', carCloseTutorial);
+  document.getElementById('carTutoPrevBtn').addEventListener('click', () => {
+    if(carTutoIndex > 0){ carTutoIndex--; carRenderTutoSlide(); }
+  });
+  document.getElementById('carTutoNextBtn').addEventListener('click', () => {
+    const total = carTutoSlideEls().length;
+    if(carTutoIndex < total - 1){ carTutoIndex++; carRenderTutoSlide(); }
+    else carCloseTutorial();
+  });
+  document.getElementById('carResumeContinueBtn').addEventListener('click', () => {
+    document.getElementById('carResumeModal').style.display = 'none';
+    renderCareerPhase();
+  });
+  document.getElementById('carResumeNewBtn').addEventListener('click', () => {
+    document.getElementById('carResumeModal').style.display = 'none';
+    carNewCareer();
+  });
+  document.getElementById('carSetupBackBtn').addEventListener('click', () => {
+    document.getElementById('careerScreen').style.display = 'none';
+    document.getElementById('landing').style.display = 'flex';
+  });
+  document.getElementById('carPlayingBackBtn').addEventListener('click', () => {
+    document.getElementById('careerScreen').style.display = 'none';
+    document.getElementById('landing').style.display = 'flex';
+  });
+  document.getElementById('carFinishedBackBtn').addEventListener('click', () => {
+    document.getElementById('careerScreen').style.display = 'none';
+    document.getElementById('landing').style.display = 'flex';
+  });
+  document.getElementById('carNewCareerBtn2').addEventListener('click', carNewCareer);
+
+  document.getElementById('carNameInput').addEventListener('input', (e) => {
+    if(CR) CR.name = e.target.value;
+  });
+  document.getElementById('carShuffleBtn').addEventListener('click', carRegenerateAll);
+  document.getElementById('carKeepBtn').addEventListener('click', carStartGame);
+  document.getElementById('carShowFavsBtn').addEventListener('click', () => {
+    document.getElementById('carFavsModal').style.display = 'flex';
+    renderCareerFavsModal();
+  });
+  document.getElementById('carFavsCloseBtn').addEventListener('click', () => {
+    document.getElementById('carFavsModal').style.display = 'none';
+  });
+
+  document.getElementById('carRetireBtn').addEventListener('click', () => {
+    document.getElementById('carRetireText').textContent =
+      `${CR.name || 'Ton joueur'} a ${carAge()} ans et ${carTotalSeasons() - CR.seasonNum} saison${(carTotalSeasons()-CR.seasonNum)>1?'s':''} encore devant lui.`;
+    document.getElementById('carRetireModal').style.display = 'flex';
+  });
+  document.getElementById('carRetireCancelBtn').addEventListener('click', () => {
+    document.getElementById('carRetireModal').style.display = 'none';
+  });
+  document.getElementById('carRetireConfirmBtn').addEventListener('click', carRetireNow);
+
+  document.getElementById('carStarBtn').addEventListener('click', carToggleFavorite);
 
 })();
 </script>
