@@ -241,6 +241,17 @@
   }
   .mode-card:hover{transform:translateY(-2px);box-shadow:0 8px 16px rgba(0,0,0,.1);border-color:var(--pitch);}
   .mode-card:active{transform:translateY(0) scale(.99);}
+  .mode-card-new{position:relative;overflow:visible;}
+  .mode-new-badge{
+    position:absolute;top:-7px;right:10px;background:var(--red);color:#fff;
+    font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;
+    padding:3px 8px;border-radius:999px;box-shadow:0 2px 5px rgba(0,0,0,.25);
+    animation:modeNewPulse 2s ease-in-out infinite;
+  }
+  @keyframes modeNewPulse{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.08);}
+  }
   .mode-card-tall{padding:16px 14px;}
   .mode-card-tall .mode-icon{width:44px;height:44px;font-size:21px;}
   .mode-card-tall .mode-title{font-size:16px;}
@@ -1314,11 +1325,14 @@
 
   .car-seasons-hint{font-size:9.5px;color:#7a8f80;margin-top:6px;text-align:center;}
   .car-favs-btn{
-    display:flex;align-items:center;justify-content:center;gap:3px;font-size:8.5px;padding:6px 4px;border-radius:7px;
-    color:#c9a227;border:1px solid rgba(201,162,39,.4);background:none;font-family:'JetBrains Mono',monospace;
+    display:flex;align-items:center;justify-content:center;gap:5px;font-size:10.5px;font-weight:700;padding:9px 6px;border-radius:9px;
+    color:#c9a227;border:1.5px solid rgba(201,162,39,.5);background:rgba(201,162,39,.08);font-family:'Inter',sans-serif;
     flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    transition:background .15s ease,transform .1s ease;
   }
-  .car-setup-links-row{display:flex;gap:6px;margin-top:6px;}
+  .car-favs-btn:active{transform:scale(.96);background:rgba(201,162,39,.16);}
+  .car-favs-btn svg{flex:none;}
+  .car-setup-links-row{display:flex;gap:8px;margin-top:8px;}
   .car-bottom-link{margin-top:6px;text-align:center;color:#7a8f80;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;text-decoration:underline;text-underline-offset:2px;background:none;border:none;}
   .car-bottom-link:hover{color:#c9a227;}
 
@@ -1437,9 +1451,23 @@
   .car-intl-nums span{color:#f3efe2;font-size:14px;}
   .car-intl-tourney{background:#123824;border-radius:6px;padding:6px 10px;margin-top:8px;font-size:12px;color:#e6e2d3;font-weight:700;display:flex;align-items:center;gap:8px;}
   .car-intl-tourney.won{background:#c9a227;color:#0b2b1d;}
-  .car-trophy-row{font-size:10px;color:#8a6d14;margin-bottom:1px;}
-  .car-trophy-row.intl{color:#2c5aa0;}
-  .car-trophy-row .yr{color:#9a9482;}
+  .car-trophy-row{background:#c9a227;border-radius:8px;padding:8px 11px;display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:11.5px;font-weight:700;color:#0b2b1d;}
+  .car-palmares-box{padding-bottom:6px;}
+  .car-trophy-row2{
+    display:flex;align-items:center;gap:7px;padding:6px 7px;margin-bottom:4px;border-radius:7px;
+    background:rgba(11,43,29,.05);
+  }
+  .car-trophy-row2.major{background:linear-gradient(135deg,#f0cf6a,#c9a227);box-shadow:0 2px 4px rgba(0,0,0,.15);}
+  .car-trophy-icon{font-size:13px;flex:none;}
+  .car-trophy-label{flex:1;min-width:0;font-size:10.5px;font-weight:700;color:#4a4636;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .car-trophy-row2.major .car-trophy-label{color:#0b2b1d;}
+  .car-trophy-years{font-size:8.5px;color:#8a8272;font-family:'JetBrains Mono',monospace;flex:none;}
+  .car-trophy-row2.major .car-trophy-years{color:#5c4a12;}
+  .car-trophy-count{
+    font-size:8.5px;font-weight:800;color:#fff;background:#8a6d14;border-radius:999px;
+    padding:1.5px 6px;flex:none;font-family:'JetBrains Mono',monospace;
+  }
+  .car-trophy-row2.major .car-trophy-count{background:#0b2b1d;color:#f0cf6a;}
 
   .car-finished-header{flex:none;text-align:center;padding:12px 16px 10px;position:relative;z-index:1;overflow:hidden;}
   .car-finished-header::before{
@@ -1466,8 +1494,6 @@
     background:#0b2b1d;position:relative;z-index:1;
   }
   .car-finished-actions{display:flex;gap:8px;}
-  .car-star-btn{flex:none;border:2px solid #c9a227;background:#e7dcb8;color:#6b4e12;border-radius:10px;padding:12px 14px;font-weight:700;font-size:11.5px;text-transform:uppercase;display:flex;align-items:center;gap:5px;}
-  .car-star-btn.active{background:#c9a227;color:#0b2b1d;}
   .car-bottom-link.car-finished-back{margin-top:8px;}
 
   .car-modal{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,20,13,.85);}
@@ -1482,14 +1508,25 @@
 
   .car-favs-card{max-width:384px;max-height:80vh;display:flex;flex-direction:column;text-align:left;padding:0;overflow:hidden;border:3px solid #c9a227;}
   .car-favs-header{background:#c9a227;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:#0b2b1d;text-transform:uppercase;}
+  .car-top5-tabs{display:flex;border-bottom:1px solid var(--parchment-dark);}
+  .car-top5-tab{
+    flex:1;padding:10px 8px;font-size:11px;font-weight:700;color:var(--ink-soft);
+    background:none;border:none;border-bottom:2px solid transparent;
+  }
+  .car-top5-tab.active{color:#8a6d14;border-bottom-color:#c9a227;}
+  .car-top5-status{font-size:11px;color:var(--ink-soft);text-align:center;padding:20px 0;}
   .car-favs-list{flex:1;min-height:0;overflow-y:auto;padding:14px 16px;}
   .car-fav-item{background:#e7e2d3;border-radius:8px;padding:11px 13px;margin-bottom:9px;}
   .car-fav-item-top{display:flex;justify-content:space-between;gap:8px;margin-bottom:5px;}
   .car-fav-name{font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:#0b2b1d;text-transform:uppercase;}
   .car-fav-meta{font-size:10px;color:#6b6552;}
+  .car-top5-owner{font-size:9px;color:#8a6d14;font-weight:700;margin-top:1px;}
   .car-fav-verdict{font-size:8px;font-weight:700;text-transform:uppercase;background:#c9a227;color:#0b2b1d;padding:3px 7px;border-radius:5px;flex:none;height:fit-content;}
   .car-fav-chips{display:flex;gap:10px;font-size:11px;color:#0b2b1d;margin-bottom:4px;}
-  .car-fav-remove{font-size:10px;color:#a83e3e;font-weight:700;text-transform:uppercase;background:none;border:none;float:right;}
+  .car-top5-rank{
+    flex:none;font-size:16px;font-weight:800;min-width:22px;text-align:center;
+    font-family:'JetBrains Mono',monospace;color:#8a6d14;
+  }
   .car-favs-empty{font-size:12px;color:#6b6552;text-align:center;padding:22px 0;}
 
   /* -- tactile press feedback -- */
@@ -1499,7 +1536,6 @@
   .car-draft-card:active{transform:scale(.97);}
   .car-offer-card{transition:transform .15s ease,box-shadow .15s ease;cursor:pointer;}
   .car-offer-card:active{transform:scale(.98);}
-  .car-star-btn{transition:transform .1s ease,background .15s ease,color .15s ease;}
   .car-die{transition:box-shadow .15s ease;}
 
   /* -- tutorial slideshow -- */
@@ -1577,7 +1613,8 @@
         </div>
         <div class="mode-arrow">›</div>
       </button>
-      <button class="mode-card" id="showCareerBtn" type="button">
+      <button class="mode-card mode-card-new" id="showCareerBtn" type="button">
+        <span class="mode-new-badge">Nouveau</span>
         <div class="mode-icon mode-icon-career">🎯</div>
         <div class="mode-text">
           <div class="mode-title">Mode Carrière</div>
@@ -1666,7 +1703,7 @@
       <div class="profile-stats-row" id="profileStatsRow">
         <div class="profile-stat-cell"><b id="profileGamesPlayed">0</b><small>Parties</small></div>
         <div class="profile-stat-cell"><b id="profileGamesWon">0</b><small>Victoires</small></div>
-        <div class="profile-stat-cell"><b id="profileWinRate">—</b><small>Réussite</small></div>
+        <div class="profile-stat-cell"><b id="profileBestNote">—</b><small>Meilleure note</small></div>
       </div>
 
       <div class="field-label section" style="display:flex;justify-content:space-between;align-items:baseline;">
@@ -1970,6 +2007,8 @@
         </div>
       </div>
 
+      <p class="car-seasons-hint" id="carSeasonsHint"></p>
+
       <div class="car-drafts" id="carDrafts" style="display:none">
         <p class="car-drafts-title">Tirage <span id="carDraftCount">0</span>/3</p>
         <div class="car-drafts-row" id="carDraftsRow"></div>
@@ -1977,11 +2016,10 @@
 
       <button class="start-btn car-btn-shuffle-sub" id="carShuffleBtn" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" style="flex:none;"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.2" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.2" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.2" fill="currentColor" stroke="none"/></svg><span>Tirer au sort</span></button>
       <button class="start-btn car-btn-primary" id="carKeepBtn" type="button" style="display:none;">Garder ce joueur ›</button>
-      <p class="car-seasons-hint" id="carSeasonsHint"></p>
 
       <div class="car-setup-links-row">
-        <button class="car-favs-btn" id="carShowFavsBtn" type="button">⭐ Gardées (<span id="carFavCount">0</span>/10)</button>
-        <button class="car-favs-btn" id="carShowTutoBtn" type="button">❓ Comment jouer ?</button>
+        <button class="car-favs-btn" id="carShowTop5Btn" type="button"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M17 5h2a2 2 0 0 1 2 2 4 4 0 0 1-4 4M7 5H5a2 2 0 0 0-2 2 4 4 0 0 0 4 4"/></svg><span>Top 5</span></button>
+        <button class="car-favs-btn" id="carShowTutoBtn" type="button"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5M12 17h.01"/></svg><span>Règles</span></button>
       </div>
       <button class="car-bottom-link" id="carSetupBackBtn" type="button">← Retour</button>
     </div>
@@ -2056,8 +2094,7 @@
     </div>
     <div class="car-finished-footer">
       <div class="car-finished-actions">
-        <button class="car-star-btn" id="carStarBtn" type="button">⭐ <span id="carStarLabel">Garder</span></button>
-        <button class="start-btn car-btn-primary" id="carNewCareerBtn2" type="button" style="flex:1;margin:0;padding:12px;font-size:13.5px;">Nouvelle carrière</button>
+        <button class="start-btn car-btn-primary" id="carNewCareerBtn2" type="button" style="flex:1;margin:0;padding:12px;font-size:13.5px;max-width:none;">Nouvelle carrière</button>
       </div>
       <button class="car-bottom-link car-finished-back" id="carFinishedBackBtn" type="button">← Retour</button>
     </div>
@@ -2077,15 +2114,18 @@
     </div>
   </div>
 
-  <!-- Hall of fame modal -->
-  <div id="carFavsModal" class="car-modal" style="display:none">
+  <!-- Top 5 leaderboard modal -->
+  <div id="carTop5Modal" class="car-modal" style="display:none">
     <div class="car-modal-card car-favs-card">
       <div class="car-favs-header">
-        <span>⭐ Carrières gardées</span>
-        <span id="carFavsCount">0/10</span>
+        <span>Top 5 carrières</span>
       </div>
-      <div class="car-favs-list" id="carFavsList"></div>
-      <button class="start-btn" id="carFavsCloseBtn" type="button" style="margin-top:10px;">Fermer</button>
+      <div class="car-top5-tabs">
+        <button class="car-top5-tab active" id="carTop5TabPersonal" type="button">Personnel</button>
+        <button class="car-top5-tab" id="carTop5TabGlobal" type="button">Tous les joueurs</button>
+      </div>
+      <div class="car-favs-list" id="carTop5List"></div>
+      <button class="start-btn" id="carTop5CloseBtn" type="button" style="margin-top:10px;">Fermer</button>
     </div>
   </div>
 
@@ -2863,10 +2903,11 @@
           xp: typeof p.xp === 'number' ? p.xp : 0,
           gamesPlayed: typeof p.gamesPlayed === 'number' ? p.gamesPlayed : 0,
           gamesWon: typeof p.gamesWon === 'number' ? p.gamesWon : 0,
+          bestCareerNote: typeof p.bestCareerNote === 'number' ? p.bestCareerNote : 0,
         };
       }
     } catch(e){}
-    return { pseudo:'', emblemIdx:0, xp:0, gamesPlayed:0, gamesWon:0 };
+    return { pseudo:'', emblemIdx:0, xp:0, gamesPlayed:0, gamesWon:0, bestCareerNote:0 };
   }
   function saveProfile(){
     try{ localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); } catch(e){}
@@ -2894,6 +2935,19 @@
   // mode's completion-XP reward can actually call it (previously this threw
   // a ReferenceError, crashing whenever a career finished/retired).
   window.awardXP = awardXP;
+
+  function updateBestCareerNote(note){
+    if(note > profile.bestCareerNote){
+      profile.bestCareerNote = note;
+      saveProfile();
+    }
+  }
+  window.updateBestCareerNote = updateBestCareerNote;
+
+  function getProfilePseudo(){
+    return (profile.pseudo && profile.pseudo.trim()) || null;
+  }
+  window.getProfilePseudo = getProfilePseudo;
 
   // Now that the pseudo and emblem both auto-save as soon as they're set,
   // "has a profile" just means "has a real pseudo" — no separate explicit
@@ -2927,10 +2981,10 @@
 
     const gp = document.getElementById('profileGamesPlayed');
     const gw = document.getElementById('profileGamesWon');
-    const wr = document.getElementById('profileWinRate');
+    const bn = document.getElementById('profileBestNote');
     if(gp) gp.textContent = profile.gamesPlayed;
     if(gw) gw.textContent = profile.gamesWon;
-    if(wr) wr.textContent = profile.gamesPlayed > 0 ? Math.round(profile.gamesWon / profile.gamesPlayed * 100) + '%' : '—';
+    if(bn) bn.textContent = profile.bestCareerNote > 0 ? profile.bestCareerNote : '—';
 
     const nextUnlockEl = document.getElementById('profileNextUnlock');
     if(nextUnlockEl){
@@ -5269,7 +5323,7 @@
   const CAR_START_YEAR = 2026;
   const CAR_MERCATO_EVERY = 3;
   const CAR_MAX_DRAFTS = 3;
-  const CAR_MAX_FAVORITES = 10;
+  const CAR_TOP5_SIZE = 5;
 
   const CAR_WEIGHTS = [["normale",0.34],["bonus",0.42],["malus",0.20],["horsfoot",0.04]];
 
@@ -5973,19 +6027,24 @@ const CAR_SEASON_RESULTS = [
     const xp = CAR_XP_BY_VERDICT[verdict] || 50;
     awardXP(xp);
     if(typeof renderProfileButton === 'function') renderProfileButton();
+    if(typeof updateBestCareerNote === 'function') updateBestCareerNote(CR.careerPeak);
+    carRecordCareerResult();
     CR.xpEarned = xp;
   }
 
-  // ---- FAVORITES PERSISTENCE ----
-  const CAR_FAV_KEY = 'multipoly_career_favorites_v1';
-  function carLoadFavorites(){
-    try{ const raw = localStorage.getItem(CAR_FAV_KEY); return raw ? JSON.parse(raw) : []; }
+  // ---- TOP 5 LEADERBOARD ----
+  // Automatically tracks the player's 5 best-ever careers (by peak rating),
+  // no manual "save" step needed — every completed career is compared
+  // against the current top 5 and slotted in if it's good enough.
+  const CAR_TOP5_KEY = 'multipoly_career_top5_v1';
+  function carLoadTop5(){
+    try{ const raw = localStorage.getItem(CAR_TOP5_KEY); return raw ? JSON.parse(raw) : []; }
     catch(e){ return []; }
   }
-  function carSaveFavorites(){
-    try{ localStorage.setItem(CAR_FAV_KEY, JSON.stringify(carFavorites)); } catch(e){}
+  function carSaveTop5(){
+    try{ localStorage.setItem(CAR_TOP5_KEY, JSON.stringify(carTop5)); } catch(e){}
   }
-  let carFavorites = carLoadFavorites();
+  let carTop5 = carLoadTop5();
 
   // ---- STATE ----
   let CR = null;
@@ -6274,15 +6333,19 @@ const CAR_SEASON_RESULTS = [
       let run = null, won = false;
       if(tourney){
         // Nation strength matters as much as personal quality: elite
-        // footballing nations (pot 1) get a much bigger boost than
-        // weaker ones (pot 3) — winning with Scotland should feel
-        // genuinely harder than winning with France or Brazil.
-        const strength = (CR.note - threshold)/25 + (4 - CR.nation.pot) * 0.30;
-        const roll = Math.random() + strength;
-        if(roll > 1.15){ run = 'Vainqueur'; won = true; }
-        else if(roll > 0.95) run = 'Finaliste';
-        else if(roll > 0.72) run = 'Demi-finale';
-        else if(roll > 0.48) run = 'Quart de finale';
+        // footballing nations (pot 1) get a bigger boost than weaker ones
+        // (pot 3) — winning with a modest nation should feel genuinely
+        // harder than winning with an elite one. Win chance is capped well
+        // below 100% no matter how good you are — there's always a real
+        // chance of heartbreak, even for the best player on the best team.
+        const skillGap = (CR.note - threshold) / 30;
+        const natBonus = (4 - CR.nation.pot) * 0.07;
+        const winProb = Math.max(0.03, Math.min(0.80, 0.12 + skillGap * 0.32 + natBonus));
+        const roll = Math.random();
+        if(roll < winProb){ run = 'Vainqueur'; won = true; }
+        else if(roll < winProb + 0.15) run = 'Finaliste';
+        else if(roll < winProb + 0.35) run = 'Demi-finale';
+        else if(roll < winProb + 0.60) run = 'Quart de finale';
         else run = 'Éliminé en poules';
         if(won) CR.careerTrophies.push({ season: CR.seasonNum, label: `${tourney.name} ${year}`, intl:true });
       }
@@ -6371,25 +6434,52 @@ const CAR_SEASON_RESULTS = [
     renderCareerPhase();
   }
 
-  function carCareerKey(){ return `${CR.name || 'Joueur'}|${CAR_START_YEAR}|${CR.startAge}`; }
+  const CAR_LB_BROKER = 'wss://broker.hivemq.com:8884/mqtt';
+  const CAR_LB_TOPIC_PREFIX = 'multipoly-career-lb-v1/';
+  const CAR_DEVICE_KEY = 'multipoly_career_device_id_v1';
+  function carDeviceId(){
+    try{
+      let id = localStorage.getItem(CAR_DEVICE_KEY);
+      if(!id){ id = 'd' + Math.random().toString(36).slice(2, 12); localStorage.setItem(CAR_DEVICE_KEY, id); }
+      return id;
+    } catch(e){ return 'd' + Math.random().toString(36).slice(2, 12); }
+  }
+  function carPublishGlobalBest(entry){
+    if(typeof mqtt === 'undefined') return; // library failed to load — global leaderboard just won't have this entry, no crash
+    try{
+      const client = mqtt.connect(CAR_LB_BROKER, { clientId: 'multipoly-lb-' + Math.random().toString(16).slice(2), clean:true, connectTimeout:6000 });
+      client.on('connect', () => {
+        client.publish(CAR_LB_TOPIC_PREFIX + carDeviceId(), JSON.stringify(entry), { retain:true, qos:1 }, () => client.end());
+      });
+      client.on('error', () => { try{ client.end(true); } catch(e){} });
+    } catch(e){}
+  }
 
-  function carToggleFavorite(){
-    const key = carCareerKey();
-    const i = carFavorites.findIndex(f => f.key === key);
-    if(i >= 0){ carFavorites.splice(i,1); carSaveFavorites(); renderCareerPhase(); return; }
-    if(carFavorites.length >= CAR_MAX_FAVORITES) return;
+  function carRecordCareerResult(){
     const best = CR.clubSpells.slice().sort((a,b) => b.buts - a.buts)[0];
-    carFavorites.push({
-      key, player: CR.name || 'Joueur', nation: CR.nation.name, startAge: CR.startAge, endAge: carAge(),
+    const entry = {
+      player: CR.name || 'Joueur', nation: CR.nation.name, startAge: CR.startAge, endAge: carAge(),
       peak: CR.careerPeak, verdict: carVerdict(CR.careerPeak, CR.careerTrophies.length, CR.careerStats.buts, CR.careerStats.selections),
       matchs: CR.careerStats.matchs, buts: CR.careerStats.buts, passes: CR.careerStats.passes,
       selections: CR.careerStats.selections, butsInter: CR.careerStats.butsInter, trophies: CR.careerTrophies.length,
       topTrophies: CR.careerTrophies.slice(0,4).map(t => t.label), clubs: CR.clubSpells.length,
       bestClub: best ? { club: best.club, buts: best.buts, matchs: best.matchs } : null,
       argent: CR.argent, ended: CR.endReason === 'injury' ? 'Blessure' : CR.endReason === 'choice' ? 'Retraite' : 'Terme',
-    });
-    carSaveFavorites();
-    renderCareerPhase();
+      // Real player behind the fictional footballer — so the leaderboard
+      // shows who actually achieved it, not just the in-game character name.
+      profilePseudo: (typeof getProfilePseudo === 'function' && getProfilePseudo()) || 'Anonyme',
+    };
+    carTop5.push(entry);
+    carTop5.sort((a,b) => b.peak - a.peak || b.buts - a.buts || b.trophies - a.trophies || b.passes - a.passes);
+    carTop5 = carTop5.slice(0, CAR_TOP5_SIZE);
+    carSaveTop5();
+    // Share to the global leaderboard only if this is now this player's own
+    // personal best (top of their own list) — keeps the global board to one
+    // entry per device, always their finest career. Published as a RETAINED
+    // MQTT message, so it stays visible to everyone indefinitely — until
+    // this same device beats it — regardless of whether this device is
+    // currently online or not; it doesn't need to stay connected.
+    if(carTop5[0] === entry) carPublishGlobalBest(entry);
   }
 
   // ---- RENDER ----
@@ -6485,7 +6575,6 @@ const CAR_SEASON_RESULTS = [
     keepBtn.style.display = (CR.hasRandomized && !CR.shuffling) ? 'flex' : 'none';
 
     document.getElementById('carSeasonsHint').textContent = `${carTotalSeasons()} saisons — ${CR.startAge} à ${CR.retireAge} ans`;
-    document.getElementById('carFavCount').textContent = carFavorites.length;
   }
 
   function renderCareerPlaying(){
@@ -6703,12 +6792,21 @@ const CAR_SEASON_RESULTS = [
     `;
   }
 
+  function carCategorizeTrophy(t){
+    if(t.intl){
+      const isWorldCup = t.label.startsWith('Coupe du monde');
+      return { tier: isWorldCup ? 4 : 3, icon: isWorldCup ? '🌍' : '🏆', group: t.label.replace(/ \d{4}$/, '') };
+    }
+    if(t.label.startsWith('Champion')) return { tier: 2, icon: '🏆', group: t.label };
+    if(/Ligue des champions|Ligue Europa|Copa Libertadores/.test(t.label)) return { tier: 2, icon: '🏆', group: t.label };
+    if(t.label.startsWith('Meilleur buteur')) return { tier: 0, icon: '⚽', group: t.label };
+    return { tier: 1, icon: '🎖️', group: t.label };
+  }
+
   function renderCareerFinished(){
     const injured = CR.endReason === 'injury';
     const bestClub = CR.clubSpells.slice().sort((a,b) => b.buts - a.buts)[0];
     const verdict = carVerdict(CR.careerPeak, CR.careerTrophies.length, CR.careerStats.buts, CR.careerStats.selections);
-    const starred = carFavorites.some(f => f.key === carCareerKey());
-    const favFull = carFavorites.length >= CAR_MAX_FAVORITES;
 
     document.getElementById('carFinishedEyebrow').textContent = injured ? 'Carrière brisée' : CR.endReason === 'choice' ? 'Retraite anticipée' : 'Fin de carrière';
     document.getElementById('carFinishedName').textContent = CR.name || 'Le joueur';
@@ -6720,13 +6818,28 @@ const CAR_SEASON_RESULTS = [
 
     let trophiesHtml;
     if(CR.careerTrophies.length > 0){
-      const intlTrophies = CR.careerTrophies.filter(t => t.intl);
-      const clubTrophies = CR.careerTrophies.filter(t => !t.intl);
-      trophiesHtml = `<div class="car-recap-box"><div class="car-recap-box-label">🏆 Palmarès (${CR.careerTrophies.length})</div>` +
-        intlTrophies.map(t => `<div class="car-trophy-row intl"><span>🌍</span> ${t.label} — ${CAR_START_YEAR + t.season - 1}</div>`).join('') +
-        clubTrophies.slice(0,8).map(t => `<div class="car-trophy-row"><span>🏆</span> ${t.label} — ${CAR_START_YEAR + t.season - 1}</div>`).join('') +
-        (clubTrophies.length > 8 ? `<p style="font-size:10px;color:#6b6552;margin-top:4px;">+${clubTrophies.length-8} autre${clubTrophies.length-8>1?'s':''} titre${clubTrophies.length-8>1?'s':''}</p>` : '') +
-        `</div>`;
+      const groups = {};
+      CR.careerTrophies.forEach(t => {
+        const cat = carCategorizeTrophy(t);
+        if(!groups[cat.group]) groups[cat.group] = Object.assign({ count:0, firstYear:null, lastYear:null }, cat);
+        const g = groups[cat.group];
+        g.count++;
+        const yr = CAR_START_YEAR + t.season - 1;
+        if(g.firstYear === null || yr < g.firstYear) g.firstYear = yr;
+        if(g.lastYear === null || yr > g.lastYear) g.lastYear = yr;
+      });
+      const sorted = Object.values(groups).sort((a,b) => b.tier - a.tier || b.count - a.count);
+      trophiesHtml = `<div class="car-recap-box car-palmares-box">
+        <div class="car-recap-box-label">🏆 Palmarès — ${CR.careerTrophies.length} titre${CR.careerTrophies.length>1?'s':''}</div>
+        ${sorted.map(g => `
+          <div class="car-trophy-row2${g.tier>=3?' major':''}">
+            <span class="car-trophy-icon">${g.icon}</span>
+            <span class="car-trophy-label">${g.group}</span>
+            <span class="car-trophy-years">${g.firstYear===g.lastYear ? g.firstYear : g.firstYear+'–'+g.lastYear}</span>
+            ${g.count>1 ? `<span class="car-trophy-count">×${g.count}</span>` : ''}
+          </div>
+        `).join('')}
+      </div>`;
     } else {
       trophiesHtml = `<div class="car-recap-box"><div class="car-recap-box-label">🏆 Palmarès</div><p style="font-size:11px;color:#6b6552;">Aucun titre remporté cette carrière.</p></div>`;
     }
@@ -6761,46 +6874,83 @@ const CAR_SEASON_RESULTS = [
         </div>
       ` : ''}
     `;
-
-    const starBtn = document.getElementById('carStarBtn');
-    starBtn.classList.toggle('active', starred);
-    starBtn.disabled = !starred && favFull;
-    document.getElementById('carStarLabel').textContent = starred ? 'Gardée' : 'Garder';
   }
 
-  function renderCareerFavsModal(){
-    document.getElementById('carFavsCount').textContent = `${carFavorites.length}/${CAR_MAX_FAVORITES}`;
-    const list = document.getElementById('carFavsList');
-    if(!carFavorites.length){
-      list.innerHTML = `<div class="car-favs-empty">Aucune carrière gardée. À la fin d'une carrière, touche « Garder » pour l'enregistrer ici.</div>`;
-      return;
-    }
-    list.innerHTML = carFavorites.map((f, i) => `
+  function carRenderLeaderboardEntries(entries){
+    const medals = ['🥇','🥈','🥉','4','5'];
+    return entries.map((f, i) => `
       <div class="car-fav-item">
         <div class="car-fav-item-top">
-          <div style="min-width:0;">
-            <div class="car-fav-name">${f.player}</div>
-            <div class="car-fav-meta">${f.nation} · ${f.startAge}–${f.endAge} ans · pic ${f.peak}</div>
+          <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+            <span class="car-top5-rank">${medals[i] || (i+1)}</span>
+            <div style="min-width:0;">
+              <div class="car-fav-name">${f.player}</div>
+              <div class="car-fav-meta">${f.nation} · ${f.startAge}–${f.endAge} ans · pic ${f.peak}</div>
+              ${f.profilePseudo ? `<div class="car-top5-owner">par ${f.profilePseudo}</div>` : ''}
+            </div>
           </div>
           <span class="car-fav-verdict">${f.verdict}</span>
         </div>
         <div class="car-fav-chips"><span>${carIcon('target',11)} ${f.buts}</span><span>${carIcon('send',11)} ${f.passes}</span><span>${carIcon('users',11)} ${f.matchs}</span><span>${carIcon('trophy',11)} ${f.trophies}</span></div>
         ${f.bestClub ? `<p style="font-size:10px;color:var(--ink-soft);">${f.bestClub.club} — ${f.bestClub.buts} buts</p>` : ''}
         ${f.selections > 0 ? `<p style="font-size:10px;color:#2c5aa0;">${f.selections} sélections · ${f.butsInter} buts en sélection</p>` : ''}
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
-          <span style="font-size:9px;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;">${cfmt(f.argent)} · fin : ${f.ended}</span>
-          <button class="car-fav-remove" data-idx="${i}" type="button">Retirer</button>
-        </div>
+        <p style="font-size:9px;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;margin-top:4px;">${cfmt(f.argent)} · fin : ${f.ended}</p>
       </div>
     `).join('');
-    list.querySelectorAll('.car-fav-remove').forEach(btn => {
-      btn.addEventListener('click', () => {
-        carFavorites.splice(parseInt(btn.dataset.idx,10), 1);
-        carSaveFavorites();
-        renderCareerFavsModal();
-        renderCareerPhase();
-      });
+  }
+
+  let carTop5Tab = 'personal';
+  function renderCareerTop5Modal(){
+    document.getElementById('carTop5TabPersonal').classList.toggle('active', carTop5Tab === 'personal');
+    document.getElementById('carTop5TabGlobal').classList.toggle('active', carTop5Tab === 'global');
+    if(carTop5Tab === 'personal') renderCareerTop5Personal();
+    else renderCareerTop5Global();
+  }
+  function renderCareerTop5Personal(){
+    const list = document.getElementById('carTop5List');
+    if(!carTop5.length){
+      list.innerHTML = `<div class="car-favs-empty">Aucune carrière terminée pour l'instant. Termine une carrière pour apparaître dans ce classement.</div>`;
+      return;
+    }
+    list.innerHTML = carRenderLeaderboardEntries(carTop5);
+  }
+
+  let carLbClient = null;
+  function renderCareerTop5Global(){
+    const list = document.getElementById('carTop5List');
+    list.innerHTML = `<div class="car-top5-status">Recherche des autres joueurs…</div>`;
+    if(typeof mqtt === 'undefined'){
+      list.innerHTML = `<div class="car-top5-status">Classement en ligne indisponible pour le moment.</div>`;
+      return;
+    }
+    if(carLbClient){ try{ carLbClient.end(true); } catch(e){} carLbClient = null; }
+    const collected = {};
+    try{
+      carLbClient = mqtt.connect(CAR_LB_BROKER, { clientId: 'multipoly-lbview-' + Math.random().toString(16).slice(2), clean:true, connectTimeout:6000 });
+    } catch(e){
+      list.innerHTML = `<div class="car-top5-status">Classement en ligne indisponible pour le moment.</div>`;
+      return;
+    }
+    carLbClient.on('connect', () => {
+      carLbClient.subscribe(CAR_LB_TOPIC_PREFIX + '+', { qos:1 }, () => {});
     });
+    carLbClient.on('message', (topic, payload) => {
+      try{
+        const entry = JSON.parse(payload.toString());
+        collected[topic] = entry;
+      } catch(e){}
+    });
+    carLbClient.on('error', () => {});
+    setTimeout(() => {
+      if(carLbClient){ try{ carLbClient.end(true); } catch(e){} carLbClient = null; }
+      if(carTop5Tab !== 'global') return; // user switched tabs while waiting — don't overwrite
+      const all = Object.values(collected).sort((a,b) => b.peak - a.peak || b.buts - a.buts || b.trophies - a.trophies || b.passes - a.passes).slice(0, 10);
+      if(!all.length){
+        list.innerHTML = `<div class="car-top5-status">Personne d'autre n'a encore terminé de carrière.</div>`;
+        return;
+      }
+      list.innerHTML = carRenderLeaderboardEntries(all);
+    }, 2200);
   }
 
   // ---- WIRING ----
@@ -6883,12 +7033,22 @@ const CAR_SEASON_RESULTS = [
   });
   document.getElementById('carShuffleBtn').addEventListener('click', carRegenerateAll);
   document.getElementById('carKeepBtn').addEventListener('click', carStartGame);
-  document.getElementById('carShowFavsBtn').addEventListener('click', () => {
-    document.getElementById('carFavsModal').style.display = 'flex';
-    renderCareerFavsModal();
+  document.getElementById('carShowTop5Btn').addEventListener('click', () => {
+    document.getElementById('carTop5Modal').style.display = 'flex';
+    carTop5Tab = 'personal';
+    renderCareerTop5Modal();
   });
-  document.getElementById('carFavsCloseBtn').addEventListener('click', () => {
-    document.getElementById('carFavsModal').style.display = 'none';
+  document.getElementById('carTop5TabPersonal').addEventListener('click', () => {
+    carTop5Tab = 'personal';
+    renderCareerTop5Modal();
+  });
+  document.getElementById('carTop5TabGlobal').addEventListener('click', () => {
+    carTop5Tab = 'global';
+    renderCareerTop5Modal();
+  });
+  document.getElementById('carTop5CloseBtn').addEventListener('click', () => {
+    document.getElementById('carTop5Modal').style.display = 'none';
+    if(carLbClient){ try{ carLbClient.end(true); } catch(e){} carLbClient = null; }
   });
 
   document.getElementById('carRetireBtn').addEventListener('click', () => {
@@ -6900,8 +7060,6 @@ const CAR_SEASON_RESULTS = [
     document.getElementById('carRetireModal').style.display = 'none';
   });
   document.getElementById('carRetireConfirmBtn').addEventListener('click', carRetireNow);
-
-  document.getElementById('carStarBtn').addEventListener('click', carToggleFavorite);
 
 })();
 </script>
