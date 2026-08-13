@@ -6131,7 +6131,15 @@ const CAR_SEASON_RESULTS = [
     } else {
       if(seasonStats.buts >= 22 && idx >= 3 && Math.random() < 0.5) out.push('Meilleur buteur — ' + league.name);
       if(seasonStats.buts >= 28 && idx >= 4 && Math.random() < 0.30) out.push("Soulier d'Or");
-      if(CR.note >= 84 && idx === 5 && seasonStats.buts >= 14 && Math.random() < 0.26) out.push("Ballon d'Or");
+      // A truly monster season (55+ combined goals+assists at a high note)
+      // wins the Ballon d'Or outright — no dice roll needed, that level of
+      // output speaks for itself. Otherwise it stays a rarer, probabilistic
+      // honour for merely great (rather than historic) seasons.
+      if(CR.note >= 87 && (seasonStats.buts + seasonStats.passes) >= 55){
+        out.push("Ballon d'Or");
+      } else if(CR.note >= 84 && idx === 5 && seasonStats.buts >= 14 && Math.random() < 0.26){
+        out.push("Ballon d'Or");
+      }
     }
     return out;
   }
@@ -6184,6 +6192,8 @@ const CAR_SEASON_RESULTS = [
   }
   function carVerdict(peak, trophies, goals, caps, cleanSheets){
     cleanSheets = cleanSheets || 0;
+    const outputOk = cleanSheets >= 190 || goals >= 300;
+    if(peak >= 98 && trophies >= 15 && outputOk) return 'GOAT';
     if(peak >= 90 && trophies >= 8) return 'Légende du football';
     if(peak >= 87 && trophies >= 4) return 'Star mondiale';
     if(peak >= 82 && (trophies >= 2 || caps >= 40)) return 'Grand joueur';
@@ -6207,21 +6217,9 @@ const CAR_SEASON_RESULTS = [
     'Star mondiale': 200,
     'Légende du football': 280,
   };
-  function carCheckGoat(){
-    const peakOk = CR.careerPeak >= 97;
-    const trophiesOk = CR.careerTrophies.length >= 12;
-    const outputOk = CR.poste === 'gardien'
-      ? CR.careerStats.cleanSheets >= 160
-      : CR.careerStats.buts >= 260 && CR.careerStats.passes >= 90;
-    if(peakOk && trophiesOk && outputOk && Math.random() < 0.22){
-      CR.careerTrophies.push({ season: CR.seasonNum, label: 'GOAT' });
-    }
-  }
-
   function carAwardCompletionXP(){
     if(CR.xpAwarded) return; // guard: only award once per finished career, even if the finished screen re-renders
     CR.xpAwarded = true;
-    carCheckGoat();
     const verdict = carVerdict(CR.careerPeak, CR.careerTrophies.length, CR.careerStats.buts, CR.careerStats.selections, CR.careerStats.cleanSheets);
     const xp = CAR_XP_BY_VERDICT[verdict] || 50;
     awardXP(xp);
@@ -6578,7 +6576,7 @@ const CAR_SEASON_RESULTS = [
       const firstCall = !CR.capped;
       const caps = crnd(5,8);
       const gpg = 0.12 + Math.max(0, CR.note - 70) * 0.022;
-      const goals = Math.max(0, Math.round(caps * gpg * (0.7 + Math.random()*0.7)));
+      const goals = CR.poste === 'gardien' ? 0 : Math.max(0, Math.round(caps * gpg * (0.7 + Math.random()*0.7)));
       // Nation strength matters as much as personal quality: elite
       // footballing nations (pot 1) get a bigger boost than weaker ones
       // (pot 3). Calibrated so that across a WHOLE CAREER (roughly 9 major
@@ -6626,7 +6624,7 @@ const CAR_SEASON_RESULTS = [
       if(firstCall) CR.capped = true;
       const caps = crnd(4,9);
       const gpg = 0.12 + Math.max(0, CR.note - 70) * 0.022;
-      const goals = Math.max(0, Math.round(caps * gpg * (0.7 + Math.random()*0.7)));
+      const goals = CR.poste === 'gardien' ? 0 : Math.max(0, Math.round(caps * gpg * (0.7 + Math.random()*0.7)));
       CR.careerStats.selections += caps;
       CR.careerStats.butsInter += goals;
       intl = { firstCall, caps, goals, tourney: null, run: null, won: false, year };
@@ -7254,7 +7252,6 @@ const CAR_SEASON_RESULTS = [
   }
 
   function carCategorizeTrophy(t){
-    if(t.label === 'GOAT') return { tier: 5, icon: '🐐', group: t.label };
     if(t.intl){
       const isWorldCup = t.label.startsWith('Coupe du monde');
       return { tier: isWorldCup ? 4 : 3, icon: isWorldCup ? '🌍' : '🏆', group: t.label.replace(/ \d{4}$/, '') };
