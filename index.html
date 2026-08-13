@@ -6127,11 +6127,11 @@ const CAR_SEASON_RESULTS = [
       if(seasonStats.cleanSheets >= 7 && idx >= 3 && Math.random() < 0.5) out.push('Meilleur gardien — ' + league.name);
       if(seasonStats.cleanSheets >= 10 && idx >= 4 && Math.random() < 0.30) out.push("Gant d'Or");
       if(seasonStats.matchs && (seasonStats.cleanSheets/seasonStats.matchs) >= 0.42 && idx === 5 && Math.random() < 0.22) out.push('Record d\'invincibilité');
-      if(CR.note >= 87 && idx === 5 && seasonStats.cleanSheets >= 8 && Math.random() < 0.14) out.push("Ballon d'Or");
+      if(CR.note >= 84 && idx === 5 && seasonStats.cleanSheets >= 6 && Math.random() < 0.26) out.push("Ballon d'Or");
     } else {
       if(seasonStats.buts >= 22 && idx >= 3 && Math.random() < 0.5) out.push('Meilleur buteur — ' + league.name);
       if(seasonStats.buts >= 28 && idx >= 4 && Math.random() < 0.30) out.push("Soulier d'Or");
-      if(CR.note >= 87 && idx === 5 && seasonStats.buts >= 18 && Math.random() < 0.14) out.push("Ballon d'Or");
+      if(CR.note >= 84 && idx === 5 && seasonStats.buts >= 14 && Math.random() < 0.26) out.push("Ballon d'Or");
     }
     return out;
   }
@@ -6207,9 +6207,21 @@ const CAR_SEASON_RESULTS = [
     'Star mondiale': 200,
     'Légende du football': 280,
   };
+  function carCheckGoat(){
+    const peakOk = CR.careerPeak >= 97;
+    const trophiesOk = CR.careerTrophies.length >= 12;
+    const outputOk = CR.poste === 'gardien'
+      ? CR.careerStats.cleanSheets >= 160
+      : CR.careerStats.buts >= 260 && CR.careerStats.passes >= 90;
+    if(peakOk && trophiesOk && outputOk && Math.random() < 0.22){
+      CR.careerTrophies.push({ season: CR.seasonNum, label: 'GOAT' });
+    }
+  }
+
   function carAwardCompletionXP(){
     if(CR.xpAwarded) return; // guard: only award once per finished career, even if the finished screen re-renders
     CR.xpAwarded = true;
+    carCheckGoat();
     const verdict = carVerdict(CR.careerPeak, CR.careerTrophies.length, CR.careerStats.buts, CR.careerStats.selections, CR.careerStats.cleanSheets);
     const xp = CAR_XP_BY_VERDICT[verdict] || 50;
     awardXP(xp);
@@ -7242,6 +7254,7 @@ const CAR_SEASON_RESULTS = [
   }
 
   function carCategorizeTrophy(t){
+    if(t.label === 'GOAT') return { tier: 5, icon: '🐐', group: t.label };
     if(t.intl){
       const isWorldCup = t.label.startsWith('Coupe du monde');
       return { tier: isWorldCup ? 4 : 3, icon: isWorldCup ? '🌍' : '🏆', group: t.label.replace(/ \d{4}$/, '') };
